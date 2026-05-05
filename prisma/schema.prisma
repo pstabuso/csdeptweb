@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  COORDINATOR
+  SECRETARY
+  ADMIN
+}
+
+enum ConcernStatus {
+  OPEN
+  ANSWERED
+  CLOSED
+}
+
+model User {
+  id           String         @id @default(cuid())
+  name         String
+  email        String         @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  concerns     Concern[]      @relation("ConcernStudent")
+  replies      ConcernReply[] @relation("ReplyAuthor")
+  auditLogs    AuditLog[]
+}
+
+model Concern {
+  id              String         @id @default(cuid())
+  subject         String
+  category        String
+  message         String
+  status          ConcernStatus  @default(OPEN)
+  studentId       String
+  student         User           @relation("ConcernStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  replies         ConcernReply[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  lastRespondedAt DateTime?
+
+  @@index([studentId, createdAt])
+  @@index([status, updatedAt])
+}
+
+model ConcernReply {
+  id        String   @id @default(cuid())
+  message   String
+  concernId String
+  concern   Concern  @relation(fields: [concernId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation("ReplyAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([concernId, createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String
+  entityId   String?
+  details    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([actorId, createdAt])
+}
