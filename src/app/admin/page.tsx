@@ -24,20 +24,20 @@ const roleLabels = {
 
 const roleBadgeStyles: Record<Role, string> = {
   STUDENT:
-    "bg-slate-100/10 text-slate-200 ring-1 ring-inset ring-slate-200/15",
+    "bg-violet-400/15 text-violet-100 ring-1 ring-inset ring-violet-300/20",
   COORDINATOR:
-    "bg-cyan-400/15 text-cyan-200 ring-1 ring-inset ring-cyan-300/30",
+    "bg-fuchsia-400/15 text-fuchsia-100 ring-1 ring-inset ring-fuchsia-300/30",
   SECRETARY:
-    "bg-amber-400/15 text-amber-100 ring-1 ring-inset ring-amber-300/30",
+    "bg-purple-400/15 text-purple-100 ring-1 ring-inset ring-purple-300/30",
   ADMIN:
-    "bg-fuchsia-400/15 text-fuchsia-200 ring-1 ring-inset ring-fuchsia-300/30",
+    "bg-violet-300/15 text-violet-50 ring-1 ring-inset ring-violet-200/30",
 };
 
 const accessBadgeStyles: Record<UserStatus, string> = {
   ACTIVE:
-    "bg-emerald-400/15 text-emerald-200 ring-1 ring-inset ring-emerald-300/30",
+    "bg-violet-400/15 text-violet-100 ring-1 ring-inset ring-violet-300/20",
   DISABLED:
-    "bg-rose-400/15 text-rose-200 ring-1 ring-inset ring-rose-300/30",
+    "bg-fuchsia-400/15 text-fuchsia-100 ring-1 ring-inset ring-fuchsia-300/20",
 };
 
 type PageProps = {
@@ -134,51 +134,48 @@ export default async function AdminPage({ searchParams }: PageProps) {
     <AppShell
       user={user}
       title="Admin operations hub"
-      description="Control user access, inspect full concern threads, and monitor the department portal through one cleaner admin workspace."
+      description="Manage users, concerns, and schedule."
     >
-      <div className="space-y-6">
+      <div className="space-y-4">
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card) => (
             <article
               key={card.label}
-              className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
+              className="rounded-[1.4rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
             >
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                 {card.label}
               </p>
-              <p className="mt-3 text-4xl font-semibold tracking-tight text-white">
+              <p className="mt-2 text-3xl font-semibold tracking-tight text-white">
                 {card.value}
               </p>
-              <p className="mt-2 text-sm leading-6 text-slate-300">
+              <p className="mt-1 text-sm leading-5 text-slate-300">
                 {card.helper}
               </p>
             </article>
           ))}
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_360px]">
-          <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
-            <div className="flex flex-col gap-4 border-b border-white/10 pb-6">
+        <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_320px]">
+          <section className="rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+            <div className="flex flex-col gap-3 border-b border-white/10 pb-4">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
-                  Account governance
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+                  Users
                 </p>
-                <h2 className="mt-2 text-2xl font-semibold text-white">
-                  Edit names, emails, student numbers, roles, and access
+                <h2 className="mt-1 text-xl font-semibold text-white">
+                  Edit users
                 </h2>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-                  Admin controls every account record here. Accounts remain
-                  students by default unless you explicitly assign a staff or
-                  admin role.
+                <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
+                  Default role is student unless changed.
                 </p>
               </div>
-              <div className="rounded-[1.6rem] border border-cyan-300/15 bg-cyan-400/10 px-4 py-4 text-sm leading-6 text-cyan-100">
-                Admin can inspect the entire concern lifecycle while keeping
-                names, roles, student numbers, and access states current.
+              <div className="rounded-[1.2rem] border border-violet-300/15 bg-violet-400/10 px-3 py-3 text-sm leading-6 text-violet-100">
+                Full account control.
               </div>
             </div>
 
-            <div className="mt-6 space-y-4">
+            <div className="mt-4 space-y-3">
               {users.map((account) => {
                 const action = updateUserAccess.bind(null, account.id);
                 const isCurrentSession = account.id === user.id;
@@ -186,12 +183,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
                 return (
                   <article
                     key={account.id}
-                    className="rounded-[1.7rem] border border-white/10 bg-slate-900/85 p-5"
+                    className="rounded-[1.3rem] border border-white/10 bg-slate-900/85 p-4"
                   >
                     <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                      <div className="max-w-xl space-y-3">
+                      <div className="max-w-xl space-y-2">
                         <div className="flex flex-wrap items-center gap-3">
-                          <span className="text-lg font-semibold text-white">
+                          <span className="text-base font-semibold text-white">
                             {account.name}
                           </span>
                           <span
@@ -211,7 +208,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                           ) : null}
                         </div>
 
-                        <div className="space-y-1 text-sm leading-6 text-slate-400">
+                        <div className="space-y-1 text-sm leading-5 text-slate-400">
                           <p>{account.email}</p>
                           <p>
                             Student number: {account.studentNumber || "Not set"}
@@ -226,7 +223,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
 
                       <form
                         action={action}
-                        className="grid w-full gap-3 rounded-[1.5rem] border border-white/10 bg-slate-950/90 p-4 md:grid-cols-2"
+                        className="grid w-full gap-2 rounded-[1.2rem] border border-white/10 bg-slate-950/90 p-3 md:grid-cols-2"
                       >
                         <div className="space-y-2">
                           <label
@@ -240,7 +237,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                             name="name"
                             defaultValue={account.name}
                             required
-                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+                            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                           />
                         </div>
 
@@ -257,7 +254,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                             type="email"
                             defaultValue={account.email}
                             required
-                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+                            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                           />
                         </div>
 
@@ -272,8 +269,8 @@ export default async function AdminPage({ searchParams }: PageProps) {
                             id={`student-number-${account.id}`}
                             name="studentNumber"
                             defaultValue={account.studentNumber ?? ""}
-                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
-                            placeholder="Required before students can submit"
+                            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
+                            placeholder="Student ID"
                           />
                         </div>
 
@@ -288,7 +285,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                             id={`role-${account.id}`}
                             name="role"
                             defaultValue={account.role}
-                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+                            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                           >
                             <option value="STUDENT">Student</option>
                             <option value="COORDINATOR">Coordinator</option>
@@ -308,7 +305,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                             id={`status-${account.id}`}
                             name="status"
                             defaultValue={account.status}
-                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+                            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                           >
                             <option value="ACTIVE">Active</option>
                             <option value="DISABLED">Disabled</option>

@@ -80,7 +80,7 @@ export default async function SecretaryPage({ searchParams }: PageProps) {
     <AppShell
       user={user}
       title="Secretary response queue"
-      description="Track student requests, coordinate responses, and maintain clean concern records for the department office."
+      description="Track, reply, and organize concerns."
     >
       <StaffDashboard
         role={Role.SECRETARY}

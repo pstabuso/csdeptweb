@@ -60,27 +60,23 @@ export function ConcernWorkspace({
   ).length;
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
-        <div className="flex flex-col gap-3 border-b border-white/10 pb-5">
+    <div className="space-y-4">
+      <section className="rounded-[1.6rem] border border-white/10 bg-slate-950/60 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+        <div className="flex flex-col gap-2 border-b border-white/10 pb-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
-              Concern workspace
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+              Concerns
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">{title}</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
+            <h2 className="mt-1 text-xl font-semibold text-white">{title}</h2>
+            <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
               {description}
             </p>
           </div>
-          <p className="text-sm text-slate-400">
-            Use filters to narrow the queue, then sort the results into the
-            review order you want.
-          </p>
         </div>
 
         <form
           action={currentPath}
-          className="mt-5 grid gap-3 lg:grid-cols-[minmax(0,1.3fr)_180px_180px_180px_auto]"
+          className="mt-4 grid gap-2 lg:grid-cols-[minmax(0,1.3fr)_150px_160px_150px_auto]"
         >
           {persistentParams
             ? Object.entries(persistentParams).map(([key, value]) => (
@@ -90,13 +86,13 @@ export function ConcernWorkspace({
           <input
             name="query"
             defaultValue={filters.query}
-            placeholder="Search subject, student, email, or student number"
-            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+            placeholder="Search"
+            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
           />
           <select
             name="status"
             defaultValue={filters.status}
-            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
           >
             <option value="ALL">All statuses</option>
             <option value="OPEN">Open</option>
@@ -106,7 +102,7 @@ export function ConcernWorkspace({
           <select
             name="category"
             defaultValue={filters.category}
-            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
           >
             <option value="ALL">All categories</option>
             {categoryOptions.map((category) => (
@@ -118,7 +114,7 @@ export function ConcernWorkspace({
           <select
             name="sort"
             defaultValue={filters.sort}
-            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
           >
             {Object.entries(sortLabels).map(([value, label]) => (
               <option key={value} value={value}>
@@ -128,102 +124,102 @@ export function ConcernWorkspace({
           </select>
           <button
             type="submit"
-            className="rounded-2xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
+            className="rounded-xl bg-violet-400 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-300"
           >
             Apply
           </button>
         </form>
 
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <div className="rounded-[1.5rem] border border-amber-300/15 bg-amber-400/10 px-4 py-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-100">
+        <div className="mt-4 grid gap-2 md:grid-cols-3">
+          <div className="rounded-[1.1rem] border border-violet-300/15 bg-violet-400/10 px-3 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-100">
               Open
             </p>
-            <p className="mt-2 text-3xl font-semibold text-white">{openCount}</p>
+            <p className="mt-1 text-2xl font-semibold text-white">{openCount}</p>
           </div>
-          <div className="rounded-[1.5rem] border border-emerald-300/15 bg-emerald-400/10 px-4 py-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-100">
+          <div className="rounded-[1.1rem] border border-fuchsia-300/15 bg-fuchsia-400/10 px-3 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fuchsia-100">
               Answered
             </p>
-            <p className="mt-2 text-3xl font-semibold text-white">
+            <p className="mt-1 text-2xl font-semibold text-white">
               {answeredCount}
             </p>
           </div>
-          <div className="rounded-[1.5rem] border border-slate-300/15 bg-slate-400/10 px-4 py-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-100">
+          <div className="rounded-[1.1rem] border border-white/10 bg-white/5 px-3 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-200">
               Closed
             </p>
-            <p className="mt-2 text-3xl font-semibold text-white">{closedCount}</p>
+            <p className="mt-1 text-2xl font-semibold text-white">{closedCount}</p>
           </div>
         </div>
       </section>
 
-      <section className="space-y-5">
+      <section className="space-y-3">
         {concerns.length ? (
           concerns.map((concern) => (
             <article
               key={concern.id}
-              className="space-y-4 rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
+              className="space-y-3 rounded-[1.5rem] border border-white/10 bg-slate-950/65 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
             >
-              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                <div className="space-y-2">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div className="space-y-1.5">
                   <div className="flex flex-wrap items-center gap-3">
                     <StatusBadge status={concern.status} />
-                    <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200 ring-1 ring-inset ring-white/10">
+                    <span className="rounded-full bg-violet-400/10 px-2.5 py-1 text-[11px] font-semibold text-violet-100 ring-1 ring-inset ring-violet-300/20">
                       {concern.category}
                     </span>
                   </div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-white">
                     {concern.subject}
                   </h3>
-                  <div className="text-sm leading-6 text-slate-400">
+                  <div className="text-sm leading-5 text-slate-400">
                     <p>{concern.student.name}</p>
                     <p>{concern.student.email}</p>
                     <p>
-                      Student number: {concern.student.studentNumber || "Not set"}
+                      {concern.student.studentNumber || "No ID"} /{" "}
+                      {formatDateTime(concern.createdAt)}
                     </p>
-                    <p>Submitted {formatDateTime(concern.createdAt)}</p>
                   </div>
                 </div>
-                <div className="rounded-[1.4rem] border border-white/10 bg-slate-900/70 px-4 py-3 text-sm text-slate-300">
-                  <p>Last updated</p>
+                <div className="rounded-[1rem] border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
+                  <p className="uppercase tracking-[0.16em] text-slate-500">Updated</p>
                   <p className="mt-1 font-semibold text-white">
                     {formatDateTime(concern.updatedAt)}
                   </p>
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-4 text-sm leading-7 text-slate-200">
+              <div className="rounded-[1.2rem] border border-white/10 bg-slate-900/80 p-3 text-sm leading-6 text-slate-200">
                 {concern.message}
               </div>
 
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Conversation
+              <div className="space-y-2">
+                <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  Thread
                 </h4>
                 {concern.replies.length ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {concern.replies.map((reply) => (
                       <div
                         key={reply.id}
-                        className="rounded-3xl border border-white/10 bg-slate-900/80 p-4"
+                        className="rounded-[1.1rem] border border-white/10 bg-slate-900/80 p-3"
                       >
-                        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
                           <span>{reply.author.name}</span>
-                          <span className="text-slate-600">/</span>
+                          <span className="text-slate-700">/</span>
                           <span>{reply.author.role.replaceAll("_", " ")}</span>
-                          <span className="text-slate-600">/</span>
+                          <span className="text-slate-700">/</span>
                           <span>{formatDateTime(reply.createdAt)}</span>
                         </div>
-                        <p className="mt-3 text-sm leading-7 text-slate-200">
+                        <p className="mt-2 text-sm leading-6 text-slate-200">
                           {reply.message}
                         </p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="rounded-3xl border border-dashed border-white/15 bg-slate-900/70 px-4 py-5 text-sm text-slate-400">
-                    No staff response yet.
+                  <p className="rounded-[1.1rem] border border-dashed border-white/15 bg-slate-900/70 px-3 py-3 text-sm text-slate-400">
+                    No replies yet.
                   </p>
                 )}
               </div>
@@ -238,7 +234,7 @@ export function ConcernWorkspace({
             </article>
           ))
         ) : (
-          <div className="rounded-[2rem] border border-dashed border-white/15 bg-slate-950/50 p-8 text-center text-sm text-slate-400">
+          <div className="rounded-[1.5rem] border border-dashed border-white/15 bg-slate-950/50 p-5 text-center text-sm text-slate-400">
             {emptyMessage}
           </div>
         )}

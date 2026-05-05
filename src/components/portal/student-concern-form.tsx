@@ -12,17 +12,12 @@ export function StudentConcernForm({
   return (
     <form
       action={createConcern}
-      className="space-y-4 rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
+      className="space-y-3 rounded-[1.6rem] border border-white/10 bg-slate-950/60 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
     >
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <div className="space-y-1">
-        <h2 className="text-xl font-semibold text-white">
-          Submit a new concern
-        </h2>
-        <p className="text-sm leading-6 text-slate-300">
-          Share your question, request, or issue so the department team can
-          respond.
-        </p>
+        <h2 className="text-lg font-semibold text-white">New concern</h2>
+        <p className="text-sm text-slate-400">Pick a type, add details.</p>
       </div>
 
       <div className="space-y-2">
@@ -34,8 +29,8 @@ export function StudentConcernForm({
           name="subject"
           required
           minLength={5}
-          className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:bg-slate-950"
-          placeholder="Example: Clearance concern"
+          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+          placeholder="Subject"
         />
       </div>
 
@@ -47,7 +42,7 @@ export function StudentConcernForm({
           id="category"
           name="category"
           required
-          className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:bg-slate-950"
+          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
           defaultValue=""
         >
           <option value="" disabled>
@@ -70,9 +65,9 @@ export function StudentConcernForm({
           name="message"
           required
           minLength={15}
-          rows={6}
-          className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:bg-slate-950"
-          placeholder="Explain the concern and include any important context."
+          rows={5}
+          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+          placeholder="Details"
         />
       </div>
 

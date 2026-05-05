@@ -17,11 +17,11 @@ type AppShellProps = {
 };
 
 const roleStyles: Record<Role, string> = {
-  STUDENT: "bg-sky-400/15 text-sky-200 ring-1 ring-inset ring-sky-300/30",
+  STUDENT: "bg-violet-400/15 text-violet-100 ring-1 ring-inset ring-violet-300/30",
   COORDINATOR:
-    "bg-emerald-400/15 text-emerald-200 ring-1 ring-inset ring-emerald-300/30",
-  SECRETARY: "bg-amber-400/15 text-amber-200 ring-1 ring-inset ring-amber-300/30",
-  ADMIN: "bg-fuchsia-400/15 text-fuchsia-200 ring-1 ring-inset ring-fuchsia-300/30",
+    "bg-fuchsia-400/15 text-fuchsia-100 ring-1 ring-inset ring-fuchsia-300/30",
+  SECRETARY: "bg-purple-400/15 text-purple-100 ring-1 ring-inset ring-purple-300/30",
+  ADMIN: "bg-violet-300/15 text-violet-50 ring-1 ring-inset ring-violet-200/30",
 };
 
 export function AppShell({
@@ -31,29 +31,29 @@ export function AppShell({
   children,
 }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.14),_transparent_28%),radial-gradient(circle_at_right,_rgba(168,85,247,0.12),_transparent_20%),linear-gradient(135deg,_#050b16_0%,_#091221_46%,_#0c1b2f_100%)] text-slate-100">
-      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-8 lg:px-10">
-        <header className="mb-8 rounded-[2rem] border border-white/10 bg-slate-950/55 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur-xl">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="space-y-3">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(192,132,252,0.18),_transparent_30%),radial-gradient(circle_at_right,_rgba(139,92,246,0.16),_transparent_22%),linear-gradient(135deg,_#0f0918_0%,_#181126_42%,_#221533_100%)] text-slate-100">
+      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-5 lg:px-6">
+        <header className="mb-5 rounded-[1.6rem] border border-white/10 bg-slate-950/45 p-4 shadow-[0_20px_70px_-45px_rgba(12,7,24,0.95)] backdrop-blur-xl">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="space-y-2">
               <span
                 className={cx(
-                  "inline-flex rounded-full px-3 py-1 text-xs font-semibold tracking-[0.2em] uppercase",
+                  "inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[0.18em] uppercase",
                   roleStyles[user.role],
                 )}
               >
                 {user.role.replaceAll("_", " ")}
               </span>
               <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">
+                <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
                   {title}
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-300 md:text-base">
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-300">
                   {description}
                 </p>
               </div>
             </div>
-            <div className="flex flex-col gap-4 rounded-[1.5rem] border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 p-3 sm:flex-row sm:items-center">
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-white">
                   {user.name}
@@ -63,7 +63,7 @@ export function AppShell({
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/profile"
-                  className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+                  className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-violet-400/10 px-3 py-2 text-sm font-semibold text-violet-50 transition hover:bg-violet-400/20"
                 >
                   Profile
                 </Link>

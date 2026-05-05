@@ -80,7 +80,7 @@ export default async function CoordinatorPage({ searchParams }: PageProps) {
     <AppShell
       user={user}
       title="Coordinator response queue"
-      description="Review new student concerns, provide official responses, and update statuses so the department queue stays accurate."
+      description="Review, reply, and sort concerns."
     >
       <StaffDashboard
         role={Role.COORDINATOR}

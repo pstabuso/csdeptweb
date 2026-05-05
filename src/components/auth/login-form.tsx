@@ -14,16 +14,11 @@ export function LoginForm() {
   return (
     <form
       action={action}
-      className="space-y-5 rounded-[2rem] border border-white/10 bg-slate-950/70 p-8 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur-xl"
+      className="space-y-4 rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur-xl"
     >
       <div className="space-y-1">
-        <h2 className="text-2xl font-semibold tracking-tight text-white">
-          Department portal login
-        </h2>
-        <p className="text-sm leading-6 text-slate-300">
-          Sign in with your assigned email and password. Access is determined by
-          the role granted to your account by the admin.
-        </p>
+        <h2 className="text-xl font-semibold tracking-tight text-white">Login</h2>
+        <p className="text-sm text-slate-400">Use your assigned account.</p>
       </div>
 
       <div className="space-y-2">
@@ -35,7 +30,7 @@ export function LoginForm() {
           name="email"
           type="email"
           required
-          className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:bg-slate-950"
+          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
           placeholder="name@csdept.edu"
         />
       </div>
@@ -50,7 +45,7 @@ export function LoginForm() {
           type="password"
           required
           minLength={8}
-          className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:bg-slate-950"
+          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
           placeholder="Enter your password"
         />
       </div>
@@ -63,7 +58,7 @@ export function LoginForm() {
 
       <SubmitButton
         pendingLabel="Signing in..."
-        className="w-full rounded-2xl py-3 text-base"
+        className="w-full rounded-xl py-2.5 text-base"
       >
         Sign in
       </SubmitButton>
@@ -71,7 +66,7 @@ export function LoginForm() {
       <p className="text-center text-sm text-slate-400">
         Need an account?{" "}
         <Link
-          className="font-semibold text-cyan-300 hover:text-cyan-200"
+          className="font-semibold text-violet-300 hover:text-violet-200"
           href="/sign-up"
         >
           Student sign up

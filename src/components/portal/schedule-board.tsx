@@ -102,15 +102,15 @@ export function ScheduleBoard({
   }, {});
 
   return (
-    <section className="space-y-5 rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
-      <div className="flex flex-col gap-3 border-b border-white/10 pb-5">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <section className="space-y-4 rounded-[1.6rem] border border-white/10 bg-slate-950/60 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+      <div className="flex flex-col gap-2 border-b border-white/10 pb-4">
+        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-300">
-              Shared schedule
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+              Schedule
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">{title}</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
+            <h2 className="mt-1 text-xl font-semibold text-white">{title}</h2>
+            <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
               {description}
             </p>
           </div>
@@ -121,7 +121,7 @@ export function ScheduleBoard({
             >
               Prev
             </Link>
-            <span className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-semibold text-white">
+            <span className="rounded-xl border border-violet-300/15 bg-violet-400/10 px-4 py-2 font-semibold text-white">
               {formatMonthLabel(month)}
             </span>
             <Link
@@ -134,19 +134,19 @@ export function ScheduleBoard({
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-2 text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+      <div className="grid grid-cols-7 gap-1.5 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
           <div key={day}>{day}</div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 gap-1.5">
         {grid.map((cell) => {
           if (!cell.dayNumber) {
             return (
               <div
                 key={cell.key}
-                className="min-h-20 rounded-2xl border border-transparent bg-transparent"
+                className="min-h-16 rounded-xl border border-transparent bg-transparent"
               />
             );
           }
@@ -157,14 +157,14 @@ export function ScheduleBoard({
           return (
             <div
               key={cell.key}
-              className="min-h-20 rounded-2xl border border-white/10 bg-slate-900/70 p-3"
+              className="min-h-16 rounded-xl border border-white/10 bg-slate-900/70 p-2.5"
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-white">
                   {cell.dayNumber}
                 </span>
                 {count ? (
-                  <span className="rounded-full bg-cyan-400/15 px-2 py-1 text-[10px] font-semibold text-cyan-200 ring-1 ring-inset ring-cyan-300/30">
+                  <span className="rounded-full bg-violet-400/15 px-2 py-1 text-[10px] font-semibold text-violet-100 ring-1 ring-inset ring-violet-300/30">
                     {count}
                   </span>
                 ) : null}
@@ -174,7 +174,7 @@ export function ScheduleBoard({
                   Array.from({ length: Math.min(count, 3) }).map((_, index) => (
                     <div
                       key={`${cell.key}-marker-${index}`}
-                      className="h-2 rounded-full bg-cyan-300/70"
+                      className="h-1.5 rounded-full bg-violet-300/70"
                     />
                   ))
                 ) : (
@@ -189,47 +189,44 @@ export function ScheduleBoard({
       {canManage ? (
         <form
           action={createScheduleEntry}
-          className="space-y-4 rounded-[1.7rem] border border-white/10 bg-slate-900/80 p-5"
+          className="space-y-3 rounded-[1.3rem] border border-white/10 bg-slate-900/80 p-4"
         >
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-white">Add schedule entry</h3>
-            <p className="text-sm text-slate-400">
-              Coordinators and secretaries can maintain the department calendar
-              here for student visibility.
-            </p>
+            <h3 className="text-base font-semibold text-white">Add entry</h3>
+            <p className="text-sm text-slate-400">Student-visible calendar.</p>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             <input
               name="title"
               required
               placeholder="Event title"
-              className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-fuchsia-400"
+              className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
             />
             <input
               name="location"
               required
               placeholder="Location"
-              className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-fuchsia-400"
+              className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
             />
             <input
               name="startsAt"
               type="datetime-local"
               required
-              className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-fuchsia-400"
+              className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
             />
             <input
               name="endsAt"
               type="datetime-local"
               required
-              className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-fuchsia-400"
+              className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
             />
           </div>
           <textarea
             name="notes"
-            rows={3}
-            placeholder="Optional notes for students and staff"
-            className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-fuchsia-400"
+            rows={2}
+            placeholder="Notes"
+            className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
           />
           <SubmitButton pendingLabel="Saving schedule...">
             Add to calendar
@@ -237,14 +234,14 @@ export function ScheduleBoard({
         </form>
       ) : null}
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {entries.length ? (
           entries.map((entry) =>
             canManage ? (
               <form
                 key={entry.id}
                 action={updateScheduleEntry.bind(null, entry.id)}
-                className="space-y-4 rounded-[1.7rem] border border-white/10 bg-slate-900/80 p-5"
+                className="space-y-3 rounded-[1.3rem] border border-white/10 bg-slate-900/80 p-4"
               >
                 <input type="hidden" name="redirectTo" value={redirectTo} />
                 <div className="grid gap-3 md:grid-cols-2">
@@ -252,34 +249,34 @@ export function ScheduleBoard({
                     name="title"
                     defaultValue={entry.title}
                     required
-                    className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-fuchsia-400"
+                    className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                   />
                   <input
                     name="location"
                     defaultValue={entry.location}
                     required
-                    className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-fuchsia-400"
+                    className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                   />
                   <input
                     name="startsAt"
                     type="datetime-local"
                     defaultValue={getDateTimeLocalValue(entry.startsAt)}
                     required
-                    className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-fuchsia-400"
+                    className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                   />
                   <input
                     name="endsAt"
                     type="datetime-local"
                     defaultValue={getDateTimeLocalValue(entry.endsAt)}
                     required
-                    className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-fuchsia-400"
+                    className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                   />
                 </div>
                 <textarea
                   name="notes"
-                  rows={3}
+                  rows={2}
                   defaultValue={entry.notes ?? ""}
-                  className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-fuchsia-400"
+                  className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                 />
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="text-sm text-slate-400">
@@ -293,13 +290,13 @@ export function ScheduleBoard({
                   <div className="flex flex-col gap-3 sm:flex-row">
                     <SubmitButton
                       pendingLabel="Saving..."
-                      className="rounded-2xl px-5 py-3"
+                      className="rounded-xl px-4 py-2.5"
                     >
                       Save changes
                     </SubmitButton>
                     <button
                       formAction={deleteScheduleEntry.bind(null, entry.id)}
-                      className="rounded-2xl border border-rose-300/20 bg-rose-400/10 px-5 py-3 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20"
+                      className="rounded-xl border border-rose-300/20 bg-rose-400/10 px-4 py-2.5 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20"
                     >
                       Delete
                     </button>
@@ -309,11 +306,11 @@ export function ScheduleBoard({
             ) : (
               <article
                 key={entry.id}
-                className="rounded-[1.7rem] border border-white/10 bg-slate-900/80 p-5"
+                className="rounded-[1.3rem] border border-white/10 bg-slate-900/80 p-4"
               >
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="text-base font-semibold text-white">
                       {entry.title}
                     </h3>
                     <p className="mt-1 text-sm text-slate-300">
@@ -328,12 +325,12 @@ export function ScheduleBoard({
                       {formatRoleLabel(entry.createdBy.role)})
                     </p>
                   </div>
-                  <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200 ring-1 ring-inset ring-white/10">
+                  <span className="rounded-full bg-violet-400/10 px-2.5 py-1 text-[11px] font-semibold text-violet-100 ring-1 ring-inset ring-violet-300/20">
                     {formatRoleLabel(entry.createdBy.role)}
                   </span>
                 </div>
                 {entry.notes ? (
-                  <p className="mt-4 rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm leading-6 text-slate-200">
+                  <p className="mt-3 rounded-xl border border-white/10 bg-slate-950/80 px-3 py-2.5 text-sm leading-6 text-slate-200">
                     {entry.notes}
                   </p>
                 ) : null}
@@ -341,7 +338,7 @@ export function ScheduleBoard({
             ),
           )
         ) : (
-          <div className="rounded-[1.7rem] border border-dashed border-white/15 bg-slate-900/60 px-5 py-6 text-sm text-slate-400">
+          <div className="rounded-[1.3rem] border border-dashed border-white/15 bg-slate-900/60 px-4 py-4 text-sm text-slate-400">
             No schedule entries yet for this month.
           </div>
         )}
