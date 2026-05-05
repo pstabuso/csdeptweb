@@ -6,9 +6,14 @@ import { SubmitButton } from "@/components/forms/submit-button";
 type ReplyFormProps = {
   concernId: string;
   defaultStatus: ConcernStatus;
+  redirectTo: string;
 };
 
-export function ReplyForm({ concernId, defaultStatus }: ReplyFormProps) {
+export function ReplyForm({
+  concernId,
+  defaultStatus,
+  redirectTo,
+}: ReplyFormProps) {
   const action = replyToConcern.bind(null, concernId);
 
   return (
@@ -16,6 +21,7 @@ export function ReplyForm({ concernId, defaultStatus }: ReplyFormProps) {
       action={action}
       className="space-y-3 rounded-3xl border border-white/10 bg-slate-900/80 p-4"
     >
+      <input type="hidden" name="redirectTo" value={redirectTo} />
       <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_180px]">
         <div className="space-y-2">
           <label

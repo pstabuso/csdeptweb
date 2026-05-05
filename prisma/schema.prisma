@@ -25,18 +25,19 @@ enum ConcernStatus {
 }
 
 model User {
-  id           String         @id @default(cuid())
-  name         String
-  email        String         @unique
-  studentNumber String?       @unique
-  passwordHash String
-  role         Role
-  status       UserStatus     @default(ACTIVE)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  concerns     Concern[]      @relation("ConcernStudent")
-  replies      ConcernReply[] @relation("ReplyAuthor")
-  auditLogs    AuditLog[]
+  id              String          @id @default(cuid())
+  name            String
+  email           String          @unique
+  studentNumber   String?         @unique
+  passwordHash    String
+  role            Role
+  status          UserStatus      @default(ACTIVE)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  concerns        Concern[]       @relation("ConcernStudent")
+  replies         ConcernReply[]  @relation("ReplyAuthor")
+  auditLogs       AuditLog[]
+  scheduleEntries ScheduleEntry[] @relation("ScheduleEntryCreator")
 }
 
 model Concern {
@@ -80,4 +81,20 @@ model AuditLog {
 
   @@index([createdAt])
   @@index([actorId, createdAt])
+}
+
+model ScheduleEntry {
+  id          String   @id @default(cuid())
+  title       String
+  location    String
+  notes       String?
+  startsAt    DateTime
+  endsAt      DateTime
+  createdById String
+  createdBy   User     @relation("ScheduleEntryCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([startsAt])
+  @@index([createdById, startsAt])
 }

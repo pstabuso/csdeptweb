@@ -1,4 +1,5 @@
 import { Role } from "@prisma/client";
+import Link from "next/link";
 
 import { logout } from "@/app/actions/auth";
 import { SubmitButton } from "@/components/forms/submit-button";
@@ -59,14 +60,22 @@ export function AppShell({
                 </p>
                 <p className="truncate text-sm text-slate-400">{user.email}</p>
               </div>
-              <form action={logout}>
-                <SubmitButton
-                  pendingLabel="Signing out..."
-                  className="w-full rounded-xl px-3 py-2 text-sm sm:w-auto"
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href="/profile"
+                  className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
                 >
-                  Log out
-                </SubmitButton>
-              </form>
+                  Profile
+                </Link>
+                <form action={logout}>
+                  <SubmitButton
+                    pendingLabel="Signing out..."
+                    className="w-full rounded-xl px-3 py-2 text-sm sm:w-auto"
+                  >
+                    Log out
+                  </SubmitButton>
+                </form>
+              </div>
             </div>
           </div>
         </header>

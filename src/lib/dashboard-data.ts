@@ -2,7 +2,194 @@ import "server-only";
 
 import { ConcernStatus, Role, UserStatus } from "@prisma/client";
 
+import {
+  CONCERN_SORT_OPTIONS,
+  STUDENT_CONCERN_CATEGORIES,
+} from "@/lib/constants";
 import { getDb } from "@/lib/prisma";
+
+export type ConcernFilterState = {
+  status: "ALL" | ConcernStatus;
+  category: string;
+  sort: (typeof CONCERN_SORT_OPTIONS)[number];
+  query: string;
+};
+
+type DashboardSearchParams = {
+  status?: string;
+  category?: string;
+  sort?: string;
+  query?: string;
+};
+
+const concernStatusRank: Record<ConcernStatus, number> = {
+  OPEN: 0,
+  ANSWERED: 1,
+  CLOSED: 2,
+};
+
+export function normalizeConcernFilters(
+  params?: DashboardSearchParams,
+): ConcernFilterState {
+  const status =
+    params?.status === "OPEN" ||
+    params?.status === "ANSWERED" ||
+    params?.status === "CLOSED"
+      ? params.status
+      : "ALL";
+  const sort = CONCERN_SORT_OPTIONS.includes(
+    (params?.sort as (typeof CONCERN_SORT_OPTIONS)[number]) ?? "recent",
+  )
+    ? ((params?.sort as (typeof CONCERN_SORT_OPTIONS)[number]) ?? "recent")
+    : "recent";
+
+  return {
+    status,
+    category: params?.category?.trim() || "ALL",
+    sort,
+    query: params?.query?.trim() || "",
+  };
+}
+
+function buildConcernWhere(filters: ConcernFilterState) {
+  const query = filters.query.trim();
+
+  return {
+    ...(filters.status !== "ALL" ? { status: filters.status } : {}),
+    ...(filters.category !== "ALL" ? { category: filters.category } : {}),
+    ...(query
+      ? {
+          OR: [
+            {
+              subject: {
+                contains: query,
+                mode: "insensitive" as const,
+              },
+            },
+            {
+              message: {
+                contains: query,
+                mode: "insensitive" as const,
+              },
+            },
+            {
+              student: {
+                is: {
+                  name: {
+                    contains: query,
+                    mode: "insensitive" as const,
+                  },
+                },
+              },
+            },
+            {
+              student: {
+                is: {
+                  email: {
+                    contains: query,
+                    mode: "insensitive" as const,
+                  },
+                },
+              },
+            },
+            {
+              student: {
+                is: {
+                  studentNumber: {
+                    contains: query,
+                    mode: "insensitive" as const,
+                  },
+                },
+              },
+            },
+          ],
+        }
+      : {}),
+  };
+}
+
+function sortConcerns<T extends { status: ConcernStatus; createdAt: Date; updatedAt: Date }>(
+  concerns: T[],
+  sort: ConcernFilterState["sort"],
+) {
+  return [...concerns].sort((left, right) => {
+    if (sort === "oldest") {
+      return left.createdAt.getTime() - right.createdAt.getTime();
+    }
+
+    if (sort === "newest") {
+      return right.createdAt.getTime() - left.createdAt.getTime();
+    }
+
+    if (sort === "open-first") {
+      const byStatus = concernStatusRank[left.status] - concernStatusRank[right.status];
+
+      if (byStatus !== 0) {
+        return byStatus;
+      }
+    }
+
+    const byUpdated = right.updatedAt.getTime() - left.updatedAt.getTime();
+
+    if (byUpdated !== 0) {
+      return byUpdated;
+    }
+
+    return right.createdAt.getTime() - left.createdAt.getTime();
+  });
+}
+
+export function getDefaultScheduleMonth() {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila",
+    year: "numeric",
+    month: "2-digit",
+  });
+  const parts = Object.fromEntries(
+    formatter.formatToParts(new Date()).map((part) => [part.type, part.value]),
+  );
+
+  return `${parts.year}-${parts.month}`;
+}
+
+export function normalizeScheduleMonth(value?: string) {
+  if (!value || !/^\d{4}-\d{2}$/.test(value)) {
+    return getDefaultScheduleMonth();
+  }
+
+  return value;
+}
+
+function getMonthRange(month: string) {
+  const [year, monthPart] = month.split("-").map(Number);
+  const nextMonth = monthPart === 12 ? 1 : monthPart + 1;
+  const nextYear = monthPart === 12 ? year + 1 : year;
+
+  return {
+    start: new Date(
+      `${year}-${String(monthPart).padStart(2, "0")}-01T00:00:00+08:00`,
+    ),
+    end: new Date(
+      `${nextYear}-${String(nextMonth).padStart(2, "0")}-01T00:00:00+08:00`,
+    ),
+  };
+}
+
+export async function getConcernCategoryOptions() {
+  const db = getDb();
+  const categories = await db.concern.findMany({
+    distinct: ["category"],
+    select: { category: true },
+    orderBy: { category: "asc" },
+  });
+
+  return Array.from(
+    new Set([
+      ...STUDENT_CONCERN_CATEGORIES,
+      ...categories.map((entry) => entry.category),
+    ]),
+  );
+}
 
 export async function getStudentDashboardData(studentId: string) {
   const db = getDb();
@@ -30,15 +217,16 @@ export async function getStudentDashboardData(studentId: string) {
   });
 }
 
-export async function getStaffDashboardData() {
+export async function getStaffDashboardData(filters: ConcernFilterState) {
   const db = getDb();
-
-  return db.concern.findMany({
+  const concerns = await db.concern.findMany({
+    where: buildConcernWhere(filters),
     include: {
       student: {
         select: {
           name: true,
           email: true,
+          studentNumber: true,
         },
       },
       replies: {
@@ -55,12 +243,38 @@ export async function getStaffDashboardData() {
         },
       },
     },
-    orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+  });
+
+  return sortConcerns(concerns, filters.sort);
+}
+
+export async function getScheduleEntries(month: string) {
+  const db = getDb();
+  const range = getMonthRange(month);
+
+  return db.scheduleEntry.findMany({
+    where: {
+      startsAt: {
+        gte: range.start,
+        lt: range.end,
+      },
+    },
+    include: {
+      createdBy: {
+        select: {
+          name: true,
+          role: true,
+        },
+      },
+    },
+    orderBy: [{ startsAt: "asc" }, { endsAt: "asc" }],
   });
 }
 
-export async function getAdminDashboardData() {
+export async function getAdminDashboardData(filters: ConcernFilterState) {
   const db = getDb();
+
+  const concernWhere = buildConcernWhere(filters);
 
   const [
     totalUsers,
@@ -69,7 +283,7 @@ export async function getAdminDashboardData() {
     answeredConcerns,
     closedConcerns,
     repliesCount,
-    recentConcerns,
+    concerns,
     auditLogs,
     users,
     activeUsers,
@@ -82,18 +296,29 @@ export async function getAdminDashboardData() {
     db.concern.count({ where: { status: ConcernStatus.CLOSED } }),
     db.concernReply.count(),
     db.concern.findMany({
+      where: concernWhere,
       include: {
         student: {
           select: {
             name: true,
             email: true,
+            studentNumber: true,
+          },
+        },
+        replies: {
+          include: {
+            author: {
+              select: {
+                name: true,
+                role: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "asc",
           },
         },
       },
-      orderBy: {
-        updatedAt: "desc",
-      },
-      take: 6,
     }),
     db.auditLog.findMany({
       include: {
@@ -157,7 +382,7 @@ export async function getAdminDashboardData() {
       repliesCount,
     },
     roleCounts,
-    recentConcerns,
+    concerns: sortConcerns(concerns, filters.sort),
     auditLogs,
     users,
   };

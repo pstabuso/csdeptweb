@@ -15,6 +15,7 @@ import {
 
 export async function createConcern(formData: FormData) {
   const user = await requireUser([Role.STUDENT]);
+  const redirectTo = String(formData.get("redirectTo") || "/student");
   const parsed = concernSchema.safeParse({
     subject: formData.get("subject"),
     category: formData.get("category"),
@@ -22,7 +23,7 @@ export async function createConcern(formData: FormData) {
   });
 
   if (!parsed.success) {
-    redirect("/student");
+    redirect(redirectTo);
   }
 
   if (!user.studentNumber) {
@@ -36,7 +37,7 @@ export async function createConcern(formData: FormData) {
       },
     });
 
-    redirect("/student");
+    redirect(redirectTo);
   }
 
   const db = getDb();
@@ -62,18 +63,22 @@ export async function createConcern(formData: FormData) {
   revalidatePath("/coordinator");
   revalidatePath("/secretary");
   revalidatePath("/admin");
-  redirect("/student");
+  redirect(redirectTo);
 }
 
 export async function replyToConcern(concernId: string, formData: FormData) {
   const user = await requireUser([Role.COORDINATOR, Role.SECRETARY]);
+  const redirectTo = String(
+    formData.get("redirectTo") ||
+      (user.role === Role.COORDINATOR ? "/coordinator" : "/secretary"),
+  );
   const parsed = replySchema.safeParse({
     message: formData.get("message"),
     status: formData.get("status"),
   });
 
   if (!parsed.success) {
-    redirect(user.role === Role.COORDINATOR ? "/coordinator" : "/secretary");
+    redirect(redirectTo);
   }
 
   const db = getDb();
@@ -87,7 +92,7 @@ export async function replyToConcern(concernId: string, formData: FormData) {
   });
 
   if (!concern) {
-    redirect(user.role === Role.COORDINATOR ? "/coordinator" : "/secretary");
+    redirect(redirectTo);
   }
 
   await db.concernReply.create({
@@ -121,7 +126,7 @@ export async function replyToConcern(concernId: string, formData: FormData) {
   revalidatePath("/coordinator");
   revalidatePath("/secretary");
   revalidatePath("/admin");
-  redirect(user.role === Role.COORDINATOR ? "/coordinator" : "/secretary");
+  redirect(redirectTo);
 }
 
 export async function updateStudentNumber(formData: FormData) {

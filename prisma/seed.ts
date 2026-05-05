@@ -3,6 +3,7 @@ import {
   ConcernStatus,
   PrismaClient,
   Role,
+  ScheduleEntry,
   UserStatus,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -112,12 +113,13 @@ async function main() {
 
   await db.concernReply.deleteMany();
   await db.concern.deleteMany();
+  await db.scheduleEntry.deleteMany();
   await db.auditLog.deleteMany();
 
   const labConcern = await db.concern.create({
     data: {
       subject: "Request for laboratory make-up schedule",
-      category: "Laboratory",
+      category: "Others",
       message:
         "I missed the database systems laboratory because of a medical appointment. May I request a make-up schedule for this week?",
       status: ConcernStatus.ANSWERED,
@@ -136,13 +138,37 @@ async function main() {
   const clearanceConcern = await db.concern.create({
     data: {
       subject: "Graduation clearance follow-up",
-      category: "Clearance",
+      category: "Others",
       message:
         "My clearance still shows pending even though I already returned the borrowed equipment last week.",
       status: ConcernStatus.OPEN,
       studentId: student.id,
     },
   });
+
+  const scheduleEntries: ScheduleEntry[] = await Promise.all([
+    db.scheduleEntry.create({
+      data: {
+        title: "Coordinator consultation hours",
+        location: "CS Department Office",
+        notes:
+          "Walk-in academic consultations are prioritized during this block.",
+        startsAt: new Date("2026-05-06T09:00:00+08:00"),
+        endsAt: new Date("2026-05-06T11:30:00+08:00"),
+        createdById: coordinator.id,
+      },
+    }),
+    db.scheduleEntry.create({
+      data: {
+        title: "Secretary records processing",
+        location: "Records Window",
+        notes: "Document requests and follow-up releases are handled here.",
+        startsAt: new Date("2026-05-07T13:00:00+08:00"),
+        endsAt: new Date("2026-05-07T16:00:00+08:00"),
+        createdById: secretary.id,
+      },
+    }),
+  ]);
 
   await db.auditLog.createMany({
     data: [
@@ -174,6 +200,13 @@ async function main() {
         entityId: null,
         details: { note: "Initial demo content loaded." },
       },
+      ...scheduleEntries.map((entry) => ({
+        actorId: entry.createdById,
+        action: "SEED_SCHEDULE_CREATED",
+        entityType: "ScheduleEntry",
+        entityId: entry.id,
+        details: { title: entry.title },
+      })),
     ],
   });
 

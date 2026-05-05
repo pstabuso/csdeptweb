@@ -114,6 +114,7 @@ export async function signup(
 
   const db = getDb();
   const normalizedEmail = parsed.data.email.toLowerCase();
+  const normalizedStudentNumber = parsed.data.studentNumber.trim();
   const existingUser = await db.user.findUnique({
     where: { email: normalizedEmail },
     select: {
@@ -125,12 +126,25 @@ export async function signup(
     return { error: "An account with that email already exists." };
   }
 
+  const duplicateStudentNumber = await db.user.findFirst({
+    where: {
+      studentNumber: normalizedStudentNumber,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (duplicateStudentNumber) {
+    return { error: "That student number is already registered." };
+  }
+
   const passwordHash = await bcrypt.hash(parsed.data.password, 12);
   const user = await db.user.create({
     data: {
       name: parsed.data.name,
       email: normalizedEmail,
-      studentNumber: parsed.data.studentNumber,
+      studentNumber: normalizedStudentNumber,
       passwordHash,
       role: Role.STUDENT,
       status: UserStatus.ACTIVE,

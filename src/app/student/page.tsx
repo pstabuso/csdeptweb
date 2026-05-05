@@ -3,16 +3,41 @@ import { Role } from "@prisma/client";
 import { updateStudentNumber } from "@/app/actions/concerns";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { AppShell } from "@/components/layout/app-shell";
+import { ScheduleBoard } from "@/components/portal/schedule-board";
 import { StudentConcernForm } from "@/components/portal/student-concern-form";
 import { StatusBadge } from "@/components/portal/status-badge";
 import { requireUser } from "@/lib/auth";
-import { getStudentDashboardData } from "@/lib/dashboard-data";
+import {
+  getScheduleEntries,
+  getStudentDashboardData,
+  normalizeScheduleMonth,
+} from "@/lib/dashboard-data";
 import { formatDateTime } from "@/lib/format";
 
-export default async function StudentPage() {
+type PageProps = {
+  searchParams?: Promise<{
+    scheduleMonth?: string;
+  }>;
+};
+
+function shiftMonth(month: string, delta: number) {
+  const [year, monthPart] = month.split("-").map(Number);
+  const next = new Date(year, monthPart - 1 + delta, 1);
+
+  return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export default async function StudentPage({ searchParams }: PageProps) {
   const user = await requireUser([Role.STUDENT]);
-  const concerns = await getStudentDashboardData(user.id);
+  const params = (await searchParams) ?? {};
+  const scheduleMonth = normalizeScheduleMonth(params.scheduleMonth);
+  const [concerns, scheduleEntries] = await Promise.all([
+    getStudentDashboardData(user.id),
+    getScheduleEntries(scheduleMonth),
+  ]);
   const hasStudentNumber = Boolean(user.studentNumber);
+  const previousMonthHref = `/student?scheduleMonth=${shiftMonth(scheduleMonth, -1)}`;
+  const nextMonthHref = `/student?scheduleMonth=${shiftMonth(scheduleMonth, 1)}`;
 
   return (
     <AppShell
@@ -91,7 +116,7 @@ export default async function StudentPage() {
           </section>
 
           {hasStudentNumber ? (
-            <StudentConcernForm />
+            <StudentConcernForm redirectTo={`/student?scheduleMonth=${scheduleMonth}`} />
           ) : (
             <section className="rounded-[2rem] border border-dashed border-cyan-300/20 bg-cyan-400/10 p-6 text-sm leading-6 text-cyan-100">
               Concern submission stays locked until your student number is
@@ -102,6 +127,17 @@ export default async function StudentPage() {
         </div>
 
         <section className="space-y-5">
+          <ScheduleBoard
+            month={scheduleMonth}
+            entries={scheduleEntries}
+            canManage={false}
+            previousMonthHref={previousMonthHref}
+            nextMonthHref={nextMonthHref}
+            redirectTo="/student"
+            title="Department availability calendar"
+            description="Check the coordinator and secretary schedules so you know when consultations, office hours, and department availability are posted."
+          />
+
           {concerns.length ? (
             concerns.map((concern) => (
               <article

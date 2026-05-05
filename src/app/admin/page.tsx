@@ -3,14 +3,17 @@ import { Role, UserStatus } from "@prisma/client";
 import { updateUserAccess } from "@/app/actions/admin";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { AppShell } from "@/components/layout/app-shell";
-import { StatusBadge } from "@/components/portal/status-badge";
+import { ConcernWorkspace } from "@/components/portal/concern-workspace";
+import { ScheduleBoard } from "@/components/portal/schedule-board";
 import { requireUser } from "@/lib/auth";
-import { getAdminDashboardData } from "@/lib/dashboard-data";
 import {
-  formatActionLabel,
-  formatDateTime,
-  formatRoleLabel,
-} from "@/lib/format";
+  getAdminDashboardData,
+  getConcernCategoryOptions,
+  getScheduleEntries,
+  normalizeConcernFilters,
+  normalizeScheduleMonth,
+} from "@/lib/dashboard-data";
+import { formatActionLabel, formatDateTime, formatRoleLabel } from "@/lib/format";
 
 const roleLabels = {
   STUDENT: "Students",
@@ -37,10 +40,72 @@ const accessBadgeStyles: Record<UserStatus, string> = {
     "bg-rose-400/15 text-rose-200 ring-1 ring-inset ring-rose-300/30",
 };
 
-export default async function AdminPage() {
+type PageProps = {
+  searchParams?: Promise<{
+    status?: string;
+    category?: string;
+    sort?: string;
+    query?: string;
+    scheduleMonth?: string;
+  }>;
+};
+
+function shiftMonth(month: string, delta: number) {
+  const [year, monthPart] = month.split("-").map(Number);
+  const next = new Date(year, monthPart - 1 + delta, 1);
+
+  return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function buildHref(
+  path: string,
+  params: Record<string, string | undefined>,
+) {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) {
+      searchParams.set(key, value);
+    }
+  });
+
+  const query = searchParams.toString();
+  return query ? `${path}?${query}` : path;
+}
+
+export default async function AdminPage({ searchParams }: PageProps) {
   const user = await requireUser([Role.ADMIN]);
-  const { stats, roleCounts, recentConcerns, auditLogs, users } =
-    await getAdminDashboardData();
+  const params = (await searchParams) ?? {};
+  const filters = normalizeConcernFilters(params);
+  const scheduleMonth = normalizeScheduleMonth(params.scheduleMonth);
+  const [{ stats, roleCounts, concerns, auditLogs, users }, categoryOptions, scheduleEntries] =
+    await Promise.all([
+      getAdminDashboardData(filters),
+      getConcernCategoryOptions(),
+      getScheduleEntries(scheduleMonth),
+    ]);
+
+  const adminConcernHref = buildHref("/admin", {
+    status: filters.status !== "ALL" ? filters.status : undefined,
+    category: filters.category !== "ALL" ? filters.category : undefined,
+    sort: filters.sort !== "recent" ? filters.sort : undefined,
+    query: filters.query || undefined,
+    scheduleMonth,
+  });
+  const previousMonthHref = buildHref("/admin", {
+    status: filters.status !== "ALL" ? filters.status : undefined,
+    category: filters.category !== "ALL" ? filters.category : undefined,
+    sort: filters.sort !== "recent" ? filters.sort : undefined,
+    query: filters.query || undefined,
+    scheduleMonth: shiftMonth(scheduleMonth, -1),
+  });
+  const nextMonthHref = buildHref("/admin", {
+    status: filters.status !== "ALL" ? filters.status : undefined,
+    category: filters.category !== "ALL" ? filters.category : undefined,
+    sort: filters.sort !== "recent" ? filters.sort : undefined,
+    query: filters.query || undefined,
+    scheduleMonth: shiftMonth(scheduleMonth, 1),
+  });
 
   const statCards = [
     {
@@ -69,7 +134,7 @@ export default async function AdminPage() {
     <AppShell
       user={user}
       title="Admin operations hub"
-      description="Control roles, account access, and profile records while monitoring concern flow and audited activity across the department portal."
+      description="Control user access, inspect full concern threads, and monitor the department portal through one cleaner admin workspace."
     >
       <div className="space-y-6">
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -102,15 +167,14 @@ export default async function AdminPage() {
                   Edit names, emails, student numbers, roles, and access
                 </h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-                  Department roles are assigned here by admin. Any account that
-                  is not granted coordinator, secretary, or admin access remains
-                  a student account by default.
+                  Admin controls every account record here. Accounts remain
+                  students by default unless you explicitly assign a staff or
+                  admin role.
                 </p>
               </div>
               <div className="rounded-[1.6rem] border border-cyan-300/15 bg-cyan-400/10 px-4 py-4 text-sm leading-6 text-cyan-100">
-                This workspace follows a single-account model: one login,
-                admin-managed permissions, and complete user records before a
-                student can enter the concern queue.
+                Admin can inspect the entire concern lifecycle while keeping
+                names, roles, student numbers, and access states current.
               </div>
             </div>
 
@@ -158,13 +222,6 @@ export default async function AdminPage() {
                             {account._count.replies} replies
                           </p>
                         </div>
-
-                        {isCurrentSession ? (
-                          <p className="rounded-2xl border border-fuchsia-300/15 bg-fuchsia-400/10 px-4 py-3 text-sm leading-6 text-fuchsia-100">
-                            Changes to this account take effect on the current
-                            admin session immediately after save.
-                          </p>
-                        ) : null}
                       </div>
 
                       <form
@@ -296,112 +353,58 @@ export default async function AdminPage() {
 
             <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
               <h2 className="text-lg font-semibold text-white">
-                Queue health
+                Activity feed
               </h2>
-              <div className="mt-4 grid gap-3">
-                <div className="rounded-2xl border border-amber-300/15 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
-                  Open concerns:{" "}
-                  <span className="font-semibold">{stats.openConcerns}</span>
-                </div>
-                <div className="rounded-2xl border border-emerald-300/15 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">
-                  Answered concerns:{" "}
-                  <span className="font-semibold">
-                    {stats.answeredConcerns}
-                  </span>
-                </div>
-                <div className="rounded-2xl border border-slate-300/15 bg-slate-400/10 px-4 py-3 text-sm text-slate-100">
-                  Closed concerns:{" "}
-                  <span className="font-semibold">{stats.closedConcerns}</span>
-                </div>
-              </div>
-            </section>
-          </aside>
-        </section>
-
-        <section className="grid gap-6 xl:grid-cols-2">
-          <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-300">
-                  Recent concerns
-                </p>
-                <h2 className="mt-2 text-xl font-semibold text-white">
-                  Latest queue movement
-                </h2>
-              </div>
-              <p className="text-sm text-slate-400">Asia/Manila</p>
-            </div>
-
-            <div className="mt-5 space-y-4">
-              {recentConcerns.map((concern) => (
-                <article
-                  key={concern.id}
-                  className="rounded-[1.6rem] border border-white/10 bg-slate-900/80 p-4"
-                >
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <StatusBadge status={concern.status} />
-                        <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200 ring-1 ring-inset ring-white/10">
-                          {concern.category}
-                        </span>
-                      </div>
-                      <h3 className="mt-3 text-base font-semibold text-white">
-                        {concern.subject}
-                      </h3>
-                      <p className="mt-1 text-sm text-slate-400">
-                        {concern.student.name} / {concern.student.email}
-                      </p>
-                    </div>
-                    <p className="text-sm text-slate-400">
-                      {formatDateTime(concern.updatedAt)}
-                    </p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
-                  Activity feed
-                </p>
-                <h2 className="mt-2 text-xl font-semibold text-white">
-                  Audited system events
-                </h2>
-              </div>
-              <p className="text-sm text-slate-400">Philippine time</p>
-            </div>
-
-            <div className="mt-5 space-y-3">
-              {auditLogs.map((entry) => (
-                <article
-                  key={entry.id}
-                  className="rounded-[1.4rem] border border-white/10 bg-slate-900/80 p-4"
-                >
-                  <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
-                    <div>
+              <div className="mt-4 space-y-3">
+                {auditLogs.map((entry) => (
+                  <article
+                    key={entry.id}
+                    className="rounded-[1.4rem] border border-white/10 bg-slate-900/80 p-4"
+                  >
+                    <div className="flex flex-col gap-2">
                       <p className="text-sm font-semibold text-white">
                         {formatActionLabel(entry.action)}
                       </p>
-                      <p className="mt-1 text-sm text-slate-400">
+                      <p className="text-sm text-slate-400">
                         {entry.actor
                           ? `${entry.actor.name} (${formatRoleLabel(entry.actor.role)})`
                           : "System"}{" "}
                         / {entry.entityType}
                       </p>
+                      <p className="text-sm text-slate-400">
+                        {formatDateTime(entry.createdAt)}
+                      </p>
                     </div>
-                    <p className="text-sm text-slate-400">
-                      {formatDateTime(entry.createdAt)}
-                    </p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
+                  </article>
+                ))}
+              </div>
+            </section>
+          </aside>
         </section>
+
+        <ConcernWorkspace
+          title="Admin concern oversight"
+          description="Review full student concern threads and every response sent by the department team from one searchable oversight panel."
+          concerns={concerns}
+          filters={filters}
+          categoryOptions={categoryOptions}
+          currentPath="/admin"
+          replyRedirectTo={adminConcernHref}
+          persistentParams={{ scheduleMonth }}
+          canReply={false}
+          emptyMessage="No concerns match the current filter set."
+        />
+
+        <ScheduleBoard
+          month={scheduleMonth}
+          entries={scheduleEntries}
+          canManage={false}
+          previousMonthHref={previousMonthHref}
+          nextMonthHref={nextMonthHref}
+          redirectTo="/admin"
+          title="Department schedule overview"
+          description="Admin can monitor the posted coordinator and secretary schedule here so student-facing availability stays visible and current."
+        />
       </div>
     </AppShell>
   );
