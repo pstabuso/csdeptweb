@@ -1,10 +1,18 @@
-import { ConcernStatus, Role } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { ConcernStatus, PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-import { getDb } from "../src/lib/prisma";
+let db: PrismaClient | null = null;
 
 async function main() {
-  const db = getDb();
+  const connectionString = process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is required for seeding.");
+  }
+
+  const adapter = new PrismaPg({ connectionString });
+  db = new PrismaClient({ adapter });
   const defaultPassword = "Password123!";
   const adminEmail = process.env.ADMIN_EMAIL?.trim() || "admin@csdept.edu";
   const adminName = process.env.ADMIN_NAME?.trim() || "Alex Admin";
@@ -160,5 +168,5 @@ main()
     process.exitCode = 1;
   })
   .finally(async () => {
-    await getDb().$disconnect();
+    await db?.$disconnect();
   });
