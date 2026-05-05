@@ -1,6 +1,6 @@
 import "server-only";
 
-import { ConcernStatus, Role } from "@prisma/client";
+import { ConcernStatus, Role, UserStatus } from "@prisma/client";
 
 import { getDb } from "@/lib/prisma";
 
@@ -72,6 +72,8 @@ export async function getAdminDashboardData() {
     recentConcerns,
     auditLogs,
     users,
+    activeUsers,
+    disabledUsers,
   ] = await Promise.all([
     db.user.count(),
     db.concern.count(),
@@ -110,9 +112,23 @@ export async function getAdminDashboardData() {
     }),
     db.user.findMany({
       select: {
+        id: true,
+        name: true,
+        email: true,
         role: true,
+        status: true,
+        createdAt: true,
+        _count: {
+          select: {
+            concerns: true,
+            replies: true,
+          },
+        },
       },
+      orderBy: [{ status: "asc" }, { role: "asc" }, { createdAt: "asc" }],
     }),
+    db.user.count({ where: { status: UserStatus.ACTIVE } }),
+    db.user.count({ where: { status: UserStatus.DISABLED } }),
   ]);
 
   const roleCounts = users.reduce(
@@ -131,6 +147,8 @@ export async function getAdminDashboardData() {
   return {
     stats: {
       totalUsers,
+      activeUsers,
+      disabledUsers,
       totalConcerns,
       openConcerns,
       answeredConcerns,
@@ -140,6 +158,6 @@ export async function getAdminDashboardData() {
     roleCounts,
     recentConcerns,
     auditLogs,
+    users,
   };
 }
-

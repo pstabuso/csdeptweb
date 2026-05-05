@@ -12,7 +12,7 @@ export default async function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(34,197,94,0.18),_transparent_26%),linear-gradient(135deg,_#f8fbff_0%,_#edf7f2_48%,_#f8fcff_100%)] px-6 py-10 lg:px-10">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(52,211,153,0.16),_transparent_26%),radial-gradient(circle_at_right,_rgba(34,197,94,0.14),_transparent_22%),linear-gradient(135deg,_#030712_0%,_#07111d_48%,_#0b1624_100%)] px-6 py-10 lg:px-10">
       <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl gap-8 lg:grid-cols-[1fr_440px]">
         <section className="rounded-[2.5rem] border border-white/70 bg-slate-950 px-8 py-10 text-white shadow-[0_24px_120px_-60px_rgba(15,23,42,0.6)] lg:px-10 lg:py-12">
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-emerald-300">

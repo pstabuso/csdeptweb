@@ -11,7 +11,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.22),_transparent_28%),linear-gradient(135deg,_#f8fbff_0%,_#edf5ff_48%,_#f9fbf6_100%)] px-6 py-10 lg:px-10">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.16),_transparent_28%),radial-gradient(circle_at_right,_rgba(14,165,233,0.14),_transparent_24%),linear-gradient(135deg,_#030712_0%,_#081120_48%,_#0c1729_100%)] px-6 py-10 lg:px-10">
       <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl gap-8 lg:grid-cols-[1fr_420px]">
         <section className="rounded-[2.5rem] border border-white/70 bg-slate-950 px-8 py-10 text-white shadow-[0_24px_120px_-60px_rgba(15,23,42,0.6)] lg:px-10 lg:py-12">
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-sky-300">
@@ -51,4 +51,3 @@ export default async function LoginPage() {
     </main>
   );
 }
-

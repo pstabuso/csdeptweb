@@ -1,6 +1,6 @@
 "use server";
 
-import { Role } from "@prisma/client";
+import { Role, UserStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 
@@ -72,6 +72,23 @@ export async function login(
     };
   }
 
+  if (user.status === UserStatus.DISABLED) {
+    await logActivity({
+      actorId: user.id,
+      action: "LOGIN_DISABLED_ACCOUNT",
+      entityType: "User",
+      entityId: user.id,
+      details: {
+        email: user.email,
+      },
+    });
+
+    return {
+      error:
+        "This account has been disabled. Please contact the department administrator.",
+    };
+  }
+
   await createSession({
     userId: user.id,
     name: user.name,
@@ -134,6 +151,7 @@ export async function signup(
       email: normalizedEmail,
       passwordHash,
       role: Role.STUDENT,
+      status: UserStatus.ACTIVE,
     },
   });
 

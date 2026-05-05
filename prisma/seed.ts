@@ -1,5 +1,10 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { ConcernStatus, PrismaClient, Role } from "@prisma/client";
+import {
+  ConcernStatus,
+  PrismaClient,
+  Role,
+  UserStatus,
+} from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 let db: PrismaClient | null = null;
@@ -28,12 +33,14 @@ async function main() {
         name: "Pat Student",
         passwordHash,
         role: Role.STUDENT,
+        status: UserStatus.ACTIVE,
       },
       create: {
         name: "Pat Student",
         email: "student@csdept.edu",
         passwordHash,
         role: Role.STUDENT,
+        status: UserStatus.ACTIVE,
       },
     }),
     db.user.upsert({
@@ -42,12 +49,14 @@ async function main() {
         name: "Casey Coordinator",
         passwordHash,
         role: Role.COORDINATOR,
+        status: UserStatus.ACTIVE,
       },
       create: {
         name: "Casey Coordinator",
         email: "coordinator@csdept.edu",
         passwordHash,
         role: Role.COORDINATOR,
+        status: UserStatus.ACTIVE,
       },
     }),
     db.user.upsert({
@@ -56,12 +65,14 @@ async function main() {
         name: "Sam Secretary",
         passwordHash,
         role: Role.SECRETARY,
+        status: UserStatus.ACTIVE,
       },
       create: {
         name: "Sam Secretary",
         email: "secretary@csdept.edu",
         passwordHash,
         role: Role.SECRETARY,
+        status: UserStatus.ACTIVE,
       },
     }),
     db.user.upsert({
@@ -70,12 +81,14 @@ async function main() {
         name: adminName,
         passwordHash: adminPasswordHash,
         role: Role.ADMIN,
+        status: UserStatus.ACTIVE,
       },
       create: {
         name: adminName,
         email: adminEmail,
         passwordHash: adminPasswordHash,
         role: Role.ADMIN,
+        status: UserStatus.ACTIVE,
       },
     }),
   ]);

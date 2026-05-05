@@ -12,11 +12,14 @@ export function ReplyForm({ concernId, defaultStatus }: ReplyFormProps) {
   const action = replyToConcern.bind(null, concernId);
 
   return (
-    <form action={action} className="space-y-3 rounded-3xl bg-slate-50 p-4">
+    <form
+      action={action}
+      className="space-y-3 rounded-3xl border border-white/10 bg-slate-900/80 p-4"
+    >
       <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_180px]">
         <div className="space-y-2">
           <label
-            className="text-sm font-medium text-slate-700"
+            className="text-sm font-medium text-slate-200"
             htmlFor={`reply-${concernId}`}
           >
             Staff reply
@@ -27,13 +30,13 @@ export function ReplyForm({ concernId, defaultStatus }: ReplyFormProps) {
             required
             minLength={10}
             rows={4}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-emerald-400"
+            className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-emerald-400"
             placeholder="Write a clear and helpful response for the student."
           />
         </div>
         <div className="space-y-2">
           <label
-            className="text-sm font-medium text-slate-700"
+            className="text-sm font-medium text-slate-200"
             htmlFor={`status-${concernId}`}
           >
             Concern status
@@ -42,7 +45,7 @@ export function ReplyForm({ concernId, defaultStatus }: ReplyFormProps) {
             id={`status-${concernId}`}
             name="status"
             defaultValue={defaultStatus}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-emerald-400"
+            className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-emerald-400"
           >
             <option value="OPEN">Open</option>
             <option value="ANSWERED">Answered</option>
@@ -54,4 +57,3 @@ export function ReplyForm({ concernId, defaultStatus }: ReplyFormProps) {
     </form>
   );
 }
-

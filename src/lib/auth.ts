@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Role } from "@prisma/client";
+import { Role, UserStatus } from "@prisma/client";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -112,6 +112,7 @@ export async function requireUser(allowedRoles?: Role[]) {
       name: true,
       email: true,
       role: true,
+      status: true,
       createdAt: true,
     },
   });
@@ -121,6 +122,10 @@ export async function requireUser(allowedRoles?: Role[]) {
     redirect("/login");
   }
 
+  if (user.status === UserStatus.DISABLED) {
+    await clearSession();
+    redirect("/login");
+  }
+
   return user;
 }
-

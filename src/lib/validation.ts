@@ -26,6 +26,11 @@ export const signupSchema = z
     path: ["confirmPassword"],
   });
 
+export const accessUpdateSchema = z.object({
+  role: z.enum(["STUDENT", "COORDINATOR", "SECRETARY", "ADMIN"]),
+  status: z.enum(["ACTIVE", "DISABLED"]),
+});
+
 export const concernSchema = z.object({
   subject: z.string().trim().min(5, "Subject must be at least 5 characters."),
   category: z.string().trim().min(3, "Category is required."),

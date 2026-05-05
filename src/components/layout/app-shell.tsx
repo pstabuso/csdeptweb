@@ -16,10 +16,11 @@ type AppShellProps = {
 };
 
 const roleStyles: Record<Role, string> = {
-  STUDENT: "bg-sky-100 text-sky-900",
-  COORDINATOR: "bg-emerald-100 text-emerald-900",
-  SECRETARY: "bg-amber-100 text-amber-900",
-  ADMIN: "bg-rose-100 text-rose-900",
+  STUDENT: "bg-sky-400/15 text-sky-200 ring-1 ring-inset ring-sky-300/30",
+  COORDINATOR:
+    "bg-emerald-400/15 text-emerald-200 ring-1 ring-inset ring-emerald-300/30",
+  SECRETARY: "bg-amber-400/15 text-amber-200 ring-1 ring-inset ring-amber-300/30",
+  ADMIN: "bg-fuchsia-400/15 text-fuchsia-200 ring-1 ring-inset ring-fuchsia-300/30",
 };
 
 export function AppShell({
@@ -29,9 +30,9 @@ export function AppShell({
   children,
 }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.18),_transparent_32%),linear-gradient(135deg,_#f8fbff_0%,_#eef4ff_50%,_#f7fbf7_100%)] text-slate-900">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.14),_transparent_28%),radial-gradient(circle_at_right,_rgba(168,85,247,0.12),_transparent_20%),linear-gradient(135deg,_#050b16_0%,_#091221_46%,_#0c1b2f_100%)] text-slate-100">
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-8 lg:px-10">
-        <header className="mb-8 rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-[0_20px_80px_-40px_rgba(15,23,42,0.35)] backdrop-blur">
+        <header className="mb-8 rounded-[2rem] border border-white/10 bg-slate-950/55 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur-xl">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="space-y-3">
               <span
@@ -43,20 +44,20 @@ export function AppShell({
                 {user.role.replaceAll("_", " ")}
               </span>
               <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
+                <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">
                   {title}
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600 md:text-base">
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-300 md:text-base">
                   {description}
                 </p>
               </div>
             </div>
-            <div className="flex flex-col gap-4 rounded-[1.5rem] border border-slate-200/80 bg-slate-50/80 p-4 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-4 rounded-[1.5rem] border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-center">
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-slate-900">
+                <p className="truncate text-sm font-semibold text-white">
                   {user.name}
                 </p>
-                <p className="truncate text-sm text-slate-500">{user.email}</p>
+                <p className="truncate text-sm text-slate-400">{user.email}</p>
               </div>
               <form action={logout}>
                 <SubmitButton
@@ -74,4 +75,3 @@ export function AppShell({
     </div>
   );
 }
-

@@ -37,20 +37,20 @@ export function LoginForm() {
   return (
     <form
       action={action}
-      className="space-y-5 rounded-[2rem] border border-white/70 bg-white/85 p-8 shadow-[0_20px_80px_-40px_rgba(15,23,42,0.45)] backdrop-blur"
+      className="space-y-5 rounded-[2rem] border border-white/10 bg-slate-950/70 p-8 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur-xl"
     >
       <div className="space-y-1">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+        <h2 className="text-2xl font-semibold tracking-tight text-white">
           Department portal login
         </h2>
-        <p className="text-sm leading-6 text-slate-600">
+        <p className="text-sm leading-6 text-slate-300">
           Sign in with your assigned email, password, and role to access the
           correct portal view.
         </p>
       </div>
 
       <fieldset className="space-y-3">
-        <legend className="text-sm font-medium text-slate-700">
+        <legend className="text-sm font-medium text-slate-200">
           Sign in as
         </legend>
         <div className="grid gap-3">
@@ -58,7 +58,7 @@ export function LoginForm() {
             <label
               key={role.value}
               className={cx(
-                "flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm transition has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50",
+                "flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm transition has-[:checked]:border-cyan-400 has-[:checked]:bg-cyan-400/10",
               )}
             >
               <input
@@ -66,13 +66,13 @@ export function LoginForm() {
                 name="role"
                 value={role.value}
                 defaultChecked={index === 0}
-                className="mt-1 h-4 w-4 border-slate-300 text-sky-600 focus:ring-sky-500"
+                className="mt-1 h-4 w-4 border-slate-500 bg-slate-900 text-cyan-400 focus:ring-cyan-500"
               />
               <span className="block">
-                <span className="block font-semibold text-slate-900">
+                <span className="block font-semibold text-white">
                   {role.label}
                 </span>
-                <span className="mt-1 block text-slate-500">{role.helper}</span>
+                <span className="mt-1 block text-slate-400">{role.helper}</span>
               </span>
             </label>
           ))}
@@ -80,7 +80,7 @@ export function LoginForm() {
       </fieldset>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700" htmlFor="email">
+        <label className="text-sm font-medium text-slate-200" htmlFor="email">
           Email address
         </label>
         <input
@@ -88,13 +88,13 @@ export function LoginForm() {
           name="email"
           type="email"
           required
-          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-sky-400 focus:bg-white"
+          className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:bg-slate-950"
           placeholder="name@csdept.edu"
         />
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700" htmlFor="password">
+        <label className="text-sm font-medium text-slate-200" htmlFor="password">
           Password
         </label>
         <input
@@ -103,7 +103,7 @@ export function LoginForm() {
           type="password"
           required
           minLength={8}
-          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-sky-400 focus:bg-white"
+          className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:bg-slate-950"
           placeholder="Enter your password"
         />
       </div>
@@ -121,10 +121,10 @@ export function LoginForm() {
         Sign in
       </SubmitButton>
 
-      <p className="text-center text-sm text-slate-600">
+      <p className="text-center text-sm text-slate-400">
         Need an account?{" "}
         <Link
-          className="font-semibold text-sky-700 hover:text-sky-800"
+          className="font-semibold text-cyan-300 hover:text-cyan-200"
           href="/sign-up"
         >
           Student sign up

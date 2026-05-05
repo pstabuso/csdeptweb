@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7fbff;
-  --foreground: #0f172a;
-  --muted: #5b6475;
+  --background: #07111f;
+  --foreground: #edf4ff;
+  --muted: #8ca0bf;
 }
 
 @theme inline {
@@ -16,6 +16,7 @@
 html {
   min-height: 100%;
   background: var(--background);
+  color-scheme: dark;
 }
 
 body {
@@ -26,9 +27,9 @@ body {
 }
 
 * {
-  border-color: rgb(226 232 240 / 0.8);
+  border-color: rgb(51 65 85 / 0.9);
 }
 
 ::selection {
-  background: rgb(14 165 233 / 0.18);
+  background: rgb(56 189 248 / 0.25);
 }
