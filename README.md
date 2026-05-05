@@ -9,6 +9,12 @@ A Next.js and Prisma starter for a Vercel-deployed concern-management system for
 - `secretary`: reviews all concerns and responds from the staff queue
 - `admin`: sees platform-wide activity, user distribution, and concern metrics
 
+## Authentication flow
+
+- Students can create their own account from `/sign-up`
+- New self-registered accounts are automatically assigned the `student` role
+- Coordinator, secretary, and admin accounts remain department-managed
+
 ## Tech stack
 
 - Next.js 16 App Router

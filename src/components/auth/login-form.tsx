@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 
 import { login, type LoginActionState } from "@/app/actions/auth";
@@ -119,6 +120,16 @@ export function LoginForm() {
       >
         Sign in
       </SubmitButton>
+
+      <p className="text-center text-sm text-slate-600">
+        Need an account?{" "}
+        <Link
+          className="font-semibold text-sky-700 hover:text-sky-800"
+          href="/sign-up"
+        >
+          Student sign up
+        </Link>
+      </p>
     </form>
   );
 }
