@@ -111,6 +111,7 @@ export async function requireUser(allowedRoles?: Role[]) {
       id: true,
       name: true,
       email: true,
+      studentNumber: true,
       role: true,
       status: true,
       createdAt: true,

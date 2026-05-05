@@ -1,9 +1,9 @@
 import { Role, UserStatus } from "@prisma/client";
 
 import { updateUserAccess } from "@/app/actions/admin";
+import { SubmitButton } from "@/components/forms/submit-button";
 import { AppShell } from "@/components/layout/app-shell";
 import { StatusBadge } from "@/components/portal/status-badge";
-import { SubmitButton } from "@/components/forms/submit-button";
 import { requireUser } from "@/lib/auth";
 import { getAdminDashboardData } from "@/lib/dashboard-data";
 import {
@@ -17,6 +17,17 @@ const roleLabels = {
   COORDINATOR: "Coordinators",
   SECRETARY: "Secretaries",
   ADMIN: "Admins",
+};
+
+const roleBadgeStyles: Record<Role, string> = {
+  STUDENT:
+    "bg-slate-100/10 text-slate-200 ring-1 ring-inset ring-slate-200/15",
+  COORDINATOR:
+    "bg-cyan-400/15 text-cyan-200 ring-1 ring-inset ring-cyan-300/30",
+  SECRETARY:
+    "bg-amber-400/15 text-amber-100 ring-1 ring-inset ring-amber-300/30",
+  ADMIN:
+    "bg-fuchsia-400/15 text-fuchsia-200 ring-1 ring-inset ring-fuchsia-300/30",
 };
 
 const accessBadgeStyles: Record<UserStatus, string> = {
@@ -35,37 +46,37 @@ export default async function AdminPage() {
     {
       label: "Accounts",
       value: stats.totalUsers,
-      helper: `${stats.activeUsers} active · ${stats.disabledUsers} disabled`,
+      helper: `${stats.activeUsers} active / ${stats.disabledUsers} disabled`,
     },
     {
-      label: "Concerns",
-      value: stats.totalConcerns,
-      helper: `${stats.openConcerns} still open`,
+      label: "Open queue",
+      value: stats.openConcerns,
+      helper: `${stats.totalConcerns} total concerns in the system`,
     },
     {
-      label: "Resolved",
+      label: "Resolved flow",
       value: stats.answeredConcerns + stats.closedConcerns,
-      helper: `${stats.answeredConcerns} answered · ${stats.closedConcerns} closed`,
+      helper: `${stats.answeredConcerns} answered / ${stats.closedConcerns} closed`,
     },
     {
       label: "Replies sent",
       value: stats.repliesCount,
-      helper: "All timestamps shown in Philippine time",
+      helper: "All timestamps are shown in Philippine time",
     },
   ];
 
   return (
     <AppShell
       user={user}
-      title="Admin command center"
-      description="Manage account access, monitor department operations, and audit the full portal activity stream from one cleaner control surface."
+      title="Admin operations hub"
+      description="Control roles, account access, and profile records while monitoring concern flow and audited activity across the department portal."
     >
       <div className="space-y-6">
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card) => (
             <article
               key={card.label}
-              className="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
+              className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
             >
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
                 {card.label}
@@ -81,66 +92,134 @@ export default async function AdminPage() {
         </section>
 
         <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_360px]">
-          <section className="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
-            <div className="flex flex-col gap-3 border-b border-white/10 pb-5 md:flex-row md:items-end md:justify-between">
+          <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+            <div className="flex flex-col gap-4 border-b border-white/10 pb-6">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
-                  Access manager
+                  Account governance
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-white">
-                  Edit user roles and access states
+                  Edit names, emails, student numbers, roles, and access
                 </h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
-                  Promote users to staff roles, disable access when needed, and
-                  keep department permissions under direct admin control.
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
+                  Department roles are assigned here by admin. Any account that
+                  is not granted coordinator, secretary, or admin access remains
+                  a student account by default.
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
-                Current admin account changes are intentionally locked for safety.
+              <div className="rounded-[1.6rem] border border-cyan-300/15 bg-cyan-400/10 px-4 py-4 text-sm leading-6 text-cyan-100">
+                This workspace follows a single-account model: one login,
+                admin-managed permissions, and complete user records before a
+                student can enter the concern queue.
               </div>
             </div>
 
             <div className="mt-6 space-y-4">
               {users.map((account) => {
                 const action = updateUserAccess.bind(null, account.id);
-                const isCurrentAdmin = account.id === user.id;
+                const isCurrentSession = account.id === user.id;
 
                 return (
                   <article
                     key={account.id}
-                    className="rounded-[1.6rem] border border-white/10 bg-slate-900/80 p-5"
+                    className="rounded-[1.7rem] border border-white/10 bg-slate-900/85 p-5"
                   >
                     <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                      <div className="space-y-3">
+                      <div className="max-w-xl space-y-3">
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="text-lg font-semibold text-white">
                             {account.name}
+                          </span>
+                          <span
+                            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold tracking-wide ${roleBadgeStyles[account.role]}`}
+                          >
+                            {formatRoleLabel(account.role)}
                           </span>
                           <span
                             className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold tracking-wide ${accessBadgeStyles[account.status]}`}
                           >
                             {formatRoleLabel(account.status)}
                           </span>
-                          {isCurrentAdmin ? (
-                            <span className="inline-flex rounded-full bg-fuchsia-400/15 px-3 py-1 text-xs font-semibold tracking-wide text-fuchsia-200 ring-1 ring-inset ring-fuchsia-300/30">
+                          {isCurrentSession ? (
+                            <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-slate-100 ring-1 ring-inset ring-white/10">
                               Current session
                             </span>
                           ) : null}
                         </div>
-                        <div className="text-sm leading-6 text-slate-400">
+
+                        <div className="space-y-1 text-sm leading-6 text-slate-400">
                           <p>{account.email}</p>
                           <p>
-                            Joined {formatDateTime(account.createdAt)} ·{" "}
-                            {account._count.concerns} concerns ·{" "}
+                            Student number: {account.studentNumber || "Not set"}
+                          </p>
+                          <p>
+                            Joined {formatDateTime(account.createdAt)} /{" "}
+                            {account._count.concerns} concerns /{" "}
                             {account._count.replies} replies
                           </p>
                         </div>
+
+                        {isCurrentSession ? (
+                          <p className="rounded-2xl border border-fuchsia-300/15 bg-fuchsia-400/10 px-4 py-3 text-sm leading-6 text-fuchsia-100">
+                            Changes to this account take effect on the current
+                            admin session immediately after save.
+                          </p>
+                        ) : null}
                       </div>
 
                       <form
                         action={action}
-                        className="grid gap-3 rounded-[1.4rem] border border-white/10 bg-slate-950/80 p-4 md:grid-cols-[180px_180px_auto]"
+                        className="grid w-full gap-3 rounded-[1.5rem] border border-white/10 bg-slate-950/90 p-4 md:grid-cols-2"
                       >
+                        <div className="space-y-2">
+                          <label
+                            className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400"
+                            htmlFor={`name-${account.id}`}
+                          >
+                            Full name
+                          </label>
+                          <input
+                            id={`name-${account.id}`}
+                            name="name"
+                            defaultValue={account.name}
+                            required
+                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label
+                            className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400"
+                            htmlFor={`email-${account.id}`}
+                          >
+                            Email
+                          </label>
+                          <input
+                            id={`email-${account.id}`}
+                            name="email"
+                            type="email"
+                            defaultValue={account.email}
+                            required
+                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label
+                            className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400"
+                            htmlFor={`student-number-${account.id}`}
+                          >
+                            Student number
+                          </label>
+                          <input
+                            id={`student-number-${account.id}`}
+                            name="studentNumber"
+                            defaultValue={account.studentNumber ?? ""}
+                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
+                            placeholder="Required before students can submit"
+                          />
+                        </div>
+
                         <div className="space-y-2">
                           <label
                             className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400"
@@ -152,8 +231,7 @@ export default async function AdminPage() {
                             id={`role-${account.id}`}
                             name="role"
                             defaultValue={account.role}
-                            disabled={isCurrentAdmin}
-                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
                           >
                             <option value="STUDENT">Student</option>
                             <option value="COORDINATOR">Coordinator</option>
@@ -173,20 +251,19 @@ export default async function AdminPage() {
                             id={`status-${account.id}`}
                             name="status"
                             defaultValue={account.status}
-                            disabled={isCurrentAdmin}
-                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400"
                           >
                             <option value="ACTIVE">Active</option>
                             <option value="DISABLED">Disabled</option>
                           </select>
                         </div>
 
-                        <div className="flex items-end">
+                        <div className="flex items-end md:justify-end">
                           <SubmitButton
-                            pendingLabel="Updating..."
+                            pendingLabel="Saving..."
                             className="w-full md:w-auto"
                           >
-                            Save access
+                            Save account
                           </SubmitButton>
                         </div>
                       </form>
@@ -198,7 +275,7 @@ export default async function AdminPage() {
           </section>
 
           <aside className="space-y-6">
-            <section className="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+            <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
               <h2 className="text-lg font-semibold text-white">
                 Role distribution
               </h2>
@@ -217,20 +294,24 @@ export default async function AdminPage() {
               </div>
             </section>
 
-            <section className="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+            <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
               <h2 className="text-lg font-semibold text-white">
                 Queue health
               </h2>
               <div className="mt-4 grid gap-3">
                 <div className="rounded-2xl border border-amber-300/15 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
-                  Open concerns: <span className="font-semibold">{stats.openConcerns}</span>
+                  Open concerns:{" "}
+                  <span className="font-semibold">{stats.openConcerns}</span>
                 </div>
                 <div className="rounded-2xl border border-emerald-300/15 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">
                   Answered concerns:{" "}
-                  <span className="font-semibold">{stats.answeredConcerns}</span>
+                  <span className="font-semibold">
+                    {stats.answeredConcerns}
+                  </span>
                 </div>
                 <div className="rounded-2xl border border-slate-300/15 bg-slate-400/10 px-4 py-3 text-sm text-slate-100">
-                  Closed concerns: <span className="font-semibold">{stats.closedConcerns}</span>
+                  Closed concerns:{" "}
+                  <span className="font-semibold">{stats.closedConcerns}</span>
                 </div>
               </div>
             </section>
@@ -238,14 +319,14 @@ export default async function AdminPage() {
         </section>
 
         <section className="grid gap-6 xl:grid-cols-2">
-          <section className="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+          <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-300">
                   Recent concerns
                 </p>
                 <h2 className="mt-2 text-xl font-semibold text-white">
-                  Latest student queue movement
+                  Latest queue movement
                 </h2>
               </div>
               <p className="text-sm text-slate-400">Asia/Manila</p>
@@ -269,7 +350,7 @@ export default async function AdminPage() {
                         {concern.subject}
                       </h3>
                       <p className="mt-1 text-sm text-slate-400">
-                        {concern.student.name} · {concern.student.email}
+                        {concern.student.name} / {concern.student.email}
                       </p>
                     </div>
                     <p className="text-sm text-slate-400">
@@ -281,14 +362,14 @@ export default async function AdminPage() {
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+          <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
                   Activity feed
                 </p>
                 <h2 className="mt-2 text-xl font-semibold text-white">
-                  Audited admin and user events
+                  Audited system events
                 </h2>
               </div>
               <p className="text-sm text-slate-400">Philippine time</p>
@@ -309,7 +390,7 @@ export default async function AdminPage() {
                         {entry.actor
                           ? `${entry.actor.name} (${formatRoleLabel(entry.actor.role)})`
                           : "System"}{" "}
-                        · {entry.entityType}
+                        / {entry.entityType}
                       </p>
                     </div>
                     <p className="text-sm text-slate-400">

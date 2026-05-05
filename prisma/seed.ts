@@ -31,6 +31,7 @@ async function main() {
       where: { email: "student@csdept.edu" },
       update: {
         name: "Pat Student",
+        studentNumber: "2024-00001",
         passwordHash,
         role: Role.STUDENT,
         status: UserStatus.ACTIVE,
@@ -38,6 +39,7 @@ async function main() {
       create: {
         name: "Pat Student",
         email: "student@csdept.edu",
+        studentNumber: "2024-00001",
         passwordHash,
         role: Role.STUDENT,
         status: UserStatus.ACTIVE,
@@ -47,6 +49,7 @@ async function main() {
       where: { email: "coordinator@csdept.edu" },
       update: {
         name: "Casey Coordinator",
+        studentNumber: null,
         passwordHash,
         role: Role.COORDINATOR,
         status: UserStatus.ACTIVE,
@@ -54,6 +57,7 @@ async function main() {
       create: {
         name: "Casey Coordinator",
         email: "coordinator@csdept.edu",
+        studentNumber: null,
         passwordHash,
         role: Role.COORDINATOR,
         status: UserStatus.ACTIVE,
@@ -63,6 +67,7 @@ async function main() {
       where: { email: "secretary@csdept.edu" },
       update: {
         name: "Sam Secretary",
+        studentNumber: null,
         passwordHash,
         role: Role.SECRETARY,
         status: UserStatus.ACTIVE,
@@ -70,6 +75,7 @@ async function main() {
       create: {
         name: "Sam Secretary",
         email: "secretary@csdept.edu",
+        studentNumber: null,
         passwordHash,
         role: Role.SECRETARY,
         status: UserStatus.ACTIVE,
@@ -79,6 +85,7 @@ async function main() {
       where: { email: adminEmail },
       update: {
         name: adminName,
+        studentNumber: null,
         passwordHash: adminPasswordHash,
         role: Role.ADMIN,
         status: UserStatus.ACTIVE,
@@ -86,6 +93,7 @@ async function main() {
       create: {
         name: adminName,
         email: adminEmail,
+        studentNumber: null,
         passwordHash: adminPasswordHash,
         role: Role.ADMIN,
         status: UserStatus.ACTIVE,

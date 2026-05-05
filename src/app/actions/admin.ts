@@ -12,6 +12,9 @@ import { accessUpdateSchema } from "@/lib/validation";
 export async function updateUserAccess(userId: string, formData: FormData) {
   const admin = await requireUser([Role.ADMIN]);
   const parsed = accessUpdateSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    studentNumber: formData.get("studentNumber"),
     role: formData.get("role"),
     status: formData.get("status"),
   });
@@ -27,6 +30,7 @@ export async function updateUserAccess(userId: string, formData: FormData) {
       id: true,
       name: true,
       email: true,
+      studentNumber: true,
       role: true,
       status: true,
     },
@@ -36,28 +40,45 @@ export async function updateUserAccess(userId: string, formData: FormData) {
     redirect("/admin");
   }
 
-  if (existingUser.id === admin.id) {
-    if (
-      parsed.data.role !== existingUser.role ||
-      parsed.data.status !== existingUser.status
-    ) {
-      await logActivity({
-        actorId: admin.id,
-        action: "ADMIN_SELF_ACCESS_CHANGE_BLOCKED",
-        entityType: "User",
-        entityId: existingUser.id,
-        details: {
-          targetEmail: existingUser.email,
-        },
-      });
-    }
+  const normalizedEmail = parsed.data.email.toLowerCase();
+  const normalizedStudentNumber = parsed.data.studentNumber?.trim() || null;
 
+  const duplicateEmailUser = await db.user.findFirst({
+    where: {
+      email: normalizedEmail,
+      id: {
+        not: existingUser.id,
+      },
+    },
+    select: { id: true },
+  });
+
+  if (duplicateEmailUser) {
     redirect("/admin");
+  }
+
+  if (normalizedStudentNumber) {
+    const duplicateStudentNumberUser = await db.user.findFirst({
+      where: {
+        studentNumber: normalizedStudentNumber,
+        id: {
+          not: existingUser.id,
+        },
+      },
+      select: { id: true },
+    });
+
+    if (duplicateStudentNumberUser) {
+      redirect("/admin");
+    }
   }
 
   await db.user.update({
     where: { id: existingUser.id },
     data: {
+      name: parsed.data.name,
+      email: normalizedEmail,
+      studentNumber: normalizedStudentNumber,
       role: parsed.data.role as Role,
       status: parsed.data.status as UserStatus,
     },
@@ -70,6 +91,11 @@ export async function updateUserAccess(userId: string, formData: FormData) {
     entityId: existingUser.id,
     details: {
       targetEmail: existingUser.email,
+      nextEmail: normalizedEmail,
+      previousName: existingUser.name,
+      nextName: parsed.data.name,
+      previousStudentNumber: existingUser.studentNumber,
+      nextStudentNumber: normalizedStudentNumber,
       previousRole: existingUser.role,
       nextRole: parsed.data.role,
       previousStatus: existingUser.status,

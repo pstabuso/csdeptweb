@@ -20,7 +20,6 @@ export async function login(
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
-    role: formData.get("role"),
   });
 
   if (!parsed.success) {
@@ -53,25 +52,6 @@ export async function login(
     return { error: "No account matches that email and password." };
   }
 
-  if (user.role !== parsed.data.role) {
-    await logActivity({
-      actorId: user.id,
-      action: "LOGIN_ROLE_MISMATCH",
-      entityType: "User",
-      entityId: user.id,
-      details: {
-        email: user.email,
-        selectedRole: parsed.data.role,
-        actualRole: user.role,
-      },
-    });
-
-    return {
-      error:
-        "That account exists, but it is not assigned to the role you selected.",
-    };
-  }
-
   if (user.status === UserStatus.DISABLED) {
     await logActivity({
       actorId: user.id,
@@ -93,7 +73,7 @@ export async function login(
     userId: user.id,
     name: user.name,
     email: user.email,
-    role: parsed.data.role,
+    role: user.role,
   });
 
   await logActivity({
@@ -101,10 +81,10 @@ export async function login(
     action: "LOGIN_SUCCESS",
     entityType: "User",
     entityId: user.id,
-    details: { role: parsed.data.role },
+    details: { role: user.role },
   });
 
-  redirect(getRoleHomePath(parsed.data.role));
+  redirect(getRoleHomePath(user.role));
 }
 
 export async function logout() {
@@ -123,6 +103,7 @@ export async function signup(
   const parsed = signupSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
+    studentNumber: formData.get("studentNumber"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
   });
@@ -149,6 +130,7 @@ export async function signup(
     data: {
       name: parsed.data.name,
       email: normalizedEmail,
+      studentNumber: parsed.data.studentNumber,
       passwordHash,
       role: Role.STUDENT,
       status: UserStatus.ACTIVE,

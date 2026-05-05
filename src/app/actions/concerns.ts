@@ -7,7 +7,11 @@ import { redirect } from "next/navigation";
 import { logActivity } from "@/lib/activity";
 import { requireUser } from "@/lib/auth";
 import { getDb } from "@/lib/prisma";
-import { concernSchema, replySchema } from "@/lib/validation";
+import {
+  concernSchema,
+  replySchema,
+  studentProfileSchema,
+} from "@/lib/validation";
 
 export async function createConcern(formData: FormData) {
   const user = await requireUser([Role.STUDENT]);
@@ -18,6 +22,20 @@ export async function createConcern(formData: FormData) {
   });
 
   if (!parsed.success) {
+    redirect("/student");
+  }
+
+  if (!user.studentNumber) {
+    await logActivity({
+      actorId: user.id,
+      action: "CONCERN_BLOCKED_MISSING_STUDENT_NUMBER",
+      entityType: "Concern",
+      entityId: null,
+      details: {
+        email: user.email,
+      },
+    });
+
     redirect("/student");
   }
 
@@ -106,3 +124,50 @@ export async function replyToConcern(concernId: string, formData: FormData) {
   redirect(user.role === Role.COORDINATOR ? "/coordinator" : "/secretary");
 }
 
+export async function updateStudentNumber(formData: FormData) {
+  const user = await requireUser([Role.STUDENT]);
+  const parsed = studentProfileSchema.safeParse({
+    studentNumber: formData.get("studentNumber"),
+  });
+
+  if (!parsed.success) {
+    redirect("/student");
+  }
+
+  const db = getDb();
+  const normalizedStudentNumber = parsed.data.studentNumber.trim();
+  const duplicateUser = await db.user.findFirst({
+    where: {
+      studentNumber: normalizedStudentNumber,
+      id: {
+        not: user.id,
+      },
+    },
+    select: { id: true },
+  });
+
+  if (duplicateUser) {
+    redirect("/student");
+  }
+
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      studentNumber: normalizedStudentNumber,
+    },
+  });
+
+  await logActivity({
+    actorId: user.id,
+    action: "STUDENT_NUMBER_UPDATED",
+    entityType: "User",
+    entityId: user.id,
+    details: {
+      studentNumber: normalizedStudentNumber,
+    },
+  });
+
+  revalidatePath("/student");
+  revalidatePath("/admin");
+  redirect("/student");
+}

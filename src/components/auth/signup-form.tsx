@@ -58,6 +58,23 @@ export function SignupForm() {
         />
       </div>
 
+      <div className="space-y-2">
+        <label
+          className="text-sm font-medium text-slate-200"
+          htmlFor="studentNumber"
+        >
+          Student number
+        </label>
+        <input
+          id="studentNumber"
+          name="studentNumber"
+          required
+          minLength={5}
+          className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-emerald-400 focus:bg-slate-950"
+          placeholder="2024-00001"
+        />
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <label

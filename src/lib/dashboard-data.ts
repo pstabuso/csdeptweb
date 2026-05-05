@@ -115,6 +115,7 @@ export async function getAdminDashboardData() {
         id: true,
         name: true,
         email: true,
+        studentNumber: true,
         role: true,
         status: true,
         createdAt: true,

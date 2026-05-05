@@ -3,15 +3,16 @@ import { z } from "zod";
 export const loginSchema = z.object({
   email: z.string().trim().email("Enter a valid email address."),
   password: z.string().min(8, "Password must be at least 8 characters."),
-  role: z.enum(["STUDENT", "COORDINATOR", "SECRETARY", "ADMIN"], {
-    error: "Choose the role you want to sign in as.",
-  }),
 });
 
 export const signupSchema = z
   .object({
     name: z.string().trim().min(2, "Name must be at least 2 characters."),
     email: z.string().trim().email("Enter a valid email address."),
+    studentNumber: z
+      .string()
+      .trim()
+      .min(5, "Student number must be at least 5 characters."),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters.")
@@ -27,8 +28,18 @@ export const signupSchema = z
   });
 
 export const accessUpdateSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters."),
+  email: z.string().trim().email("Enter a valid email address."),
+  studentNumber: z.string().trim().optional(),
   role: z.enum(["STUDENT", "COORDINATOR", "SECRETARY", "ADMIN"]),
   status: z.enum(["ACTIVE", "DISABLED"]),
+});
+
+export const studentProfileSchema = z.object({
+  studentNumber: z
+    .string()
+    .trim()
+    .min(5, "Student number must be at least 5 characters."),
 });
 
 export const concernSchema = z.object({
