@@ -8,11 +8,7 @@ export default async function ProfilePage() {
   const user = await requireUser();
 
   return (
-    <AppShell
-      user={user}
-      title="Profile settings"
-      description="Edit your username and password."
-    >
+    <AppShell user={user} title="Profile settings">
       <section className="mx-auto max-w-3xl space-y-4">
         <article className="rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
           <div className="grid gap-3 md:grid-cols-3">

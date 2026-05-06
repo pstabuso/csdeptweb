@@ -47,7 +47,10 @@ function buildHref(
 export default async function CoordinatorPage({ searchParams }: PageProps) {
   const user = await requireUser([Role.COORDINATOR]);
   const params = (await searchParams) ?? {};
-  const filters = normalizeConcernFilters(params);
+  const filters = normalizeConcernFilters({
+    ...params,
+    sort: params.sort ?? "open-first",
+  });
   const scheduleMonth = normalizeScheduleMonth(params.scheduleMonth);
   const [concerns, categoryOptions, scheduleEntries] = await Promise.all([
     getStaffDashboardData(filters),
@@ -57,31 +60,27 @@ export default async function CoordinatorPage({ searchParams }: PageProps) {
   const concernRedirectTo = buildHref("/coordinator", {
     status: filters.status !== "ALL" ? filters.status : undefined,
     category: filters.category !== "ALL" ? filters.category : undefined,
-    sort: filters.sort !== "recent" ? filters.sort : undefined,
+    sort: filters.sort !== "open-first" ? filters.sort : undefined,
     query: filters.query || undefined,
     scheduleMonth,
   });
   const previousMonthHref = buildHref("/coordinator", {
     status: filters.status !== "ALL" ? filters.status : undefined,
     category: filters.category !== "ALL" ? filters.category : undefined,
-    sort: filters.sort !== "recent" ? filters.sort : undefined,
+    sort: filters.sort !== "open-first" ? filters.sort : undefined,
     query: filters.query || undefined,
     scheduleMonth: shiftMonth(scheduleMonth, -1),
   });
   const nextMonthHref = buildHref("/coordinator", {
     status: filters.status !== "ALL" ? filters.status : undefined,
     category: filters.category !== "ALL" ? filters.category : undefined,
-    sort: filters.sort !== "recent" ? filters.sort : undefined,
+    sort: filters.sort !== "open-first" ? filters.sort : undefined,
     query: filters.query || undefined,
     scheduleMonth: shiftMonth(scheduleMonth, 1),
   });
 
   return (
-    <AppShell
-      user={user}
-      title="Coordinator response queue"
-      description="Review, reply, and sort concerns."
-    >
+    <AppShell user={user} title="Coordinator response queue">
       <StaffDashboard
         role={Role.COORDINATOR}
         concerns={concerns}

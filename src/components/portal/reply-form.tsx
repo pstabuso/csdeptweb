@@ -15,6 +15,10 @@ export function ReplyForm({
   redirectTo,
 }: ReplyFormProps) {
   const action = replyToConcern.bind(null, concernId);
+  const nextStatus =
+    defaultStatus === ConcernStatus.OPEN
+      ? ConcernStatus.ANSWERED
+      : defaultStatus;
 
   return (
     <form
@@ -50,7 +54,7 @@ export function ReplyForm({
           <select
             id={`status-${concernId}`}
             name="status"
-            defaultValue={defaultStatus}
+            defaultValue={nextStatus}
             className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
           >
             <option value="OPEN">Open</option>

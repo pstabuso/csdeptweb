@@ -21,7 +21,7 @@ type ConcernRecord = Concern & {
 
 type ConcernWorkspaceProps = {
   title: string;
-  description: string;
+  description?: string;
   concerns: ConcernRecord[];
   filters: ConcernFilterState;
   categoryOptions: string[];
@@ -58,6 +58,90 @@ export function ConcernWorkspace({
   const closedCount = concerns.filter(
     (concern) => concern.status === ConcernStatus.CLOSED,
   ).length;
+  const activeConcerns = concerns.filter(
+    (concern) => concern.status !== ConcernStatus.CLOSED,
+  );
+  const closedConcerns = concerns.filter(
+    (concern) => concern.status === ConcernStatus.CLOSED,
+  );
+
+  function renderConcernCard(concern: ConcernRecord) {
+    return (
+      <article
+        key={concern.id}
+        className="space-y-3 rounded-[1.5rem] border border-white/10 bg-slate-950/65 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
+      >
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-3">
+              <StatusBadge status={concern.status} />
+              <span className="rounded-full bg-violet-400/10 px-2.5 py-1 text-[11px] font-semibold text-violet-100 ring-1 ring-inset ring-violet-300/20">
+                {concern.category}
+              </span>
+            </div>
+            <h3 className="text-lg font-semibold text-white">{concern.subject}</h3>
+            <div className="text-sm leading-5 text-slate-400">
+              <p>{concern.student.name}</p>
+              <p>{concern.student.email}</p>
+              <p>
+                {concern.student.studentNumber || "No ID"} /{" "}
+                {formatDateTime(concern.createdAt)}
+              </p>
+            </div>
+          </div>
+          <div className="rounded-[1rem] border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
+            <p className="uppercase tracking-[0.16em] text-slate-500">Updated</p>
+            <p className="mt-1 font-semibold text-white">
+              {formatDateTime(concern.updatedAt)}
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-[1.2rem] border border-white/10 bg-slate-900/80 p-3 text-sm leading-6 text-slate-200">
+          {concern.message}
+        </div>
+
+        <div className="space-y-2">
+          <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+            Thread
+          </h4>
+          {concern.replies.length ? (
+            <div className="space-y-2">
+              {concern.replies.map((reply) => (
+                <div
+                  key={reply.id}
+                  className="rounded-[1.1rem] border border-white/10 bg-slate-900/80 p-3"
+                >
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                    <span>{reply.author.name}</span>
+                    <span className="text-slate-700">/</span>
+                    <span>{reply.author.role.replaceAll("_", " ")}</span>
+                    <span className="text-slate-700">/</span>
+                    <span>{formatDateTime(reply.createdAt)}</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-slate-200">
+                    {reply.message}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-[1.1rem] border border-dashed border-white/15 bg-slate-900/70 px-3 py-3 text-sm text-slate-400">
+              No replies yet.
+            </p>
+          )}
+        </div>
+
+        {canReply ? (
+          <ReplyForm
+            concernId={concern.id}
+            defaultStatus={concern.status}
+            redirectTo={replyRedirectTo ?? currentPath}
+          />
+        ) : null}
+      </article>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -68,9 +152,11 @@ export function ConcernWorkspace({
               Concerns
             </p>
             <h2 className="mt-1 text-xl font-semibold text-white">{title}</h2>
-            <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
-              {description}
-            </p>
+            {description ? (
+              <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
+                {description}
+              </p>
+            ) : null}
           </div>
         </div>
 
@@ -156,83 +242,49 @@ export function ConcernWorkspace({
 
       <section className="space-y-3">
         {concerns.length ? (
-          concerns.map((concern) => (
-            <article
-              key={concern.id}
-              className="space-y-3 rounded-[1.5rem] border border-white/10 bg-slate-950/65 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
-            >
-              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <StatusBadge status={concern.status} />
-                    <span className="rounded-full bg-violet-400/10 px-2.5 py-1 text-[11px] font-semibold text-violet-100 ring-1 ring-inset ring-violet-300/20">
-                      {concern.category}
+          <>
+            {filters.status === "ALL" ? (
+              <>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      Active
+                    </h3>
+                    <span className="text-xs text-slate-500">
+                      {activeConcerns.length}
                     </span>
                   </div>
-                  <h3 className="text-lg font-semibold text-white">
-                    {concern.subject}
-                  </h3>
-                  <div className="text-sm leading-5 text-slate-400">
-                    <p>{concern.student.name}</p>
-                    <p>{concern.student.email}</p>
-                    <p>
-                      {concern.student.studentNumber || "No ID"} /{" "}
-                      {formatDateTime(concern.createdAt)}
-                    </p>
-                  </div>
+                  {activeConcerns.length ? (
+                    activeConcerns.map(renderConcernCard)
+                  ) : (
+                    <div className="rounded-[1.5rem] border border-dashed border-white/15 bg-slate-950/50 p-5 text-center text-sm text-slate-400">
+                      No active concerns.
+                    </div>
+                  )}
                 </div>
-                <div className="rounded-[1rem] border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
-                  <p className="uppercase tracking-[0.16em] text-slate-500">Updated</p>
-                  <p className="mt-1 font-semibold text-white">
-                    {formatDateTime(concern.updatedAt)}
-                  </p>
-                </div>
-              </div>
 
-              <div className="rounded-[1.2rem] border border-white/10 bg-slate-900/80 p-3 text-sm leading-6 text-slate-200">
-                {concern.message}
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  Thread
-                </h4>
-                {concern.replies.length ? (
-                  <div className="space-y-2">
-                    {concern.replies.map((reply) => (
-                      <div
-                        key={reply.id}
-                        className="rounded-[1.1rem] border border-white/10 bg-slate-900/80 p-3"
-                      >
-                        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                          <span>{reply.author.name}</span>
-                          <span className="text-slate-700">/</span>
-                          <span>{reply.author.role.replaceAll("_", " ")}</span>
-                          <span className="text-slate-700">/</span>
-                          <span>{formatDateTime(reply.createdAt)}</span>
-                        </div>
-                        <p className="mt-2 text-sm leading-6 text-slate-200">
-                          {reply.message}
-                        </p>
-                      </div>
-                    ))}
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      Closed
+                    </h3>
+                    <span className="text-xs text-slate-500">
+                      {closedConcerns.length}
+                    </span>
                   </div>
-                ) : (
-                  <p className="rounded-[1.1rem] border border-dashed border-white/15 bg-slate-900/70 px-3 py-3 text-sm text-slate-400">
-                    No replies yet.
-                  </p>
-                )}
-              </div>
-
-              {canReply ? (
-                <ReplyForm
-                  concernId={concern.id}
-                  defaultStatus={concern.status}
-                  redirectTo={replyRedirectTo ?? currentPath}
-                />
-              ) : null}
-            </article>
-          ))
+                  {closedConcerns.length ? (
+                    closedConcerns.map(renderConcernCard)
+                  ) : (
+                    <div className="rounded-[1.5rem] border border-dashed border-white/15 bg-slate-950/50 p-5 text-center text-sm text-slate-400">
+                      No closed concerns.
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              concerns.map(renderConcernCard)
+            )}
+          </>
         ) : (
           <div className="rounded-[1.5rem] border border-dashed border-white/15 bg-slate-950/50 p-5 text-center text-sm text-slate-400">
             {emptyMessage}

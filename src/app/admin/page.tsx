@@ -76,7 +76,10 @@ function buildHref(
 export default async function AdminPage({ searchParams }: PageProps) {
   const user = await requireUser([Role.ADMIN]);
   const params = (await searchParams) ?? {};
-  const filters = normalizeConcernFilters(params);
+  const filters = normalizeConcernFilters({
+    ...params,
+    sort: params.sort ?? "open-first",
+  });
   const scheduleMonth = normalizeScheduleMonth(params.scheduleMonth);
   const [{ stats, roleCounts, concerns, auditLogs, users }, categoryOptions, scheduleEntries] =
     await Promise.all([
@@ -88,21 +91,21 @@ export default async function AdminPage({ searchParams }: PageProps) {
   const adminConcernHref = buildHref("/admin", {
     status: filters.status !== "ALL" ? filters.status : undefined,
     category: filters.category !== "ALL" ? filters.category : undefined,
-    sort: filters.sort !== "recent" ? filters.sort : undefined,
+    sort: filters.sort !== "open-first" ? filters.sort : undefined,
     query: filters.query || undefined,
     scheduleMonth,
   });
   const previousMonthHref = buildHref("/admin", {
     status: filters.status !== "ALL" ? filters.status : undefined,
     category: filters.category !== "ALL" ? filters.category : undefined,
-    sort: filters.sort !== "recent" ? filters.sort : undefined,
+    sort: filters.sort !== "open-first" ? filters.sort : undefined,
     query: filters.query || undefined,
     scheduleMonth: shiftMonth(scheduleMonth, -1),
   });
   const nextMonthHref = buildHref("/admin", {
     status: filters.status !== "ALL" ? filters.status : undefined,
     category: filters.category !== "ALL" ? filters.category : undefined,
-    sort: filters.sort !== "recent" ? filters.sort : undefined,
+    sort: filters.sort !== "open-first" ? filters.sort : undefined,
     query: filters.query || undefined,
     scheduleMonth: shiftMonth(scheduleMonth, 1),
   });
@@ -131,11 +134,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
   ];
 
   return (
-    <AppShell
-      user={user}
-      title="Admin operations hub"
-      description="Manage users, concerns, and schedule."
-    >
+    <AppShell user={user} title="Admin operations hub">
       <div className="space-y-4">
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card) => (
@@ -149,9 +148,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
               <p className="mt-2 text-3xl font-semibold tracking-tight text-white">
                 {card.value}
               </p>
-              <p className="mt-1 text-sm leading-5 text-slate-300">
-                {card.helper}
-              </p>
+              <p className="mt-1 text-sm leading-5 text-slate-300">{card.helper}</p>
             </article>
           ))}
         </section>
@@ -163,15 +160,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
                   Users
                 </p>
-                <h2 className="mt-1 text-xl font-semibold text-white">
-                  Edit users
-                </h2>
-                <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
-                  Default role is student unless changed.
-                </p>
-              </div>
-              <div className="rounded-[1.2rem] border border-violet-300/15 bg-violet-400/10 px-3 py-3 text-sm leading-6 text-violet-100">
-                Full account control.
+                <h2 className="mt-1 text-xl font-semibold text-white">Edit users</h2>
               </div>
             </div>
 

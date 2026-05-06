@@ -26,7 +26,7 @@ type ScheduleBoardProps = {
   nextMonthHref: string;
   redirectTo: string;
   title: string;
-  description: string;
+  description?: string;
 };
 
 function getDateTimeLocalValue(value: Date) {
@@ -110,9 +110,11 @@ export function ScheduleBoard({
               Schedule
             </p>
             <h2 className="mt-1 text-xl font-semibold text-white">{title}</h2>
-            <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
-              {description}
-            </p>
+            {description ? (
+              <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
+                {description}
+              </p>
+            ) : null}
           </div>
           <div className="flex items-center gap-3 text-sm">
             <Link

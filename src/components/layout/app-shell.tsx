@@ -12,7 +12,7 @@ type AppShellProps = {
     role: Role;
   };
   title: string;
-  description: string;
+  description?: string;
   children: React.ReactNode;
 };
 
@@ -48,9 +48,11 @@ export function AppShell({
                 <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
                   {title}
                 </h1>
-                <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-300">
-                  {description}
-                </p>
+                {description ? (
+                  <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-300">
+                    {description}
+                  </p>
+                ) : null}
               </div>
             </div>
             <div className="flex flex-col gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 p-3 sm:flex-row sm:items-center">

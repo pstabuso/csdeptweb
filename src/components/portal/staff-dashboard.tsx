@@ -45,10 +45,9 @@ export function StaffDashboard({
   const label = role === Role.COORDINATOR ? "Coordinator" : "Secretary";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <ConcernWorkspace
         title={`${label} response queue`}
-        description="Filter concerns by status, category, or search terms, then reply directly from each case thread."
         concerns={concerns}
         filters={filters}
         categoryOptions={categoryOptions}
@@ -66,8 +65,7 @@ export function StaffDashboard({
         previousMonthHref={previousMonthHref}
         nextMonthHref={nextMonthHref}
         redirectTo={concernRedirectTo}
-        title={`${label} whereabouts calendar`}
-        description="Keep class consultations, office availability, and department movements visible to students in one shared calendar."
+        title={`${label} calendar`}
       />
     </div>
   );
