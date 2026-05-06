@@ -16,6 +16,7 @@ type SessionPayload = {
   name: string;
   email: string;
   role: Role;
+  sessionVersion: number;
 };
 
 function getAuthSecret() {
@@ -42,7 +43,8 @@ export const getSession = cache(async (): Promise<SessionPayload | null> => {
       typeof payload.userId !== "string" ||
       typeof payload.name !== "string" ||
       typeof payload.email !== "string" ||
-      typeof payload.role !== "string"
+      typeof payload.role !== "string" ||
+      typeof payload.sessionVersion !== "number"
     ) {
       return null;
     }
@@ -52,6 +54,7 @@ export const getSession = cache(async (): Promise<SessionPayload | null> => {
       name: payload.name,
       email: payload.email,
       role: payload.role as Role,
+      sessionVersion: payload.sessionVersion,
     };
   } catch {
     return null;
@@ -114,6 +117,7 @@ export async function requireUser(allowedRoles?: Role[]) {
       studentNumber: true,
       role: true,
       status: true,
+      sessionVersion: true,
       createdAt: true,
     },
   });
@@ -126,6 +130,15 @@ export async function requireUser(allowedRoles?: Role[]) {
   if (user.status === UserStatus.DISABLED) {
     await clearSession();
     redirect("/login");
+  }
+
+  if (user.sessionVersion !== session.sessionVersion) {
+    await clearSession();
+    redirect("/login");
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    redirect(getRoleHomePath(user.role));
   }
 
   return user;

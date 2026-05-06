@@ -7,6 +7,11 @@ import { redirect } from "next/navigation";
 import { logActivity } from "@/lib/activity";
 import { clearSession, createSession, getRoleHomePath } from "@/lib/auth";
 import { getDb } from "@/lib/prisma";
+import {
+  getLockoutExpiry,
+  LOGIN_ATTEMPT_LIMIT,
+  LOGIN_LOCKOUT_MINUTES,
+} from "@/lib/security";
 import { loginSchema, signupSchema } from "@/lib/validation";
 
 export type LoginActionState = {
@@ -17,6 +22,7 @@ export async function login(
   _previousState: LoginActionState,
   formData: FormData,
 ): Promise<LoginActionState> {
+  const invalidCredentialsError = "No account matches that email and password.";
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -32,7 +38,34 @@ export async function login(
   });
 
   if (!user) {
-    return { error: "No account matches that email and password." };
+    return { error: invalidCredentialsError };
+  }
+
+  if (user.lockedUntil && user.lockedUntil > new Date()) {
+    await logActivity({
+      actorId: user.id,
+      action: "LOGIN_LOCKED_OUT",
+      entityType: "User",
+      entityId: user.id,
+      details: {
+        email: user.email,
+        lockedUntil: user.lockedUntil.toISOString(),
+      },
+    });
+
+    return {
+      error: `Too many sign-in attempts. Try again in ${LOGIN_LOCKOUT_MINUTES} minutes.`,
+    };
+  }
+
+  if (user.lockedUntil || user.failedLoginAttempts > 0) {
+    await db.user.update({
+      where: { id: user.id },
+      data: {
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+      },
+    });
   }
 
   const passwordMatches = await bcrypt.compare(
@@ -41,15 +74,35 @@ export async function login(
   );
 
   if (!passwordMatches) {
+    const failedLoginAttempts = user.failedLoginAttempts + 1;
+    const shouldLock = failedLoginAttempts >= LOGIN_ATTEMPT_LIMIT;
+    const lockoutExpiry = shouldLock ? getLockoutExpiry() : null;
+
+    await db.user.update({
+      where: { id: user.id },
+      data: {
+        failedLoginAttempts,
+        lockedUntil: lockoutExpiry,
+      },
+    });
+
     await logActivity({
       actorId: user.id,
       action: "LOGIN_FAILED",
       entityType: "User",
       entityId: user.id,
-      details: { email: user.email },
+      details: {
+        email: user.email,
+        failedLoginAttempts,
+        lockedUntil: lockoutExpiry?.toISOString() ?? null,
+      },
     });
 
-    return { error: "No account matches that email and password." };
+    return {
+      error: shouldLock
+        ? `Too many sign-in attempts. Try again in ${LOGIN_LOCKOUT_MINUTES} minutes.`
+        : invalidCredentialsError,
+    };
   }
 
   if (user.status === UserStatus.DISABLED) {
@@ -69,11 +122,21 @@ export async function login(
     };
   }
 
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      lastLoginAt: new Date(),
+    },
+  });
+
   await createSession({
     userId: user.id,
     name: user.name,
     email: user.email,
     role: user.role,
+    sessionVersion: user.sessionVersion,
   });
 
   await logActivity({
@@ -156,6 +219,7 @@ export async function signup(
     name: user.name,
     email: user.email,
     role: user.role,
+    sessionVersion: user.sessionVersion,
   });
 
   await logActivity({

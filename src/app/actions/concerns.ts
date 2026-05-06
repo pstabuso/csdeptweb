@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { logActivity } from "@/lib/activity";
 import { requireUser } from "@/lib/auth";
 import { getDb } from "@/lib/prisma";
+import { sanitizeRedirectPath } from "@/lib/security";
 import {
   concernSchema,
   replySchema,
@@ -15,7 +16,10 @@ import {
 
 export async function createConcern(formData: FormData) {
   const user = await requireUser([Role.STUDENT]);
-  const redirectTo = String(formData.get("redirectTo") || "/student");
+  const redirectTo = sanitizeRedirectPath(
+    String(formData.get("redirectTo") || "/student"),
+    "/student",
+  );
   const parsed = concernSchema.safeParse({
     subject: formData.get("subject"),
     category: formData.get("category"),
@@ -68,9 +72,12 @@ export async function createConcern(formData: FormData) {
 
 export async function replyToConcern(concernId: string, formData: FormData) {
   const user = await requireUser([Role.COORDINATOR, Role.SECRETARY]);
-  const redirectTo = String(
-    formData.get("redirectTo") ||
-      (user.role === Role.COORDINATOR ? "/coordinator" : "/secretary"),
+  const redirectTo = sanitizeRedirectPath(
+    String(
+      formData.get("redirectTo") ||
+        (user.role === Role.COORDINATOR ? "/coordinator" : "/secretary"),
+    ),
+    user.role === Role.COORDINATOR ? "/coordinator" : "/secretary",
   );
   const parsed = replySchema.safeParse({
     message: formData.get("message"),

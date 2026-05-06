@@ -102,33 +102,34 @@ export function ScheduleBoard({
   }, {});
 
   return (
-    <section className="space-y-4 rounded-[1.6rem] border border-white/10 bg-slate-950/60 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
-      <div className="flex flex-col gap-2 border-b border-white/10 pb-4">
-        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+    <section className="space-y-4 rounded-[1.8rem] border border-white/10 bg-slate-950/62 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur">
+      <div className="flex flex-col gap-4 border-b border-white/10 pb-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">
               Schedule
             </p>
-            <h2 className="mt-1 text-xl font-semibold text-white">{title}</h2>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-white">
+              {title}
+            </h2>
             {description ? (
-              <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
-                {description}
-              </p>
+              <p className="mt-1 text-sm text-slate-400">{description}</p>
             ) : null}
           </div>
-          <div className="flex items-center gap-3 text-sm">
+
+          <div className="flex items-center gap-2 text-sm">
             <Link
               href={previousMonthHref}
-              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200 transition hover:bg-white/10"
+              className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-slate-200 transition hover:bg-white/[0.08]"
             >
               Prev
             </Link>
-            <span className="rounded-xl border border-violet-300/15 bg-violet-400/10 px-4 py-2 font-semibold text-white">
+            <span className="rounded-full border border-violet-300/20 bg-violet-400/10 px-4 py-2 font-semibold text-white">
               {formatMonthLabel(month)}
             </span>
             <Link
               href={nextMonthHref}
-              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200 transition hover:bg-white/10"
+              className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-slate-200 transition hover:bg-white/[0.08]"
             >
               Next
             </Link>
@@ -136,73 +137,77 @@ export function ScheduleBoard({
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1.5 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day}>{day}</div>
-        ))}
-      </div>
+      <div className="space-y-4">
+        <div className="grid grid-cols-7 gap-1.5 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            <div key={day}>{day}</div>
+          ))}
+        </div>
 
-      <div className="grid grid-cols-7 gap-1.5">
-        {grid.map((cell) => {
-          if (!cell.dayNumber) {
+        <div className="grid grid-cols-7 gap-1.5">
+          {grid.map((cell) => {
+            if (!cell.dayNumber) {
+              return (
+                <div
+                  key={cell.key}
+                  className="min-h-16 rounded-xl border border-transparent bg-transparent"
+                />
+              );
+            }
+
+            const dayKey = `${month}-${String(cell.dayNumber).padStart(2, "0")}`;
+            const count = entryCountByDay[dayKey] || 0;
+
             return (
               <div
                 key={cell.key}
-                className="min-h-16 rounded-xl border border-transparent bg-transparent"
-              />
-            );
-          }
-
-          const dayKey = `${month}-${String(cell.dayNumber).padStart(2, "0")}`;
-          const count = entryCountByDay[dayKey] || 0;
-
-          return (
-            <div
-              key={cell.key}
-              className="min-h-16 rounded-xl border border-white/10 bg-slate-900/70 p-2.5"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-white">
-                  {cell.dayNumber}
-                </span>
-                {count ? (
-                  <span className="rounded-full bg-violet-400/15 px-2 py-1 text-[10px] font-semibold text-violet-100 ring-1 ring-inset ring-violet-300/30">
-                    {count}
+                className="min-h-16 rounded-xl border border-white/10 bg-slate-900/76 p-2.5"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-white">
+                    {cell.dayNumber}
                   </span>
-                ) : null}
+                  {count ? (
+                    <span className="rounded-full border border-violet-300/20 bg-violet-400/10 px-2 py-1 text-[10px] font-semibold text-violet-100">
+                      {count}
+                    </span>
+                  ) : null}
+                </div>
+                <div className="mt-3 space-y-2">
+                  {count ? (
+                    Array.from({ length: Math.min(count, 3) }).map((_, index) => (
+                      <div
+                        key={`${cell.key}-marker-${index}`}
+                        className="h-1.5 rounded-full bg-violet-300/70"
+                      />
+                    ))
+                  ) : (
+                    <div className="h-1.5 rounded-full bg-white/[0.06]" />
+                  )}
+                </div>
               </div>
-              <div className="mt-3 space-y-2">
-                {count ? (
-                  Array.from({ length: Math.min(count, 3) }).map((_, index) => (
-                    <div
-                      key={`${cell.key}-marker-${index}`}
-                      className="h-1.5 rounded-full bg-violet-300/70"
-                    />
-                  ))
-                ) : (
-                  <div className="h-2 rounded-full bg-white/5" />
-                )}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {canManage ? (
         <form
           action={createScheduleEntry}
-          className="space-y-3 rounded-[1.3rem] border border-white/10 bg-slate-900/80 p-4"
+          className="space-y-3 rounded-[1.4rem] border border-white/10 bg-slate-900/74 p-4"
         >
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <div className="space-y-1">
+          <div className="flex items-center justify-between">
             <h3 className="text-base font-semibold text-white">Add entry</h3>
-            <p className="text-sm text-slate-400">Student-visible calendar.</p>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-semibold text-slate-300">
+              Student-visible
+            </span>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             <input
               name="title"
               required
-              placeholder="Event title"
+              placeholder="Title"
               className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
             />
             <input
@@ -243,7 +248,7 @@ export function ScheduleBoard({
               <form
                 key={entry.id}
                 action={updateScheduleEntry.bind(null, entry.id)}
-                className="space-y-3 rounded-[1.3rem] border border-white/10 bg-slate-900/80 p-4"
+                className="space-y-3 rounded-[1.4rem] border border-white/10 bg-slate-900/74 p-4"
               >
                 <input type="hidden" name="redirectTo" value={redirectTo} />
                 <div className="grid gap-3 md:grid-cols-2">
@@ -294,7 +299,7 @@ export function ScheduleBoard({
                       pendingLabel="Saving..."
                       className="rounded-xl px-4 py-2.5"
                     >
-                      Save changes
+                      Save
                     </SubmitButton>
                     <button
                       formAction={deleteScheduleEntry.bind(null, entry.id)}
@@ -308,28 +313,27 @@ export function ScheduleBoard({
             ) : (
               <article
                 key={entry.id}
-                className="rounded-[1.3rem] border border-white/10 bg-slate-900/80 p-4"
+                className="rounded-[1.4rem] border border-white/10 bg-slate-900/74 p-4"
               >
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <h3 className="text-base font-semibold text-white">
-                      {entry.title}
-                    </h3>
-                    <p className="mt-1 text-sm text-slate-300">
-                      {entry.location}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-base font-semibold text-white">
+                        {entry.title}
+                      </h3>
+                      <span className="rounded-full border border-violet-300/20 bg-violet-400/10 px-2 py-1 text-[11px] font-semibold text-violet-100">
+                        {formatRoleLabel(entry.createdBy.role)}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm text-slate-300">{entry.location}</p>
                     <p className="mt-2 text-sm text-slate-400">
                       {formatDate(entry.startsAt)} /{" "}
                       {formatTimeRange(entry.startsAt, entry.endsAt)}
                     </p>
                     <p className="mt-1 text-sm text-slate-400">
-                      Posted by {entry.createdBy.name} (
-                      {formatRoleLabel(entry.createdBy.role)})
+                      Posted by {entry.createdBy.name}
                     </p>
                   </div>
-                  <span className="rounded-full bg-violet-400/10 px-2.5 py-1 text-[11px] font-semibold text-violet-100 ring-1 ring-inset ring-violet-300/20">
-                    {formatRoleLabel(entry.createdBy.role)}
-                  </span>
                 </div>
                 {entry.notes ? (
                   <p className="mt-3 rounded-xl border border-white/10 bg-slate-950/80 px-3 py-2.5 text-sm leading-6 text-slate-200">
@@ -340,7 +344,7 @@ export function ScheduleBoard({
             ),
           )
         ) : (
-          <div className="rounded-[1.3rem] border border-dashed border-white/15 bg-slate-900/60 px-4 py-4 text-sm text-slate-400">
+          <div className="rounded-[1.4rem] border border-dashed border-white/15 bg-slate-900/60 px-4 py-4 text-sm text-slate-400">
             No schedule entries yet for this month.
           </div>
         )}

@@ -80,7 +80,12 @@ export default async function CoordinatorPage({ searchParams }: PageProps) {
   });
 
   return (
-    <AppShell user={user} title="Coordinator response queue">
+    <AppShell
+      user={user}
+      title="Coordinator queue"
+      description="Concerns first, schedule second."
+      currentPath="/coordinator"
+    >
       <StaffDashboard
         role={Role.COORDINATOR}
         concerns={concerns}

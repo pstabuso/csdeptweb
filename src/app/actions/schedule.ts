@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { logActivity } from "@/lib/activity";
 import { requireUser } from "@/lib/auth";
 import { getDb } from "@/lib/prisma";
+import { sanitizeRedirectPath } from "@/lib/security";
 import { scheduleEntrySchema } from "@/lib/validation";
 
 const writableRoles = [Role.COORDINATOR, Role.SECRETARY];
@@ -24,7 +25,10 @@ function revalidateScheduleViews() {
 
 export async function createScheduleEntry(formData: FormData) {
   const user = await requireUser(writableRoles);
-  const redirectTo = String(formData.get("redirectTo") || "/coordinator");
+  const redirectTo = sanitizeRedirectPath(
+    String(formData.get("redirectTo") || "/coordinator"),
+    user.role === Role.COORDINATOR ? "/coordinator" : "/secretary",
+  );
   const parsed = scheduleEntrySchema.safeParse({
     title: formData.get("title"),
     location: formData.get("location"),
@@ -66,7 +70,10 @@ export async function createScheduleEntry(formData: FormData) {
 
 export async function updateScheduleEntry(entryId: string, formData: FormData) {
   const user = await requireUser(writableRoles);
-  const redirectTo = String(formData.get("redirectTo") || "/coordinator");
+  const redirectTo = sanitizeRedirectPath(
+    String(formData.get("redirectTo") || "/coordinator"),
+    user.role === Role.COORDINATOR ? "/coordinator" : "/secretary",
+  );
   const parsed = scheduleEntrySchema.safeParse({
     title: formData.get("title"),
     location: formData.get("location"),
@@ -108,7 +115,10 @@ export async function updateScheduleEntry(entryId: string, formData: FormData) {
 
 export async function deleteScheduleEntry(entryId: string, formData: FormData) {
   const user = await requireUser(writableRoles);
-  const redirectTo = String(formData.get("redirectTo") || "/coordinator");
+  const redirectTo = sanitizeRedirectPath(
+    String(formData.get("redirectTo") || "/coordinator"),
+    user.role === Role.COORDINATOR ? "/coordinator" : "/secretary",
+  );
   const db = getDb();
 
   const existingEntry = await db.scheduleEntry.findUnique({

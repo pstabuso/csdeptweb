@@ -63,9 +63,23 @@ export const replySchema = z.object({
 export const profileUpdateSchema = z
   .object({
     name: z.string().trim().min(2, "Name must be at least 2 characters."),
+    currentPassword: z.string().trim().optional(),
     password: z.string().trim().optional(),
     confirmPassword: z.string().trim().optional(),
   })
+  .refine(
+    (data) => {
+      if (!data.password && !data.confirmPassword) {
+        return true;
+      }
+
+      return Boolean(data.currentPassword);
+    },
+    {
+      message: "Current password is required.",
+      path: ["currentPassword"],
+    },
+  )
   .refine(
     (data) => {
       if (!data.password && !data.confirmPassword) {

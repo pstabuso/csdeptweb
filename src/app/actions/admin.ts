@@ -33,6 +33,7 @@ export async function updateUserAccess(userId: string, formData: FormData) {
       studentNumber: true,
       role: true,
       status: true,
+      sessionVersion: true,
     },
   });
 
@@ -42,6 +43,28 @@ export async function updateUserAccess(userId: string, formData: FormData) {
 
   const normalizedEmail = parsed.data.email.toLowerCase();
   const normalizedStudentNumber = parsed.data.studentNumber?.trim() || null;
+  const nextRole = parsed.data.role as Role;
+  const nextStatus = parsed.data.status as UserStatus;
+  const isCurrentSession = existingUser.id === admin.id;
+
+  if (
+    isCurrentSession &&
+    (existingUser.role !== nextRole || existingUser.status !== nextStatus)
+  ) {
+    await logActivity({
+      actorId: admin.id,
+      action: "USER_ACCESS_UPDATE_BLOCKED",
+      entityType: "User",
+      entityId: existingUser.id,
+      details: {
+        reason: "SELF_PRIVILEGE_CHANGE_BLOCKED",
+        role: existingUser.role,
+        status: existingUser.status,
+      },
+    });
+
+    redirect("/admin");
+  }
 
   const duplicateEmailUser = await db.user.findFirst({
     where: {
@@ -73,14 +96,26 @@ export async function updateUserAccess(userId: string, formData: FormData) {
     }
   }
 
+  const shouldRotateSession =
+    existingUser.email !== normalizedEmail ||
+    existingUser.role !== nextRole ||
+    existingUser.status !== nextStatus;
+
   await db.user.update({
     where: { id: existingUser.id },
     data: {
       name: parsed.data.name,
       email: normalizedEmail,
       studentNumber: normalizedStudentNumber,
-      role: parsed.data.role as Role,
-      status: parsed.data.status as UserStatus,
+      role: nextRole,
+      status: nextStatus,
+      ...(shouldRotateSession
+        ? {
+            sessionVersion: {
+              increment: 1,
+            },
+          }
+        : {}),
     },
   });
 
@@ -97,9 +132,10 @@ export async function updateUserAccess(userId: string, formData: FormData) {
       previousStudentNumber: existingUser.studentNumber,
       nextStudentNumber: normalizedStudentNumber,
       previousRole: existingUser.role,
-      nextRole: parsed.data.role,
+      nextRole,
       previousStatus: existingUser.status,
-      nextStatus: parsed.data.status,
+      nextStatus,
+      forcedReauth: shouldRotateSession,
     },
   });
 

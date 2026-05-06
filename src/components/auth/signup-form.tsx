@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 
 import { signup, type SignupActionState } from "@/app/actions/auth";
@@ -14,14 +13,8 @@ export function SignupForm() {
   return (
     <form
       action={action}
-      className="space-y-4 rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur-xl"
+      className="space-y-4"
     >
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight text-white">
-          Student sign up
-        </h2>
-      </div>
-
       <div className="space-y-2">
         <label className="text-sm font-medium text-slate-200" htmlFor="name">
           Full name
@@ -106,7 +99,7 @@ export function SignupForm() {
       </div>
 
       {state.error ? (
-        <p className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <p className="rounded-[1.2rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
           {state.error}
         </p>
       ) : null}
@@ -117,13 +110,6 @@ export function SignupForm() {
       >
         Create student account
       </SubmitButton>
-
-      <p className="text-center text-sm text-slate-400">
-        Already have an account?{" "}
-        <Link className="font-semibold text-violet-300 hover:text-violet-200" href="/login">
-          Sign in
-        </Link>
-      </p>
     </form>
   );
 }

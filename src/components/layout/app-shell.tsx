@@ -4,6 +4,7 @@ import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { cx } from "@/lib/cx";
+import { getRoleNavigation } from "@/lib/security";
 
 type AppShellProps = {
   user: {
@@ -13,6 +14,7 @@ type AppShellProps = {
   };
   title: string;
   description?: string;
+  currentPath: string;
   children: React.ReactNode;
 };
 
@@ -28,60 +30,153 @@ export function AppShell({
   user,
   title,
   description,
+  currentPath,
   children,
 }: AppShellProps) {
+  const navigation = getRoleNavigation(user.role);
+
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(192,132,252,0.18),_transparent_30%),radial-gradient(circle_at_right,_rgba(139,92,246,0.16),_transparent_22%),linear-gradient(135deg,_#0f0918_0%,_#181126_42%,_#221533_100%)] text-slate-100">
-      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-5 lg:px-6">
-        <header className="mb-5 rounded-[1.6rem] border border-white/10 bg-slate-950/45 p-4 shadow-[0_20px_70px_-45px_rgba(12,7,24,0.95)] backdrop-blur-xl">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div className="space-y-2">
-              <span
-                className={cx(
-                  "inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[0.18em] uppercase",
-                  roleStyles[user.role],
-                )}
-              >
-                {user.role.replaceAll("_", " ")}
-              </span>
-              <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
-                  {title}
-                </h1>
-                {description ? (
-                  <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-300">
-                    {description}
-                  </p>
-                ) : null}
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 p-3 sm:flex-row sm:items-center">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white">
-                  {user.name}
-                </p>
-                <p className="truncate text-sm text-slate-400">{user.email}</p>
-              </div>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/profile"
-                  className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-violet-400/10 px-3 py-2 text-sm font-semibold text-violet-50 transition hover:bg-violet-400/20"
-                >
-                  Profile
-                </Link>
-                <form action={logout}>
-                  <SubmitButton
-                    pendingLabel="Signing out..."
-                    className="w-full rounded-xl px-3 py-2 text-sm sm:w-auto"
-                  >
-                    Log out
-                  </SubmitButton>
-                </form>
-              </div>
-            </div>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(196,181,253,0.22),_transparent_24%),radial-gradient(circle_at_top_right,_rgba(168,85,247,0.18),_transparent_18%),linear-gradient(160deg,_#0b0914_0%,_#130d22_40%,_#1a1230_100%)] text-slate-100">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] gap-4 px-4 py-4 xl:px-6">
+        <aside className="hidden lg:flex lg:w-72 lg:flex-col lg:gap-4 lg:rounded-[2rem] lg:border lg:border-white/10 lg:bg-slate-950/60 lg:p-4 lg:shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] lg:backdrop-blur-xl">
+          <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">
+              CS Dept
+            </p>
+            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">
+              Portal
+            </h1>
+            <p className="mt-3 text-sm text-slate-400">Asia/Manila</p>
           </div>
-        </header>
-        <main className="flex-1">{children}</main>
+
+          <nav className="space-y-2">
+            {navigation.map((item) => {
+              const isActive =
+                currentPath === item.href || currentPath.startsWith(`${item.href}/`);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cx(
+                    "flex items-center justify-between rounded-[1.2rem] border px-4 py-3 text-sm font-medium transition",
+                    isActive
+                      ? "border-violet-300/30 bg-violet-400/15 text-white shadow-[0_18px_36px_-24px_rgba(167,139,250,0.9)]"
+                      : "border-white/8 bg-white/[0.03] text-slate-300 hover:border-white/15 hover:bg-white/[0.05] hover:text-white",
+                  )}
+                >
+                  <span>{item.label}</span>
+                  <span className="text-xs text-slate-500">/</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="mt-auto space-y-3 rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-4">
+            <span
+              className={cx(
+                "inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[0.18em] uppercase",
+                roleStyles[user.role],
+              )}
+            >
+              {user.role.replaceAll("_", " ")}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-white">{user.name}</p>
+              <p className="truncate text-sm text-slate-400">{user.email}</p>
+            </div>
+            <form action={logout}>
+              <SubmitButton
+                pendingLabel="Signing out..."
+                className="w-full rounded-xl bg-violet-400 px-3 py-2 text-sm text-white hover:bg-violet-300"
+              >
+                Log out
+              </SubmitButton>
+            </form>
+          </div>
+        </aside>
+
+        <div className="flex min-w-0 flex-1 flex-col gap-4">
+          <header className="rounded-[1.8rem] border border-white/10 bg-slate-950/58 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur-xl">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+              <div className="space-y-3">
+                <span
+                  className={cx(
+                    "inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[0.18em] uppercase",
+                    roleStyles[user.role],
+                  )}
+                >
+                  {user.role.replaceAll("_", " ")}
+                </span>
+                <div>
+                  <h2 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
+                    {title}
+                  </h2>
+                  {description ? (
+                    <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
+                      {description}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex flex-wrap gap-2 lg:hidden">
+                  {navigation.map((item) => {
+                    const isActive =
+                      currentPath === item.href ||
+                      currentPath.startsWith(`${item.href}/`);
+
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cx(
+                          "rounded-full border px-3 py-1.5 text-xs font-semibold transition",
+                          isActive
+                            ? "border-violet-300/30 bg-violet-400/15 text-violet-50"
+                            : "border-white/10 bg-white/[0.03] text-slate-300 hover:bg-white/[0.06]",
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                <div className="flex flex-col gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.04] p-3 sm:flex-row sm:items-center">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-white">
+                      {user.name}
+                    </p>
+                    <p className="truncate text-sm text-slate-400">{user.email}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 sm:justify-end">
+                    <span className="inline-flex items-center rounded-full border border-violet-300/15 bg-violet-400/10 px-3 py-1.5 text-xs font-semibold text-violet-100">
+                      PH time
+                    </span>
+                    <Link
+                      href="/profile"
+                      className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-slate-100 transition hover:bg-white/[0.07]"
+                    >
+                      Profile
+                    </Link>
+                    <form action={logout} className="lg:hidden">
+                      <SubmitButton
+                        pendingLabel="Signing out..."
+                        className="rounded-full bg-violet-400 px-3 py-1.5 text-xs text-white hover:bg-violet-300"
+                      >
+                        Log out
+                      </SubmitButton>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <main className="flex-1">{children}</main>
+        </div>
       </div>
     </div>
   );

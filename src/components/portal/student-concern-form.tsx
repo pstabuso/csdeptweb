@@ -12,53 +12,57 @@ export function StudentConcernForm({
   return (
     <form
       action={createConcern}
-      className="space-y-3 rounded-[1.6rem] border border-white/10 bg-slate-950/60 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
+      className="space-y-4 rounded-[1.8rem] border border-white/10 bg-slate-950/62 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur"
     >
       <input type="hidden" name="redirectTo" value={redirectTo} />
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold text-white">New concern</h2>
-        <p className="text-sm text-slate-400">Pick a type, add details.</p>
+      <div className="space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">
+          New concern
+        </p>
+        <h2 className="text-xl font-semibold text-white">Submit request</h2>
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-200" htmlFor="subject">
-          Subject
-        </label>
-        <input
-          id="subject"
-          name="subject"
-          required
-          minLength={5}
-          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
-          placeholder="Subject"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-200" htmlFor="category">
-          Category
-        </label>
-        <select
-          id="category"
-          name="category"
-          required
-          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
-          defaultValue=""
-        >
-          <option value="" disabled>
-            Choose concern type
-          </option>
-          {STUDENT_CONCERN_CATEGORIES.map((category) => (
-            <option key={category} value={category}>
-              {category}
+      <div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-200" htmlFor="category">
+            Concern type
+          </label>
+          <select
+            id="category"
+            name="category"
+            required
+            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+            defaultValue=""
+          >
+            <option value="" disabled>
+              Choose type
             </option>
-          ))}
-        </select>
+            {STUDENT_CONCERN_CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-200" htmlFor="subject">
+            Subject
+          </label>
+          <input
+            id="subject"
+            name="subject"
+            required
+            minLength={5}
+            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+            placeholder="Short summary"
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium text-slate-200" htmlFor="message">
-          Concern details
+          Details
         </label>
         <textarea
           id="message"
@@ -67,7 +71,7 @@ export function StudentConcernForm({
           minLength={15}
           rows={5}
           className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
-          placeholder="Details"
+          placeholder="Explain the request or concern"
         />
       </div>
 

@@ -40,14 +40,16 @@ function ConcernList({
         <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
           {title}
         </h2>
-        <span className="text-xs text-slate-500">{concerns.length}</span>
+        <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-semibold text-slate-300">
+          {concerns.length}
+        </span>
       </div>
 
       {concerns.length ? (
         concerns.map((concern) => (
           <article
             key={concern.id}
-            className="space-y-3 rounded-[1.5rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
+            className="space-y-3 rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur"
           >
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
@@ -66,7 +68,7 @@ function ConcernList({
               </div>
             </div>
 
-            <div className="rounded-[1.2rem] border border-white/10 bg-slate-900/80 p-3 text-sm leading-6 text-slate-200">
+            <div className="rounded-[1.3rem] border border-white/10 bg-slate-900/80 p-3 text-sm leading-6 text-slate-200">
               {concern.message}
             </div>
 
@@ -126,10 +128,15 @@ export default async function StudentPage({ searchParams }: PageProps) {
   const nextMonthHref = `/student?scheduleMonth=${shiftMonth(scheduleMonth, 1)}`;
 
   return (
-    <AppShell user={user} title="Student concern desk">
-      <div className="grid gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
+    <AppShell
+      user={user}
+      title="Student desk"
+      description="Submit concerns and track replies."
+      currentPath="/student"
+    >
+      <div className="grid gap-4 xl:grid-cols-[380px_minmax(0,1fr)]">
         <div className="space-y-4">
-          <section className="rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+          <section className="rounded-[1.8rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
               Record
             </p>
@@ -137,7 +144,7 @@ export default async function StudentPage({ searchParams }: PageProps) {
               {hasStudentNumber ? "Ready" : "Student number required"}
             </h2>
 
-            <div className="mt-4 rounded-[1.2rem] border border-white/10 bg-slate-900/85 p-3">
+            <div className="mt-4 rounded-[1.3rem] border border-white/10 bg-slate-900/85 p-3">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">

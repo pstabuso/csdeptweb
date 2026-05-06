@@ -134,7 +134,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
   ];
 
   return (
-    <AppShell user={user} title="Admin operations hub">
+    <AppShell
+      user={user}
+      title="Admin control"
+      description="Accounts, queue, and audit flow."
+      currentPath="/admin"
+    >
       <div className="space-y-4">
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card) => (
@@ -207,6 +212,19 @@ export default async function AdminPage({ searchParams }: PageProps) {
                             {account._count.concerns} concerns /{" "}
                             {account._count.replies} replies
                           </p>
+                          <p>
+                            Last login:{" "}
+                            {account.lastLoginAt
+                              ? formatDateTime(account.lastLoginAt)
+                              : "No recorded login"}
+                          </p>
+                          {account.lockedUntil ? (
+                            <p>Locked until {formatDateTime(account.lockedUntil)}</p>
+                          ) : account.failedLoginAttempts ? (
+                            <p>
+                              Failed sign-ins: {account.failedLoginAttempts}
+                            </p>
+                          ) : null}
                         </div>
                       </div>
 
@@ -274,6 +292,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                             id={`role-${account.id}`}
                             name="role"
                             defaultValue={account.role}
+                            disabled={isCurrentSession}
                             className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                           >
                             <option value="STUDENT">Student</option>
@@ -294,6 +313,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                             id={`status-${account.id}`}
                             name="status"
                             defaultValue={account.status}
+                            disabled={isCurrentSession}
                             className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
                           >
                             <option value="ACTIVE">Active</option>
@@ -302,12 +322,19 @@ export default async function AdminPage({ searchParams }: PageProps) {
                         </div>
 
                         <div className="flex items-end md:justify-end">
-                          <SubmitButton
-                            pendingLabel="Saving..."
-                            className="w-full md:w-auto"
-                          >
-                            Save account
-                          </SubmitButton>
+                          <div className="w-full space-y-2 md:w-auto">
+                            {isCurrentSession ? (
+                              <p className="text-xs text-slate-500">
+                                Your role and access stay fixed here.
+                              </p>
+                            ) : null}
+                            <SubmitButton
+                              pendingLabel="Saving..."
+                              className="w-full md:w-auto"
+                            >
+                              {isCurrentSession ? "Save profile" : "Save account"}
+                            </SubmitButton>
+                          </div>
                         </div>
                       </form>
                     </div>

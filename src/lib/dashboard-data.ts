@@ -343,6 +343,9 @@ export async function getAdminDashboardData(filters: ConcernFilterState) {
         studentNumber: true,
         role: true,
         status: true,
+        failedLoginAttempts: true,
+        lockedUntil: true,
+        lastLoginAt: true,
         createdAt: true,
         _count: {
           select: {
