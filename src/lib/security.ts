@@ -61,10 +61,17 @@ export function getRoleNavigation(role: Role) {
     {
       label: workspaceLabel,
       href: ROLE_HOME_PATHS[role],
+      description:
+        role === Role.STUDENT
+          ? "Concerns and updates"
+          : role === Role.ADMIN
+            ? "System overview"
+            : "Live concern handling",
     },
     {
       label: "Profile",
       href: "/profile",
+      description: "Account and password",
     },
   ];
 }

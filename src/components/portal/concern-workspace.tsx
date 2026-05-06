@@ -73,9 +73,9 @@ export function ConcernWorkspace({
     return (
       <article
         key={concern.id}
-        className="rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur"
+        className="portal-surface rounded-[1.8rem] p-5"
       >
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_360px]">
+        <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.15fr)_390px]">
           <div className="space-y-4">
             <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
               <div className="space-y-2">
@@ -165,8 +165,8 @@ export function ConcernWorkspace({
 
   return (
     <div className="space-y-4">
-      <section className="rounded-[1.8rem] border border-white/10 bg-slate-950/62 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+      <section className="portal-surface rounded-[2rem] p-5 xl:p-6">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">
               Concerns
@@ -181,7 +181,7 @@ export function ConcernWorkspace({
             </div>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-4 xl:min-w-[520px]">
+          <div className="grid gap-3 sm:grid-cols-4 xl:min-w-[620px]">
             <div className="rounded-[1.2rem] border border-violet-300/20 bg-violet-400/10 px-3 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-100">
                 Open
@@ -217,7 +217,7 @@ export function ConcernWorkspace({
 
         <form
           action={currentPath}
-          className="mt-4 grid gap-2 xl:grid-cols-[minmax(0,1.3fr)_150px_180px_140px_auto]"
+          className="mt-5 grid gap-3 xl:grid-cols-[minmax(0,1.3fr)_160px_200px_150px_auto]"
         >
           {persistentParams
             ? Object.entries(persistentParams).map(([key, value]) => (
@@ -272,7 +272,7 @@ export function ConcernWorkspace({
         </form>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-5">
         {concerns.length ? (
           filters.status === "ALL" ? (
             <>

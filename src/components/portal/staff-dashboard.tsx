@@ -45,7 +45,7 @@ export function StaffDashboard({
   const label = role === Role.COORDINATOR ? "Coordinator" : "Secretary";
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_360px]">
+    <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.3fr)_430px]">
       <ConcernWorkspace
         title={`${label} response queue`}
         concerns={concerns}
@@ -58,7 +58,7 @@ export function StaffDashboard({
         emptyMessage="No concerns match the current filter set."
       />
 
-      <div className="xl:sticky xl:top-4 xl:self-start">
+      <div className="2xl:sticky 2xl:top-4 2xl:self-start">
         <ScheduleBoard
           month={scheduleMonth}
           entries={scheduleEntries}

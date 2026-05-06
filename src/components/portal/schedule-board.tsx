@@ -102,8 +102,8 @@ export function ScheduleBoard({
   }, {});
 
   return (
-    <section className="space-y-4 rounded-[1.8rem] border border-white/10 bg-slate-950/62 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur">
-      <div className="flex flex-col gap-4 border-b border-white/10 pb-4">
+    <section className="portal-surface space-y-5 rounded-[2rem] p-5 xl:p-6">
+      <div className="flex flex-col gap-4 border-b border-white/10 pb-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">
@@ -137,7 +137,7 @@ export function ScheduleBoard({
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div className="grid grid-cols-7 gap-1.5 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
             <div key={day}>{day}</div>
@@ -194,7 +194,7 @@ export function ScheduleBoard({
       {canManage ? (
         <form
           action={createScheduleEntry}
-          className="space-y-3 rounded-[1.4rem] border border-white/10 bg-slate-900/74 p-4"
+          className="space-y-4 rounded-[1.6rem] border border-white/10 bg-slate-900/74 p-5"
         >
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <div className="flex items-center justify-between">
@@ -248,7 +248,7 @@ export function ScheduleBoard({
               <form
                 key={entry.id}
                 action={updateScheduleEntry.bind(null, entry.id)}
-                className="space-y-3 rounded-[1.4rem] border border-white/10 bg-slate-900/74 p-4"
+                className="space-y-4 rounded-[1.6rem] border border-white/10 bg-slate-900/74 p-5"
               >
                 <input type="hidden" name="redirectTo" value={redirectTo} />
                 <div className="grid gap-3 md:grid-cols-2">
@@ -313,7 +313,7 @@ export function ScheduleBoard({
             ) : (
               <article
                 key={entry.id}
-                className="rounded-[1.4rem] border border-white/10 bg-slate-900/74 p-4"
+                className="rounded-[1.6rem] border border-white/10 bg-slate-900/74 p-5"
               >
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>

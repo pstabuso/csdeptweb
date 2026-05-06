@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { logout } from "@/app/actions/auth";
 import { SubmitButton } from "@/components/forms/submit-button";
+import { SidebarClock } from "@/components/layout/sidebar-clock";
 import { cx } from "@/lib/cx";
 import { getRoleNavigation } from "@/lib/security";
 
@@ -37,19 +38,25 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(196,181,253,0.22),_transparent_24%),radial-gradient(circle_at_top_right,_rgba(168,85,247,0.18),_transparent_18%),linear-gradient(160deg,_#0b0914_0%,_#130d22_40%,_#1a1230_100%)] text-slate-100">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] gap-4 px-4 py-4 xl:px-6">
-        <aside className="hidden lg:flex lg:w-72 lg:flex-col lg:gap-4 lg:rounded-[2rem] lg:border lg:border-white/10 lg:bg-slate-950/60 lg:p-4 lg:shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] lg:backdrop-blur-xl">
-          <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-4">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1750px] gap-6 px-4 py-4 xl:px-6">
+        <aside className="hidden lg:flex lg:w-[21rem] lg:flex-col lg:gap-5 lg:rounded-[2.2rem] lg:border lg:border-white/10 lg:bg-slate-950/60 lg:p-5 lg:shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] lg:backdrop-blur-xl">
+          <div className="portal-surface portal-enter rounded-[1.8rem] p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">
               CS Dept
             </p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">
               Portal
             </h1>
-            <p className="mt-3 text-sm text-slate-400">Asia/Manila</p>
+            <p className="mt-3 text-sm text-slate-400">
+              <SidebarClock />
+            </p>
           </div>
 
-          <nav className="space-y-2">
+          <div className="portal-surface portal-enter rounded-[1.8rem] p-4 [animation-delay:120ms]">
+            <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Navigation
+            </p>
+            <nav className="mt-3 space-y-2">
             {navigation.map((item) => {
               const isActive =
                 currentPath === item.href || currentPath.startsWith(`${item.href}/`);
@@ -59,20 +66,56 @@ export function AppShell({
                   key={item.href}
                   href={item.href}
                   className={cx(
-                    "flex items-center justify-between rounded-[1.2rem] border px-4 py-3 text-sm font-medium transition",
+                    "group flex items-start justify-between rounded-[1.4rem] border px-4 py-3.5 transition duration-500 ease-out",
                     isActive
                       ? "border-violet-300/30 bg-violet-400/15 text-white shadow-[0_18px_36px_-24px_rgba(167,139,250,0.9)]"
-                      : "border-white/8 bg-white/[0.03] text-slate-300 hover:border-white/15 hover:bg-white/[0.05] hover:text-white",
+                      : "border-white/8 bg-white/[0.03] text-slate-300 hover:-translate-y-0.5 hover:border-white/15 hover:bg-white/[0.05] hover:text-white",
                   )}
                 >
-                  <span>{item.label}</span>
-                  <span className="text-xs text-slate-500">/</span>
+                  <div>
+                    <p className="text-sm font-semibold">{item.label}</p>
+                    <p className="mt-1 text-xs text-slate-500 transition group-hover:text-slate-400">
+                      {item.description}
+                    </p>
+                  </div>
+                  <span className="mt-0.5 text-xs text-slate-500 transition group-hover:text-slate-300">
+                    /
+                  </span>
                 </Link>
               );
             })}
-          </nav>
+            </nav>
+          </div>
 
-          <div className="mt-auto space-y-3 rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-4">
+          <div className="portal-surface portal-enter rounded-[1.8rem] p-4 [animation-delay:220ms]">
+            <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Workspace
+            </p>
+            <div className="mt-3 grid gap-3">
+              <div className="rounded-[1.4rem] border border-white/8 bg-white/[0.03] p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-200/80">
+                  Role
+                </p>
+                <p className="mt-2 text-base font-semibold text-white">
+                  {user.role.replaceAll("_", " ")}
+                </p>
+              </div>
+              <div className="rounded-[1.4rem] border border-white/8 bg-white/[0.03] p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-200/80">
+                  Mode
+                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  {user.role === Role.STUDENT
+                    ? "Track requests and posted availability."
+                    : user.role === Role.ADMIN
+                      ? "Monitor activity and adjust access."
+                      : "Work the queue and keep the calendar current."}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="portal-surface portal-enter mt-auto space-y-4 rounded-[1.8rem] p-5 [animation-delay:320ms]">
             <span
               className={cx(
                 "inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[0.18em] uppercase",
@@ -82,13 +125,13 @@ export function AppShell({
               {user.role.replaceAll("_", " ")}
             </span>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-white">{user.name}</p>
+              <p className="truncate text-base font-semibold text-white">{user.name}</p>
               <p className="truncate text-sm text-slate-400">{user.email}</p>
             </div>
             <form action={logout}>
               <SubmitButton
                 pendingLabel="Signing out..."
-                className="w-full rounded-xl bg-violet-400 px-3 py-2 text-sm text-white hover:bg-violet-300"
+                className="w-full rounded-xl bg-violet-400 px-3 py-3 text-sm text-white hover:bg-violet-300"
               >
                 Log out
               </SubmitButton>
@@ -96,8 +139,8 @@ export function AppShell({
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-4">
-          <header className="rounded-[1.8rem] border border-white/10 bg-slate-950/58 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur-xl">
+        <div className="flex min-w-0 flex-1 flex-col gap-6">
+          <header className="portal-surface portal-enter rounded-[2rem] p-5 [animation-delay:90ms] xl:p-6">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
               <div className="space-y-3">
                 <span
@@ -113,7 +156,7 @@ export function AppShell({
                     {title}
                   </h2>
                   {description ? (
-                    <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
+                    <p className="mt-1 max-w-3xl text-base leading-7 text-slate-300">
                       {description}
                     </p>
                   ) : null}
@@ -144,7 +187,8 @@ export function AppShell({
                   })}
                 </div>
 
-                <div className="flex flex-col gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.04] p-3 sm:flex-row sm:items-center">
+                <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-white">
                       {user.name}
@@ -157,7 +201,7 @@ export function AppShell({
                     </span>
                     <Link
                       href="/profile"
-                      className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-slate-100 transition hover:bg-white/[0.07]"
+                      className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-slate-100 transition duration-500 hover:-translate-y-0.5 hover:bg-white/[0.07]"
                     >
                       Profile
                     </Link>
@@ -170,12 +214,13 @@ export function AppShell({
                       </SubmitButton>
                     </form>
                   </div>
+                  </div>
                 </div>
               </div>
             </div>
           </header>
 
-          <main className="flex-1">{children}</main>
+          <main className="portal-enter flex-1 [animation-delay:180ms]">{children}</main>
         </div>
       </div>
     </div>
