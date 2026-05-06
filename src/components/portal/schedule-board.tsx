@@ -102,7 +102,7 @@ export function ScheduleBoard({
   }, {});
 
   return (
-    <section className="portal-surface space-y-5 rounded-[2rem] p-5 xl:p-6">
+    <section className="animate-enter space-y-5 rounded-[2rem] border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] xl:p-6">
       <div className="flex flex-col gap-4 border-b border-white/10 pb-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -161,7 +161,7 @@ export function ScheduleBoard({
             return (
               <div
                 key={cell.key}
-                className="min-h-16 rounded-xl border border-white/10 bg-slate-900/76 p-2.5"
+                className="min-h-16 rounded-xl border border-slate-800 bg-slate-950/70 p-2.5"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-white">
@@ -194,7 +194,7 @@ export function ScheduleBoard({
       {canManage ? (
         <form
           action={createScheduleEntry}
-          className="space-y-4 rounded-[1.6rem] border border-white/10 bg-slate-900/74 p-5"
+          className="space-y-4 rounded-[1.6rem] border border-slate-800 bg-slate-950/78 p-5"
         >
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <div className="flex items-center justify-between">
@@ -248,7 +248,7 @@ export function ScheduleBoard({
               <form
                 key={entry.id}
                 action={updateScheduleEntry.bind(null, entry.id)}
-                className="space-y-4 rounded-[1.6rem] border border-white/10 bg-slate-900/74 p-5"
+                className="space-y-4 rounded-[1.6rem] border border-slate-800 bg-slate-950/78 p-5"
               >
                 <input type="hidden" name="redirectTo" value={redirectTo} />
                 <div className="grid gap-3 md:grid-cols-2">
@@ -313,7 +313,7 @@ export function ScheduleBoard({
             ) : (
               <article
                 key={entry.id}
-                className="rounded-[1.6rem] border border-white/10 bg-slate-900/74 p-5"
+                className="rounded-[1.6rem] border border-slate-800 bg-slate-950/78 p-5"
               >
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>

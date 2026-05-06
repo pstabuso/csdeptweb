@@ -136,7 +136,7 @@ export default async function StudentPage({ searchParams }: PageProps) {
     >
       <div className="grid gap-6 2xl:grid-cols-[430px_minmax(0,1fr)]">
         <div className="space-y-6">
-          <section className="portal-surface rounded-[1.9rem] p-5">
+          <section className="animate-enter rounded-[1.9rem] border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
               Record
             </p>
@@ -195,7 +195,7 @@ export default async function StudentPage({ searchParams }: PageProps) {
           {hasStudentNumber ? (
             <StudentConcernForm redirectTo={`/student?scheduleMonth=${scheduleMonth}`} />
           ) : (
-            <section className="portal-surface rounded-[1.8rem] border-dashed border-violet-300/20 bg-violet-400/10 p-5 text-sm leading-7 text-violet-100">
+            <section className="animate-enter rounded-[1.8rem] border border-dashed border-sky-500/25 bg-sky-500/10 p-5 text-sm leading-7 text-sky-100">
               Submit unlocks after saving your student number.
             </section>
           )}

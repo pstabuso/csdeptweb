@@ -73,7 +73,7 @@ export function ConcernWorkspace({
     return (
       <article
         key={concern.id}
-        className="portal-surface rounded-[1.8rem] p-5"
+        className="animate-enter rounded-[1.8rem] border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] [animation-delay:120ms]"
       >
         <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.15fr)_390px]">
           <div className="space-y-4">
@@ -165,7 +165,7 @@ export function ConcernWorkspace({
 
   return (
     <div className="space-y-4">
-      <section className="portal-surface rounded-[2rem] p-5 xl:p-6">
+      <section className="animate-enter rounded-[2rem] border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] xl:p-6">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">
@@ -182,13 +182,13 @@ export function ConcernWorkspace({
           </div>
 
           <div className="grid gap-3 sm:grid-cols-4 xl:min-w-[620px]">
-            <div className="rounded-[1.2rem] border border-violet-300/20 bg-violet-400/10 px-3 py-3">
+            <div className="rounded-[1.2rem] border border-sky-500/25 bg-sky-500/10 px-3 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-100">
                 Open
               </p>
               <p className="mt-1 text-2xl font-semibold text-white">{openCount}</p>
             </div>
-            <div className="rounded-[1.2rem] border border-fuchsia-300/20 bg-fuchsia-400/10 px-3 py-3">
+            <div className="rounded-[1.2rem] border border-fuchsia-500/25 bg-fuchsia-500/10 px-3 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fuchsia-100">
                 Answered
               </p>
@@ -196,7 +196,7 @@ export function ConcernWorkspace({
                 {answeredCount}
               </p>
             </div>
-            <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-3 py-3">
+            <div className="rounded-[1.2rem] border border-slate-800 bg-slate-950/70 px-3 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-300">
                 Closed
               </p>
@@ -204,7 +204,7 @@ export function ConcernWorkspace({
                 {closedCount}
               </p>
             </div>
-            <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-3 py-3">
+            <div className="rounded-[1.2rem] border border-slate-800 bg-slate-950/70 px-3 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-300">
                 Replies
               </p>
