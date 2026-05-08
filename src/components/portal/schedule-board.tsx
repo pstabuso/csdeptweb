@@ -102,7 +102,10 @@ export function ScheduleBoard({
   }, {});
 
   return (
-    <section className="animate-enter space-y-5 rounded-[2rem] border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] xl:p-6">
+    <section
+      id="schedule"
+      className="animate-enter space-y-5 scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] xl:p-6"
+    >
       <div className="flex flex-col gap-4 border-b border-white/10 pb-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>

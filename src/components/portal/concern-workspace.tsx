@@ -73,7 +73,7 @@ export function ConcernWorkspace({
     return (
       <article
         key={concern.id}
-        className="animate-enter rounded-[1.8rem] border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] [animation-delay:120ms]"
+        className="animate-enter rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] [animation-delay:120ms]"
       >
         <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.15fr)_390px]">
           <div className="space-y-4">
@@ -165,7 +165,10 @@ export function ConcernWorkspace({
 
   return (
     <div className="space-y-4">
-      <section className="animate-enter rounded-[2rem] border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] xl:p-6">
+      <section
+        id="queue"
+        className="animate-enter scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] xl:p-6"
+      >
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">

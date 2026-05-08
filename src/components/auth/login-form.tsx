@@ -1,5 +1,6 @@
 "use client";
 
+import { LogIn } from "lucide-react";
 import { useActionState } from "react";
 
 import { login, type LoginActionState } from "@/app/actions/auth";
@@ -24,7 +25,7 @@ export function LoginForm() {
           name="email"
           type="email"
           required
-          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-sky-400"
           placeholder="name@csdept.edu"
         />
       </div>
@@ -39,7 +40,7 @@ export function LoginForm() {
           type="password"
           required
           minLength={8}
-          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-sky-400"
           placeholder="Enter your password"
         />
       </div>
@@ -52,8 +53,9 @@ export function LoginForm() {
 
       <SubmitButton
         pendingLabel="Signing in..."
-        className="w-full rounded-xl py-2.5 text-base"
+        className="w-full py-2.5 text-base"
       >
+        <LogIn size={17} />
         Sign in
       </SubmitButton>
     </form>

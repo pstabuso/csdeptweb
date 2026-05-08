@@ -140,12 +140,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
       description="Accounts, queue, and audit flow."
       currentPath="/admin"
     >
-      <div className="space-y-4">
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="space-y-5">
+        <section id="overview" className="grid scroll-mt-5 gap-3 md:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card) => (
             <article
               key={card.label}
-              className="rounded-[1.4rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
+              className="rounded-lg border border-slate-800 bg-slate-900/88 p-4 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]"
             >
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                 {card.label}
@@ -158,8 +158,8 @@ export default async function AdminPage({ searchParams }: PageProps) {
           ))}
         </section>
 
-        <section className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_320px]">
-          <section className="rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+        <section className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_340px]">
+          <section id="users" className="scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-4 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]">
             <div className="flex flex-col gap-3 border-b border-white/10 pb-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
@@ -177,7 +177,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                 return (
                   <article
                     key={account.id}
-                    className="rounded-[1.3rem] border border-white/10 bg-slate-900/85 p-4"
+                    className="rounded-lg border border-slate-800 bg-slate-950/70 p-4"
                   >
                     <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                       <div className="max-w-xl space-y-2">
@@ -230,7 +230,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
 
                       <form
                         action={action}
-                        className="grid w-full gap-2 rounded-[1.2rem] border border-white/10 bg-slate-950/90 p-3 md:grid-cols-2"
+                        className="grid w-full gap-2 rounded-lg border border-slate-800 bg-slate-900 p-3 md:grid-cols-2"
                       >
                         <div className="space-y-2">
                           <label
@@ -344,8 +344,8 @@ export default async function AdminPage({ searchParams }: PageProps) {
             </div>
           </section>
 
-          <aside className="space-y-6">
-            <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+          <aside className="space-y-5">
+            <section className="rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]">
               <h2 className="text-lg font-semibold text-white">
                 Role distribution
               </h2>
@@ -353,7 +353,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                 {Object.entries(roleCounts).map(([role, count]) => (
                   <div
                     key={role}
-                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm"
+                    className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm"
                   >
                     <span className="font-medium text-slate-300">
                       {roleLabels[role as keyof typeof roleLabels]}
@@ -364,7 +364,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
               </div>
             </section>
 
-            <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
+            <section id="activity" className="scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]">
               <h2 className="text-lg font-semibold text-white">
                 Activity feed
               </h2>
@@ -372,7 +372,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                 {auditLogs.map((entry) => (
                   <article
                     key={entry.id}
-                    className="rounded-[1.4rem] border border-white/10 bg-slate-900/80 p-4"
+                    className="rounded-lg border border-slate-800 bg-slate-950/70 p-4"
                   >
                     <div className="flex flex-col gap-2">
                       <p className="text-sm font-semibold text-white">

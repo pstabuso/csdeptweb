@@ -11,8 +11,9 @@ export function StudentConcernForm({
 }: StudentConcernFormProps) {
   return (
     <form
+      id="new-concern"
       action={createConcern}
-      className="space-y-4 rounded-[1.8rem] border border-white/10 bg-slate-950/62 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur"
+      className="animate-enter scroll-mt-5 space-y-4 rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]"
     >
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <div className="space-y-2">

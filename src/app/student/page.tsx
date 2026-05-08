@@ -134,9 +134,12 @@ export default async function StudentPage({ searchParams }: PageProps) {
       description="Submit concerns and track replies."
       currentPath="/student"
     >
-      <div className="grid gap-6 2xl:grid-cols-[430px_minmax(0,1fr)]">
+      <div className="grid gap-5 2xl:grid-cols-[420px_minmax(0,1fr)]">
         <div className="space-y-6">
-          <section className="animate-enter rounded-[1.9rem] border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]">
+          <section
+            id="record"
+            className="animate-enter scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]"
+          >
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
               Record
             </p>
@@ -195,13 +198,13 @@ export default async function StudentPage({ searchParams }: PageProps) {
           {hasStudentNumber ? (
             <StudentConcernForm redirectTo={`/student?scheduleMonth=${scheduleMonth}`} />
           ) : (
-            <section className="animate-enter rounded-[1.8rem] border border-dashed border-sky-500/25 bg-sky-500/10 p-5 text-sm leading-7 text-sky-100">
+            <section className="animate-enter rounded-lg border border-dashed border-sky-500/25 bg-sky-500/10 p-5 text-sm leading-7 text-sky-100">
               Submit unlocks after saving your student number.
             </section>
           )}
         </div>
 
-        <section className="space-y-6">
+        <section id="concerns" className="scroll-mt-5 space-y-6">
           <ScheduleBoard
             month={scheduleMonth}
             entries={scheduleEntries}

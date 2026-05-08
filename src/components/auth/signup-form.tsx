@@ -1,5 +1,6 @@
 "use client";
 
+import { UserPlus } from "lucide-react";
 import { useActionState } from "react";
 
 import { signup, type SignupActionState } from "@/app/actions/auth";
@@ -24,7 +25,7 @@ export function SignupForm() {
           name="name"
           required
           minLength={2}
-          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-sky-400"
           placeholder="Full name"
         />
       </div>
@@ -38,7 +39,7 @@ export function SignupForm() {
           name="email"
           type="email"
           required
-          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-sky-400"
           placeholder="student@csdept.edu"
         />
       </div>
@@ -55,7 +56,7 @@ export function SignupForm() {
           name="studentNumber"
           required
           minLength={5}
-          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-sky-400"
           placeholder="2024-00001"
         />
       </div>
@@ -74,7 +75,7 @@ export function SignupForm() {
             type="password"
             required
             minLength={8}
-            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-sky-400"
             placeholder="Password"
           />
         </div>
@@ -92,7 +93,7 @@ export function SignupForm() {
             type="password"
             required
             minLength={8}
-            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
+            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-sky-400"
             placeholder="Re-enter password"
           />
         </div>
@@ -106,8 +107,9 @@ export function SignupForm() {
 
       <SubmitButton
         pendingLabel="Creating account..."
-        className="w-full rounded-xl py-2.5 text-base"
+        className="w-full py-2.5 text-base"
       >
+        <UserPlus size={17} />
         Create student account
       </SubmitButton>
     </form>

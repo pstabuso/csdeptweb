@@ -31,6 +31,14 @@ body {
 
 * {
   border-color: rgb(51 65 85 / 0.9);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+input,
+select,
+textarea {
   transition-property:
     color,
     background-color,
@@ -40,11 +48,24 @@ body {
     stroke,
     opacity,
     box-shadow,
-    transform,
-    filter,
-    backdrop-filter;
-  transition-duration: 420ms;
-  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transform;
+  transition-duration: 220ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgb(56 189 248 / 0.7);
+  outline-offset: 2px;
 }
 
 ::selection {
@@ -61,74 +82,6 @@ body {
 
 .animate-slide-in-left {
   animation: slideInLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.portal-surface {
-  border: 1px solid rgb(255 255 255 / 0.1);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.03));
-  box-shadow: 0 24px 90px -55px rgba(10, 8, 22, 0.98);
-  backdrop-filter: blur(20px);
-}
-
-.portal-enter {
-  animation: portal-rise 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.dynamic-home {
-  position: relative;
-  background:
-    radial-gradient(circle at top left, rgba(196, 181, 253, 0.18), transparent 24%),
-    radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.14), transparent 22%),
-    linear-gradient(160deg, #070511 0%, #0d0918 35%, #140d24 68%, #1a1230 100%);
-}
-
-.dynamic-panel {
-  border: 1px solid rgb(255 255 255 / 0.1);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.03));
-  box-shadow: 0 24px 90px -55px rgba(10, 8, 22, 0.98);
-  backdrop-filter: blur(18px);
-}
-
-.dynamic-orb {
-  position: fixed;
-  z-index: 0;
-  border-radius: 9999px;
-  filter: blur(16px);
-  opacity: 0.38;
-  pointer-events: none;
-  animation: float-orb 14s ease-in-out infinite;
-}
-
-.dynamic-orb-a {
-  top: 7%;
-  left: 5%;
-  width: 15rem;
-  height: 15rem;
-  background: radial-gradient(circle, rgba(192, 132, 252, 0.8) 0%, rgba(192, 132, 252, 0) 72%);
-}
-
-.dynamic-orb-b {
-  right: 8%;
-  top: 18%;
-  width: 18rem;
-  height: 18rem;
-  background: radial-gradient(circle, rgba(96, 165, 250, 0.66) 0%, rgba(96, 165, 250, 0) 72%);
-  animation-delay: -4s;
-}
-
-.dynamic-orb-c {
-  left: 35%;
-  bottom: 8%;
-  width: 20rem;
-  height: 20rem;
-  background: radial-gradient(circle, rgba(217, 70, 239, 0.48) 0%, rgba(217, 70, 239, 0) 72%);
-  animation-delay: -8s;
-}
-
-.dynamic-list-item {
-  animation: rise-in 0.7s ease both;
 }
 
 @keyframes enter {
@@ -160,42 +113,5 @@ body {
 
   to {
     transform: translateX(0);
-  }
-}
-
-@keyframes portal-rise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0) scale(0.985);
-    filter: blur(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0);
-  }
-}
-
-@keyframes float-orb {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(0, -18px, 0) scale(1.05);
-  }
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 14px, 0);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 }
