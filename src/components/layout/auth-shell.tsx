@@ -18,23 +18,23 @@ export function AuthShell({
   footerAction,
 }: AuthShellProps) {
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-6 text-slate-100">
+    <main className="min-h-screen bg-[#eef2f6] px-4 py-6 text-slate-900">
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-md items-center">
-        <section className="animate-enter w-full rounded-xl border border-slate-800 bg-slate-900/92 p-6 shadow-[0_24px_80px_-50px_rgba(0,0,0,0.95)] backdrop-blur">
-          <div className="mb-6 border-b border-slate-800 pb-5">
-            <p className="text-sm font-bold tracking-tight text-sky-300">
+        <section className="animate-enter w-full rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 border-b border-slate-200 pb-5">
+            <p className="text-sm font-bold text-sky-700">
               CS Department Portal
             </p>
-            <h1 className="mt-4 text-2xl font-bold text-white">{title}</h1>
-            <p className="mt-1 text-sm text-slate-400">{subtitle}</p>
+            <h1 className="mt-4 text-2xl font-bold text-slate-950">{title}</h1>
+            <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
           </div>
 
           {children}
 
-          <p className="mt-5 text-center text-sm text-slate-400">
+          <p className="mt-5 text-center text-sm text-slate-500">
             {footerLabel}{" "}
             <Link
-              className="font-semibold text-sky-300 transition hover:text-sky-200"
+              className="font-semibold text-sky-700 transition hover:text-sky-600"
               href={footerHref}
             >
               {footerAction}

@@ -32,6 +32,7 @@ body {
 * {
   border-color: rgb(51 65 85 / 0.9);
   -webkit-tap-highlight-color: transparent;
+  letter-spacing: 0 !important;
 }
 
 button,
@@ -69,7 +70,45 @@ textarea:focus-visible {
 }
 
 ::selection {
-  background: rgb(168 85 247 / 0.28);
+  background: rgb(14 165 233 / 0.22);
+}
+
+.portal-main [class*="bg-slate-900"],
+.portal-main [class*="bg-slate-950"] {
+  background-color: #ffffff !important;
+}
+
+.portal-main [class*="border-slate-800"],
+.portal-main [class*="border-white"] {
+  border-color: #d8dee8 !important;
+}
+
+.portal-main .text-white,
+.portal-main [class*="text-slate-100"],
+.portal-main [class*="text-slate-200"] {
+  color: #111827 !important;
+}
+
+.portal-main [class*="text-slate-300"],
+.portal-main [class*="text-slate-400"] {
+  color: #475569 !important;
+}
+
+.portal-main [class*="text-slate-500"] {
+  color: #64748b !important;
+}
+
+.portal-main input,
+.portal-main select,
+.portal-main textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #111827 !important;
+}
+
+.portal-main input::placeholder,
+.portal-main textarea::placeholder {
+  color: #94a3b8 !important;
 }
 
 .animate-enter {

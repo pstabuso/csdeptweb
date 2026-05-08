@@ -4,6 +4,7 @@ import {
   ConcernStatus,
   User,
 } from "@prisma/client";
+import Link from "next/link";
 
 import { ReplyForm } from "@/components/portal/reply-form";
 import { StatusBadge } from "@/components/portal/status-badge";
@@ -39,6 +40,41 @@ const sortLabels: Record<ConcernFilterState["sort"], string> = {
   "open-first": "Open first",
 };
 
+const statusTabs: Array<{ label: string; value: ConcernFilterState["status"] }> = [
+  { label: "All", value: "ALL" },
+  { label: "Open", value: ConcernStatus.OPEN },
+  { label: "Answered", value: ConcernStatus.ANSWERED },
+  { label: "Closed", value: ConcernStatus.CLOSED },
+];
+
+function buildHref(
+  path: string,
+  filters: ConcernFilterState,
+  status: ConcernFilterState["status"],
+  persistentParams?: Record<string, string>,
+) {
+  const searchParams = new URLSearchParams(persistentParams);
+
+  if (status !== "ALL") {
+    searchParams.set("status", status);
+  }
+
+  if (filters.category !== "ALL") {
+    searchParams.set("category", filters.category);
+  }
+
+  if (filters.sort !== "open-first") {
+    searchParams.set("sort", filters.sort);
+  }
+
+  if (filters.query) {
+    searchParams.set("query", filters.query);
+  }
+
+  const query = searchParams.toString();
+  return query ? `${path}?${query}` : path;
+}
+
 export function ConcernWorkspace({
   title,
   description,
@@ -68,6 +104,9 @@ export function ConcernWorkspace({
     (count, concern) => count + concern.replies.length,
     0,
   );
+  const resetHref = persistentParams
+    ? `${currentPath}?${new URLSearchParams(persistentParams).toString()}`
+    : currentPath;
 
   function renderConcernCard(concern: ConcernRecord) {
     return (
@@ -184,38 +223,46 @@ export function ConcernWorkspace({
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-4 xl:min-w-[620px]">
-            <div className="rounded-[1.2rem] border border-sky-500/25 bg-sky-500/10 px-3 py-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-100">
-                Open
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-white">{openCount}</p>
+          <div className="grid gap-2 text-sm sm:grid-cols-4 xl:min-w-[560px]">
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <span className="font-semibold text-white">{openCount}</span>{" "}
+              <span className="text-slate-400">open</span>
             </div>
-            <div className="rounded-[1.2rem] border border-fuchsia-500/25 bg-fuchsia-500/10 px-3 py-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fuchsia-100">
-                Answered
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-white">
-                {answeredCount}
-              </p>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <span className="font-semibold text-white">{answeredCount}</span>{" "}
+              <span className="text-slate-400">answered</span>
             </div>
-            <div className="rounded-[1.2rem] border border-slate-800 bg-slate-950/70 px-3 py-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-300">
-                Closed
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-white">
-                {closedCount}
-              </p>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <span className="font-semibold text-white">{closedCount}</span>{" "}
+              <span className="text-slate-400">closed</span>
             </div>
-            <div className="rounded-[1.2rem] border border-slate-800 bg-slate-950/70 px-3 py-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-300">
-                Replies
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-white">
-                {totalReplies}
-              </p>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <span className="font-semibold text-white">{totalReplies}</span>{" "}
+              <span className="text-slate-400">replies</span>
             </div>
           </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          {statusTabs.map((tab) => (
+            <Link
+              key={tab.value}
+              href={buildHref(currentPath, filters, tab.value, persistentParams)}
+              className={`rounded-lg border px-3 py-2 text-sm font-medium ${
+                filters.status === tab.value
+                  ? "border-sky-500 bg-sky-50 text-sky-700"
+                  : "border-slate-300 bg-white text-slate-600 hover:border-slate-400"
+              }`}
+            >
+              {tab.label}
+            </Link>
+          ))}
+          <Link
+            href={resetHref}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:border-slate-400"
+          >
+            Reset
+          </Link>
         </div>
 
         <form

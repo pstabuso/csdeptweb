@@ -48,10 +48,10 @@ type SidebarLink = {
 };
 
 const roleStyles: Record<Role, string> = {
-  STUDENT: "border-sky-500/30 bg-sky-500/10 text-sky-200",
-  COORDINATOR: "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-200",
-  SECRETARY: "border-violet-500/30 bg-violet-500/10 text-violet-200",
-  ADMIN: "border-pink-500/30 bg-pink-500/10 text-pink-200",
+  STUDENT: "border-cyan-300 bg-cyan-50 text-cyan-700",
+  COORDINATOR: "border-rose-300 bg-rose-50 text-rose-700",
+  SECRETARY: "border-indigo-300 bg-indigo-50 text-indigo-700",
+  ADMIN: "border-amber-300 bg-amber-50 text-amber-800",
 };
 
 const roleIcons: Record<Role, React.ComponentType<{ className?: string; size?: number }>> = {
@@ -318,10 +318,10 @@ export function AppShell({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-[#eef2f6] text-slate-900">
       <aside
         className={cx(
-          "fixed left-0 top-0 z-40 hidden h-screen border-r border-slate-800 bg-slate-900 text-slate-300 shadow-[18px_0_60px_-45px_rgba(0,0,0,0.95)] transition-all duration-300 lg:flex lg:flex-col",
+          "fixed left-0 top-0 z-40 hidden h-screen border-r border-slate-800 bg-[#17212f] text-slate-300 shadow-[18px_0_60px_-45px_rgba(0,0,0,0.55)] transition-all duration-300 lg:flex lg:flex-col",
           collapsed ? "w-20" : "w-80",
         )}
       >
@@ -346,7 +346,7 @@ export function AppShell({
             aria-label="Close sidebar overlay"
             type="button"
           />
-          <aside className="animate-slide-in-left absolute left-0 top-0 h-full w-80 max-w-[86vw] border-r border-slate-800 bg-slate-900 text-slate-300 shadow-2xl">
+          <aside className="animate-slide-in-left absolute left-0 top-0 h-full w-80 max-w-[86vw] border-r border-slate-800 bg-[#17212f] text-slate-300 shadow-2xl">
             <SidebarContent
               user={user}
               currentPath={currentPath}
@@ -359,12 +359,12 @@ export function AppShell({
 
       <div
         className={cx(
-          "min-h-screen transition-[padding-left] duration-300",
+          "portal-main min-h-screen transition-[padding-left] duration-300",
           collapsed ? "lg:pl-20" : "lg:pl-80",
         )}
       >
         <div className="mx-auto flex min-h-screen max-w-[1800px] flex-col gap-5 px-4 py-4 sm:px-5 xl:px-7">
-          <header className="animate-enter rounded-lg border border-slate-800 bg-slate-900 p-4 shadow-[0_20px_80px_-45px_rgba(0,0,0,0.95)] xl:p-5">
+          <header className="animate-enter rounded-lg border border-slate-200 bg-white p-4 shadow-sm xl:p-5">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div className="min-w-0 space-y-3">
                 <div className="flex items-center gap-3">
@@ -387,34 +387,20 @@ export function AppShell({
                 </div>
 
                 <div className="min-w-0">
-                  <h1 className="text-2xl font-bold text-white md:text-3xl">{title}</h1>
+                  <h1 className="text-2xl font-bold text-slate-950 md:text-3xl">{title}</h1>
                   {description ? (
-                    <p className="mt-1 max-w-4xl text-sm leading-6 text-slate-400">
+                    <p className="mt-1 max-w-4xl text-sm leading-6 text-slate-500">
                       {description}
                     </p>
                   ) : null}
                 </div>
               </div>
 
-              <div className="grid gap-2 sm:grid-cols-3 xl:min-w-[390px]">
-                <div className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2.5">
-                  <p className="text-[10px] font-semibold uppercase text-slate-500">
-                    Access
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-white">Role</p>
-                </div>
-                <div className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2.5">
-                  <p className="text-[10px] font-semibold uppercase text-slate-500">
-                    Time
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-white">PH</p>
-                </div>
-                <div className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2.5">
-                  <p className="text-[10px] font-semibold uppercase text-slate-500">
-                    Session
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-white">Active</p>
-                </div>
+              <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+                <Clock3 size={16} className="text-slate-500" />
+                <SidebarClock />
+                <span className="hidden h-4 w-px bg-slate-300 sm:inline-block" />
+                <span className="font-medium text-slate-700">{user.name}</span>
               </div>
             </div>
           </header>

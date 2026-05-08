@@ -17,7 +17,7 @@ export function LoginForm() {
       className="space-y-4"
     >
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-200" htmlFor="email">
+        <label className="text-sm font-medium text-slate-700" htmlFor="email">
           Email address
         </label>
         <input
@@ -25,13 +25,13 @@ export function LoginForm() {
           name="email"
           type="email"
           required
-          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-sky-400"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-sky-500"
           placeholder="name@csdept.edu"
         />
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-200" htmlFor="password">
+        <label className="text-sm font-medium text-slate-700" htmlFor="password">
           Password
         </label>
         <input
@@ -40,7 +40,7 @@ export function LoginForm() {
           type="password"
           required
           minLength={8}
-          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-sky-400"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-sky-500"
           placeholder="Enter your password"
         />
       </div>
