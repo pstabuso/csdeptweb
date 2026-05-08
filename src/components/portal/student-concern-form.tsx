@@ -1,3 +1,5 @@
+import { Send } from "lucide-react";
+
 import { createConcern } from "@/app/actions/concerns";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { STUDENT_CONCERN_CATEGORIES } from "@/lib/constants";
@@ -76,7 +78,10 @@ export function StudentConcernForm({
         />
       </div>
 
-      <SubmitButton pendingLabel="Sending concern...">Send concern</SubmitButton>
+      <SubmitButton pendingLabel="Sending concern...">
+        <Send size={16} />
+        Send concern
+      </SubmitButton>
     </form>
   );
 }

@@ -1,3 +1,5 @@
+import { Save } from "lucide-react";
+
 import { AppShell } from "@/components/layout/app-shell";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { updateProfile } from "@/app/actions/profile";
@@ -141,6 +143,7 @@ export default async function ProfilePage({ searchParams }: PageProps) {
           </div>
 
           <SubmitButton pendingLabel="Saving profile...">
+            <Save size={16} />
             Save profile
           </SubmitButton>
         </form>

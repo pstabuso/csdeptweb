@@ -1,4 +1,5 @@
 import { Role, UserStatus } from "@prisma/client";
+import { Save } from "lucide-react";
 
 import { updateUserAccess } from "@/app/actions/admin";
 import { SubmitButton } from "@/components/forms/submit-button";
@@ -232,6 +233,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
                         action={action}
                         className="grid w-full gap-2 rounded-lg border border-slate-800 bg-slate-900 p-3 md:grid-cols-2"
                       >
+                        {isCurrentSession ? (
+                          <>
+                            <input type="hidden" name="role" value={account.role} />
+                            <input type="hidden" name="status" value={account.status} />
+                          </>
+                        ) : null}
                         <div className="space-y-2">
                           <label
                             className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400"
@@ -332,6 +339,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                               pendingLabel="Saving..."
                               className="w-full md:w-auto"
                             >
+                              <Save size={16} />
                               {isCurrentSession ? "Save profile" : "Save account"}
                             </SubmitButton>
                           </div>

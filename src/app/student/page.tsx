@@ -1,4 +1,5 @@
 import { Role } from "@prisma/client";
+import { Save } from "lucide-react";
 
 import { updateStudentNumber } from "@/app/actions/concerns";
 import { SubmitButton } from "@/components/forms/submit-button";
@@ -188,6 +189,7 @@ export default async function StudentPage({ searchParams }: PageProps) {
                   </div>
 
                   <SubmitButton pendingLabel="Saving student number...">
+                    <Save size={16} />
                     Save student number
                   </SubmitButton>
                 </form>

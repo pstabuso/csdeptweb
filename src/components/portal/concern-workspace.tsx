@@ -4,6 +4,7 @@ import {
   ConcernStatus,
   User,
 } from "@prisma/client";
+import { Filter, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
 import { ReplyForm } from "@/components/portal/reply-form";
@@ -250,8 +251,8 @@ export function ConcernWorkspace({
               href={buildHref(currentPath, filters, tab.value, persistentParams)}
               className={`rounded-lg border px-3 py-2 text-sm font-medium ${
                 filters.status === tab.value
-                  ? "border-sky-500 bg-sky-50 text-sky-700"
-                  : "border-slate-300 bg-white text-slate-600 hover:border-slate-400"
+                  ? "border-sky-400/40 bg-sky-400/10 text-sky-100"
+                  : "border-white/10 bg-white/[0.04] text-slate-300 hover:border-white/20 hover:bg-white/[0.07] hover:text-white"
               }`}
             >
               {tab.label}
@@ -259,8 +260,9 @@ export function ConcernWorkspace({
           ))}
           <Link
             href={resetHref}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:border-slate-400"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-slate-300 hover:border-white/20 hover:bg-white/[0.07] hover:text-white"
           >
+            <RotateCcw size={15} />
             Reset
           </Link>
         </div>
@@ -315,8 +317,9 @@ export function ConcernWorkspace({
           </select>
           <button
             type="submit"
-            className="rounded-xl bg-violet-400 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-300"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-400 active:translate-y-px"
           >
+            <Filter size={16} />
             Apply
           </button>
         </form>

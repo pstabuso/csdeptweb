@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ScheduleEntry, User } from "@prisma/client";
+import { ChevronLeft, ChevronRight, Plus, Save, Trash2 } from "lucide-react";
 
 import {
   createScheduleEntry,
@@ -123,8 +124,9 @@ export function ScheduleBoard({
           <div className="flex items-center gap-2 text-sm">
             <Link
               href={previousMonthHref}
-              className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-slate-200 transition hover:bg-white/[0.08]"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-slate-200 transition hover:bg-white/[0.08]"
             >
+              <ChevronLeft size={15} />
               Prev
             </Link>
             <span className="rounded-full border border-violet-300/20 bg-violet-400/10 px-4 py-2 font-semibold text-white">
@@ -132,9 +134,10 @@ export function ScheduleBoard({
             </span>
             <Link
               href={nextMonthHref}
-              className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-slate-200 transition hover:bg-white/[0.08]"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-slate-200 transition hover:bg-white/[0.08]"
             >
               Next
+              <ChevronRight size={15} />
             </Link>
           </div>
         </div>
@@ -239,7 +242,8 @@ export function ScheduleBoard({
             className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
           />
           <SubmitButton pendingLabel="Saving schedule...">
-            Add to calendar
+            <Plus size={16} />
+            Add entry
           </SubmitButton>
         </form>
       ) : null}
@@ -302,12 +306,15 @@ export function ScheduleBoard({
                       pendingLabel="Saving..."
                       className="rounded-xl px-4 py-2.5"
                     >
-                      Save
+                      <Save size={16} />
+                      Save edits
                     </SubmitButton>
                     <button
+                      type="submit"
                       formAction={deleteScheduleEntry.bind(null, entry.id)}
-                      className="rounded-xl border border-rose-300/20 bg-rose-400/10 px-4 py-2.5 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-rose-300/25 bg-rose-400/10 px-4 py-2.5 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20 active:translate-y-px"
                     >
+                      <Trash2 size={16} />
                       Delete
                     </button>
                   </div>

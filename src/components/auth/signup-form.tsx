@@ -17,7 +17,7 @@ export function SignupForm() {
       className="space-y-4"
     >
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700" htmlFor="name">
+        <label className="text-sm font-medium text-slate-200" htmlFor="name">
           Full name
         </label>
         <input
@@ -25,13 +25,13 @@ export function SignupForm() {
           name="name"
           required
           minLength={2}
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-sky-500"
+          className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:bg-slate-950"
           placeholder="Full name"
         />
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700" htmlFor="email">
+        <label className="text-sm font-medium text-slate-200" htmlFor="email">
           Email address
         </label>
         <input
@@ -39,14 +39,14 @@ export function SignupForm() {
           name="email"
           type="email"
           required
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-sky-500"
+          className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:bg-slate-950"
           placeholder="student@csdept.edu"
         />
       </div>
 
       <div className="space-y-2">
         <label
-          className="text-sm font-medium text-slate-700"
+          className="text-sm font-medium text-slate-200"
           htmlFor="studentNumber"
         >
           Student number
@@ -56,7 +56,7 @@ export function SignupForm() {
           name="studentNumber"
           required
           minLength={5}
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-sky-500"
+          className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:bg-slate-950"
           placeholder="2024-00001"
         />
       </div>
@@ -64,7 +64,7 @@ export function SignupForm() {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <label
-            className="text-sm font-medium text-slate-700"
+            className="text-sm font-medium text-slate-200"
             htmlFor="password"
           >
             Password
@@ -75,14 +75,14 @@ export function SignupForm() {
             type="password"
             required
             minLength={8}
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-sky-500"
+            className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:bg-slate-950"
             placeholder="Password"
           />
         </div>
 
         <div className="space-y-2">
           <label
-            className="text-sm font-medium text-slate-700"
+            className="text-sm font-medium text-slate-200"
             htmlFor="confirmPassword"
           >
             Confirm password
@@ -93,7 +93,7 @@ export function SignupForm() {
             type="password"
             required
             minLength={8}
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-sky-500"
+            className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:bg-slate-950"
             placeholder="Re-enter password"
           />
         </div>

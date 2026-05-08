@@ -1,4 +1,5 @@
 import { ConcernStatus } from "@prisma/client";
+import { Send } from "lucide-react";
 
 import { replyToConcern } from "@/app/actions/concerns";
 import { SubmitButton } from "@/components/forms/submit-button";
@@ -63,7 +64,10 @@ export function ReplyForm({
           </select>
         </div>
       </div>
-      <SubmitButton pendingLabel="Saving reply...">Send reply</SubmitButton>
+      <SubmitButton pendingLabel="Saving reply...">
+        <Send size={16} />
+        Send reply
+      </SubmitButton>
     </form>
   );
 }
