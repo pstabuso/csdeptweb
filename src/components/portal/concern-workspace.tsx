@@ -113,49 +113,52 @@ export function ConcernWorkspace({
     return (
       <article
         key={concern.id}
-        className="animate-enter rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] [animation-delay:120ms]"
+        className="animate-enter rounded-lg border border-slate-800 bg-slate-900/88 p-4 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] [animation-delay:120ms] xl:p-5"
       >
-        <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.15fr)_390px]">
-          <div className="space-y-4">
-            <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <StatusBadge status={concern.status} />
-                  <span className="rounded-full border border-violet-300/20 bg-violet-400/10 px-2.5 py-1 text-[11px] font-semibold text-violet-100">
-                    {concern.category}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white">
-                    {concern.subject}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-400">
-                    {concern.student.name} / {concern.student.email}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    {concern.student.studentNumber || "No student number"} /{" "}
-                    {formatDateTime(concern.createdAt)}
-                  </p>
-                </div>
+        <div className="space-y-5">
+          <div className="flex flex-col gap-4 border-b border-white/10 pb-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge status={concern.status} />
+                <span className="rounded-full border border-violet-300/20 bg-violet-400/10 px-2.5 py-1 text-[11px] font-semibold text-violet-100">
+                  {concern.category}
+                </span>
               </div>
-
-              <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-3 py-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  Updated
+              <div>
+                <h3 className="text-lg font-semibold text-white">
+                  {concern.subject}
+                </h3>
+                <p className="mt-1 text-sm text-slate-400">
+                  {concern.student.name} / {concern.student.email}
                 </p>
-                <p className="mt-1 text-sm font-semibold text-white">
-                  {formatDateTime(concern.updatedAt)}
+                <p className="text-sm text-slate-500">
+                  {concern.student.studentNumber || "No student number"} /{" "}
+                  {formatDateTime(concern.createdAt)}
                 </p>
               </div>
             </div>
 
-            <div className="rounded-[1.3rem] border border-white/10 bg-slate-900/82 p-4 text-sm leading-6 text-slate-200">
-              {concern.message}
+            <div className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Updated
+              </p>
+              <p className="mt-1 text-sm font-semibold text-white">
+                {formatDateTime(concern.updatedAt)}
+              </p>
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="rounded-[1.3rem] border border-white/10 bg-slate-900/78 p-3">
+          <section className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+              Concern
+            </p>
+            <div className="rounded-lg border border-white/10 bg-slate-950/65 p-4 text-sm leading-6 text-slate-200">
+              {concern.message}
+            </div>
+          </section>
+
+          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
+            <div className="rounded-lg border border-white/10 bg-slate-950/55 p-3">
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-semibold text-white">Thread</h4>
                 <span className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-1 text-[11px] font-semibold text-slate-300">
@@ -184,32 +187,36 @@ export function ConcernWorkspace({
                   ))}
                 </div>
               ) : (
-                <p className="mt-3 rounded-[1.1rem] border border-dashed border-white/15 bg-slate-950/70 px-3 py-3 text-sm text-slate-400">
+                <p className="mt-3 rounded-lg border border-dashed border-white/15 bg-slate-950/70 px-3 py-3 text-sm text-slate-400">
                   No replies yet.
                 </p>
               )}
             </div>
 
             {canReply ? (
-              <ReplyForm
-                concernId={concern.id}
-                defaultStatus={concern.status}
-                redirectTo={replyRedirectTo ?? currentPath}
-              />
-            ) : null}
-          </div>
+              <div className="rounded-lg border border-white/10 bg-slate-950/45 p-3">
+                <ReplyForm
+                  concernId={concern.id}
+                  defaultStatus={concern.status}
+                  redirectTo={replyRedirectTo ?? currentPath}
+                />
+              </div>
+            ) : (
+              <div className="hidden xl:block" />
+            )}
+          </section>
         </div>
       </article>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <section
         id="queue"
         className="animate-enter scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] xl:p-6"
       >
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+        <div className="space-y-5">
           <div className="space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">
               Concerns
@@ -224,7 +231,7 @@ export function ConcernWorkspace({
             </div>
           </div>
 
-          <div className="grid gap-2 text-sm sm:grid-cols-4 xl:min-w-[560px]">
+          <div className="grid gap-2 text-sm sm:grid-cols-2 xl:grid-cols-4">
             <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2">
               <span className="font-semibold text-white">{openCount}</span>{" "}
               <span className="text-slate-400">open</span>
@@ -244,7 +251,7 @@ export function ConcernWorkspace({
           </div>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center gap-2">
+        <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-white/10 pt-5">
           {statusTabs.map((tab) => (
             <Link
               key={tab.value}
@@ -269,7 +276,7 @@ export function ConcernWorkspace({
 
         <form
           action={currentPath}
-          className="mt-5 grid gap-3 xl:grid-cols-[minmax(0,1.3fr)_160px_200px_150px_auto]"
+          className="mt-4 grid gap-3 lg:grid-cols-2 2xl:grid-cols-[minmax(0,1.3fr)_160px_200px_150px_auto]"
         >
           {persistentParams
             ? Object.entries(persistentParams).map(([key, value]) => (

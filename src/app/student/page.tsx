@@ -44,7 +44,7 @@ function ConcernList({
         concerns.map((concern) => (
           <article
             key={concern.id}
-            className="space-y-3 rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur"
+            className="space-y-4 rounded-lg border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur"
           >
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
@@ -63,20 +63,30 @@ function ConcernList({
               </div>
             </div>
 
-            <div className="rounded-[1.3rem] border border-white/10 bg-slate-900/80 p-3 text-sm leading-6 text-slate-200">
-              {concern.message}
-            </div>
+            <section className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                Concern
+              </p>
+              <div className="rounded-lg border border-white/10 bg-slate-900/80 p-3 text-sm leading-6 text-slate-200">
+                {concern.message}
+              </div>
+            </section>
 
-            <div className="space-y-2">
-              <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                Replies
-              </h4>
+            <details className="rounded-lg border border-white/10 bg-slate-900/60">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3">
+                <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Replies
+                </h4>
+                <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-semibold text-slate-300">
+                  {concern.replies.length}
+                </span>
+              </summary>
               {concern.replies.length ? (
-                <div className="space-y-2">
+                <div className="space-y-2 border-t border-white/10 p-3">
                   {concern.replies.map((reply) => (
                     <div
                       key={reply.id}
-                      className="rounded-[1.1rem] border border-white/10 bg-slate-900/80 p-3"
+                      className="rounded-lg border border-white/10 bg-slate-950/70 p-3"
                     >
                       <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
                         <span>{reply.author.name}</span>
@@ -92,11 +102,11 @@ function ConcernList({
                   ))}
                 </div>
               ) : (
-                <p className="rounded-[1.1rem] border border-dashed border-white/15 bg-slate-900/70 px-3 py-3 text-sm text-slate-400">
+                <p className="border-t border-white/10 px-3 py-3 text-sm text-slate-400">
                   No replies yet.
                 </p>
               )}
-            </div>
+            </details>
           </article>
         ))
       ) : (
@@ -129,8 +139,8 @@ export default async function StudentPage({ searchParams }: PageProps) {
       description="Submit concerns and track replies."
       currentPath="/student"
     >
-      <div className="grid gap-5 2xl:grid-cols-[420px_minmax(0,1fr)]">
-        <div className="space-y-6">
+      <div className="space-y-8">
+        <section className="grid gap-6 xl:grid-cols-[minmax(320px,420px)_minmax(0,1fr)]">
           <section
             id="record"
             className="animate-enter scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]"
@@ -198,19 +208,19 @@ export default async function StudentPage({ searchParams }: PageProps) {
               Submit unlocks after saving your student number.
             </section>
           )}
-        </div>
+        </section>
+
+        <ScheduleBoard
+          month={scheduleMonth}
+          entries={scheduleEntries}
+          canManage={false}
+          previousMonthHref={previousMonthHref}
+          nextMonthHref={nextMonthHref}
+          redirectTo="/student"
+          title="Department calendar"
+        />
 
         <section id="concerns" className="scroll-mt-5 space-y-6">
-          <ScheduleBoard
-            month={scheduleMonth}
-            entries={scheduleEntries}
-            canManage={false}
-            previousMonthHref={previousMonthHref}
-            nextMonthHref={nextMonthHref}
-            redirectTo="/student"
-            title="Department calendar"
-          />
-
           {concerns.length ? (
             <>
               <ConcernList title="Active" concerns={activeConcerns} />

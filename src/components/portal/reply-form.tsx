@@ -24,7 +24,7 @@ export function ReplyForm({
   return (
     <form
       action={action}
-      className="space-y-3 rounded-[1.2rem] border border-white/10 bg-slate-900/80 p-3"
+      className="space-y-3"
     >
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_150px]">

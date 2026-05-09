@@ -135,8 +135,8 @@ export default async function AdminPage({ searchParams }: PageProps) {
       description="Accounts, queue, and audit flow."
       currentPath="/admin"
     >
-      <div className="space-y-5">
-        <section id="overview" className="grid scroll-mt-5 gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="space-y-8">
+        <section id="overview" className="grid scroll-mt-5 gap-4 md:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card) => (
             <article
               key={card.label}
@@ -153,8 +153,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
           ))}
         </section>
 
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_340px]">
-          <section id="users" className="scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-4 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]">
+        <section id="users" className="scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-4 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] xl:p-5">
             <div className="flex flex-col gap-3 border-b border-white/10 pb-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
@@ -174,7 +173,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                     key={account.id}
                     className="rounded-lg border border-slate-800 bg-slate-950/70 p-4"
                   >
-                    <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                    <div className="space-y-4">
                       <div className="max-w-xl space-y-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="text-base font-semibold text-white">
@@ -223,9 +222,16 @@ export default async function AdminPage({ searchParams }: PageProps) {
                         </div>
                       </div>
 
+                      <details className="rounded-lg border border-slate-800 bg-slate-900/70">
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3 text-sm font-semibold text-slate-200">
+                          <span>Edit account details</span>
+                          <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] uppercase tracking-[0.12em] text-slate-400">
+                            Open
+                          </span>
+                        </summary>
                       <form
                         action={action}
-                        className="grid w-full gap-2 rounded-lg border border-slate-800 bg-slate-900 p-3 md:grid-cols-2"
+                        className="grid w-full gap-3 border-t border-white/10 p-3 md:grid-cols-2"
                       >
                         {isCurrentSession ? (
                           <>
@@ -339,14 +345,15 @@ export default async function AdminPage({ searchParams }: PageProps) {
                           </div>
                         </div>
                       </form>
+                      </details>
                     </div>
                   </article>
                 );
               })}
             </div>
-          </section>
+        </section>
 
-          <aside className="space-y-5">
+        <section className="grid gap-5 xl:grid-cols-2">
             <section className="rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]">
               <h2 className="text-lg font-semibold text-white">
                 Role distribution
@@ -394,7 +401,6 @@ export default async function AdminPage({ searchParams }: PageProps) {
                 ))}
               </div>
             </section>
-          </aside>
         </section>
 
         <ConcernWorkspace

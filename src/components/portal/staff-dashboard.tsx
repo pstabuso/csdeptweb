@@ -45,7 +45,7 @@ export function StaffDashboard({
   const label = role === Role.COORDINATOR ? "Coordinator" : "Secretary";
 
   return (
-    <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.1fr)_minmax(560px,0.9fr)]">
+    <div className="space-y-8">
       <ConcernWorkspace
         title={`${label} response queue`}
         concerns={concerns}
@@ -58,17 +58,15 @@ export function StaffDashboard({
         emptyMessage="No concerns match the current filter set."
       />
 
-      <div className="2xl:sticky 2xl:top-4 2xl:self-start">
-        <ScheduleBoard
-          month={scheduleMonth}
-          entries={scheduleEntries}
-          canManage
-          previousMonthHref={previousMonthHref}
-          nextMonthHref={nextMonthHref}
-          redirectTo={concernRedirectTo}
-          title={`${label} calendar`}
-        />
-      </div>
+      <ScheduleBoard
+        month={scheduleMonth}
+        entries={scheduleEntries}
+        canManage
+        previousMonthHref={previousMonthHref}
+        nextMonthHref={nextMonthHref}
+        redirectTo={concernRedirectTo}
+        title={`${label} calendar`}
+      />
     </div>
   );
 }
