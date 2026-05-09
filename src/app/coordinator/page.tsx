@@ -10,6 +10,7 @@ import {
   normalizeConcernFilters,
   normalizeScheduleMonth,
 } from "@/lib/dashboard-data";
+import { shiftScheduleMonth } from "@/lib/ph-time";
 
 type PageProps = {
   searchParams?: Promise<{
@@ -20,13 +21,6 @@ type PageProps = {
     scheduleMonth?: string;
   }>;
 };
-
-function shiftMonth(month: string, delta: number) {
-  const [year, monthPart] = month.split("-").map(Number);
-  const next = new Date(year, monthPart - 1 + delta, 1);
-
-  return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`;
-}
 
 function buildHref(
   path: string,
@@ -69,14 +63,14 @@ export default async function CoordinatorPage({ searchParams }: PageProps) {
     category: filters.category !== "ALL" ? filters.category : undefined,
     sort: filters.sort !== "open-first" ? filters.sort : undefined,
     query: filters.query || undefined,
-    scheduleMonth: shiftMonth(scheduleMonth, -1),
+    scheduleMonth: shiftScheduleMonth(scheduleMonth, -1),
   });
   const nextMonthHref = buildHref("/coordinator", {
     status: filters.status !== "ALL" ? filters.status : undefined,
     category: filters.category !== "ALL" ? filters.category : undefined,
     sort: filters.sort !== "open-first" ? filters.sort : undefined,
     query: filters.query || undefined,
-    scheduleMonth: shiftMonth(scheduleMonth, 1),
+    scheduleMonth: shiftScheduleMonth(scheduleMonth, 1),
   });
 
   return (

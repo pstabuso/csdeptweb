@@ -6,15 +6,12 @@ import { redirect } from "next/navigation";
 
 import { logActivity } from "@/lib/activity";
 import { requireUser } from "@/lib/auth";
+import { parseManilaDateTimeLocal } from "@/lib/ph-time";
 import { getDb } from "@/lib/prisma";
 import { sanitizeRedirectPath } from "@/lib/security";
 import { scheduleEntrySchema } from "@/lib/validation";
 
 const writableRoles = [Role.COORDINATOR, Role.SECRETARY];
-
-function parsePhilippineDateTime(value: string) {
-  return new Date(`${value}:00+08:00`);
-}
 
 function revalidateScheduleViews() {
   revalidatePath("/student");
@@ -41,14 +38,21 @@ export async function createScheduleEntry(formData: FormData) {
     redirect(redirectTo);
   }
 
+  const startsAt = parseManilaDateTimeLocal(parsed.data.startsAt);
+  const endsAt = parseManilaDateTimeLocal(parsed.data.endsAt);
+
+  if (!startsAt || !endsAt) {
+    redirect(redirectTo);
+  }
+
   const db = getDb();
   const entry = await db.scheduleEntry.create({
     data: {
       title: parsed.data.title,
       location: parsed.data.location,
       notes: parsed.data.notes?.trim() || null,
-      startsAt: parsePhilippineDateTime(parsed.data.startsAt),
-      endsAt: parsePhilippineDateTime(parsed.data.endsAt),
+      startsAt,
+      endsAt,
       createdById: user.id,
     },
   });
@@ -86,6 +90,13 @@ export async function updateScheduleEntry(entryId: string, formData: FormData) {
     redirect(redirectTo);
   }
 
+  const startsAt = parseManilaDateTimeLocal(parsed.data.startsAt);
+  const endsAt = parseManilaDateTimeLocal(parsed.data.endsAt);
+
+  if (!startsAt || !endsAt) {
+    redirect(redirectTo);
+  }
+
   const db = getDb();
   const entry = await db.scheduleEntry.update({
     where: { id: entryId },
@@ -93,8 +104,8 @@ export async function updateScheduleEntry(entryId: string, formData: FormData) {
       title: parsed.data.title,
       location: parsed.data.location,
       notes: parsed.data.notes?.trim() || null,
-      startsAt: parsePhilippineDateTime(parsed.data.startsAt),
-      endsAt: parsePhilippineDateTime(parsed.data.endsAt),
+      startsAt,
+      endsAt,
     },
   });
 

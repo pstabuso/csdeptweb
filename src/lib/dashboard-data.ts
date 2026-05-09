@@ -6,6 +6,7 @@ import {
   CONCERN_SORT_OPTIONS,
   STUDENT_CONCERN_CATEGORIES,
 } from "@/lib/constants";
+import { getManilaMonthRange } from "@/lib/ph-time";
 import { getDb } from "@/lib/prisma";
 
 export type ConcernFilterState = {
@@ -160,21 +161,6 @@ export function normalizeScheduleMonth(value?: string) {
   return value;
 }
 
-function getMonthRange(month: string) {
-  const [year, monthPart] = month.split("-").map(Number);
-  const nextMonth = monthPart === 12 ? 1 : monthPart + 1;
-  const nextYear = monthPart === 12 ? year + 1 : year;
-
-  return {
-    start: new Date(
-      `${year}-${String(monthPart).padStart(2, "0")}-01T00:00:00+08:00`,
-    ),
-    end: new Date(
-      `${nextYear}-${String(nextMonth).padStart(2, "0")}-01T00:00:00+08:00`,
-    ),
-  };
-}
-
 export async function getConcernCategoryOptions() {
   const db = getDb();
   const categories = await db.concern.findMany({
@@ -250,14 +236,12 @@ export async function getStaffDashboardData(filters: ConcernFilterState) {
 
 export async function getScheduleEntries(month: string) {
   const db = getDb();
-  const range = getMonthRange(month);
+  const range = getManilaMonthRange(month);
 
   return db.scheduleEntry.findMany({
     where: {
-      startsAt: {
-        gte: range.start,
-        lt: range.end,
-      },
+      startsAt: { lt: range.end },
+      endsAt: { gt: range.start },
     },
     include: {
       createdBy: {

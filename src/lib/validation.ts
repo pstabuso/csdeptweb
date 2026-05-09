@@ -1,6 +1,10 @@
 import { z } from "zod";
 
 import { STUDENT_CONCERN_CATEGORIES } from "@/lib/constants";
+import {
+  isSameManilaDate,
+  parseManilaDateTimeLocal,
+} from "@/lib/ph-time";
 
 export const loginSchema = z.object({
   email: z.string().trim().email("Enter a valid email address."),
@@ -120,13 +124,25 @@ export const scheduleEntrySchema = z
   })
   .refine(
     (data) => {
-      const startsAt = new Date(`${data.startsAt}:00+08:00`);
-      const endsAt = new Date(`${data.endsAt}:00+08:00`);
+      const startsAt = parseManilaDateTimeLocal(data.startsAt);
+      const endsAt = parseManilaDateTimeLocal(data.endsAt);
 
-      return startsAt.getTime() < endsAt.getTime();
+      return Boolean(startsAt && endsAt && startsAt.getTime() < endsAt.getTime());
     },
     {
       message: "End time must be later than start time.",
+      path: ["endsAt"],
+    },
+  )
+  .refine(
+    (data) => {
+      const startsAt = parseManilaDateTimeLocal(data.startsAt);
+      const endsAt = parseManilaDateTimeLocal(data.endsAt);
+
+      return Boolean(startsAt && endsAt && isSameManilaDate(startsAt, endsAt));
+    },
+    {
+      message: "Schedule entries must start and end on the same Philippine date.",
       path: ["endsAt"],
     },
   );

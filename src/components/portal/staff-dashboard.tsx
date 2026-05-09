@@ -45,7 +45,7 @@ export function StaffDashboard({
   const label = role === Role.COORDINATOR ? "Coordinator" : "Secretary";
 
   return (
-    <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.3fr)_430px]">
+    <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.1fr)_minmax(560px,0.9fr)]">
       <ConcernWorkspace
         title={`${label} response queue`}
         concerns={concerns}

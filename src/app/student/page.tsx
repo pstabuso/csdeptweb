@@ -14,19 +14,13 @@ import {
   normalizeScheduleMonth,
 } from "@/lib/dashboard-data";
 import { formatDateTime } from "@/lib/format";
+import { shiftScheduleMonth } from "@/lib/ph-time";
 
 type PageProps = {
   searchParams?: Promise<{
     scheduleMonth?: string;
   }>;
 };
-
-function shiftMonth(month: string, delta: number) {
-  const [year, monthPart] = month.split("-").map(Number);
-  const next = new Date(year, monthPart - 1 + delta, 1);
-
-  return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`;
-}
 
 function ConcernList({
   title,
@@ -125,8 +119,8 @@ export default async function StudentPage({ searchParams }: PageProps) {
   const hasStudentNumber = Boolean(user.studentNumber);
   const activeConcerns = concerns.filter((concern) => concern.status !== "CLOSED");
   const closedConcerns = concerns.filter((concern) => concern.status === "CLOSED");
-  const previousMonthHref = `/student?scheduleMonth=${shiftMonth(scheduleMonth, -1)}`;
-  const nextMonthHref = `/student?scheduleMonth=${shiftMonth(scheduleMonth, 1)}`;
+  const previousMonthHref = `/student?scheduleMonth=${shiftScheduleMonth(scheduleMonth, -1)}`;
+  const nextMonthHref = `/student?scheduleMonth=${shiftScheduleMonth(scheduleMonth, 1)}`;
 
   return (
     <AppShell
