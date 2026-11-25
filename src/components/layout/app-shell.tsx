@@ -3,30 +3,27 @@
 import { Role } from "@prisma/client";
 import {
   CalendarDays,
-  Clock3,
+  ClipboardList,
   GraduationCap,
+  History,
   Inbox,
   LayoutDashboard,
-  LockKeyhole,
   LogOut,
   Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
   PenLine,
-  Settings2,
   ShieldCheck,
   UserRound,
   UsersRound,
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { logout } from "@/app/actions/auth";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { SidebarClock } from "@/components/layout/sidebar-clock";
 import { cx } from "@/lib/cx";
-import { getRoleNavigation } from "@/lib/security";
 
 type AppShellProps = {
   user: {
@@ -36,125 +33,109 @@ type AppShellProps = {
   };
   title: string;
   description?: string;
-  currentPath: string;
+  /** Optional link shown above the title, e.g. "← Back to queue". */
+  backLink?: { href: string; label: string };
+  /** Buttons shown on the right of the page header. */
+  actions?: React.ReactNode;
+  /** @deprecated The shell now reads the pathname itself. */
+  currentPath?: string;
   children: React.ReactNode;
 };
 
-type SidebarLink = {
+type NavItem = {
   label: string;
-  description: string;
   href: string;
   icon: React.ComponentType<{ className?: string; size?: number }>;
 };
 
-const roleStyles: Record<Role, string> = {
-  STUDENT: "border-cyan-300/30 bg-cyan-400/10 text-cyan-100",
-  COORDINATOR: "border-rose-300/30 bg-rose-400/10 text-rose-100",
-  SECRETARY: "border-indigo-300/30 bg-indigo-400/10 text-indigo-100",
-  ADMIN: "border-amber-300/30 bg-amber-400/10 text-amber-100",
+const roleMeta: Record<Role, { label: string; focus: string; icon: NavItem["icon"] }> = {
+  STUDENT: { label: "Student", focus: "Concerns and schedule", icon: GraduationCap },
+  COORDINATOR: {
+    label: "Coordinator",
+    focus: "Thesis, grades, readmission",
+    icon: ClipboardList,
+  },
+  SECRETARY: {
+    label: "Secretary",
+    focus: "COR revisions, general, calendar",
+    icon: Inbox,
+  },
+  ADMIN: { label: "Admin", focus: "Accounts and oversight", icon: ShieldCheck },
 };
 
-const roleIcons: Record<Role, React.ComponentType<{ className?: string; size?: number }>> = {
-  STUDENT: GraduationCap,
-  COORDINATOR: Inbox,
-  SECRETARY: CalendarDays,
-  ADMIN: ShieldCheck,
-};
+function getNavigation(role: Role): NavItem[] {
+  const profile: NavItem = { label: "Profile", href: "/profile", icon: UserRound };
 
-function getRoleHome(role: Role) {
-  if (role === Role.COORDINATOR) return "/coordinator";
-  if (role === Role.SECRETARY) return "/secretary";
-  if (role === Role.ADMIN) return "/admin";
-  return "/student";
+  switch (role) {
+    case Role.STUDENT:
+      return [
+        { label: "Overview", href: "/student", icon: LayoutDashboard },
+        { label: "My concerns", href: "/student/concerns", icon: Inbox },
+        { label: "New concern", href: "/student/concerns/new", icon: PenLine },
+        { label: "Calendar", href: "/student/calendar", icon: CalendarDays },
+        profile,
+      ];
+    case Role.ADMIN:
+      return [
+        { label: "Overview", href: "/admin", icon: LayoutDashboard },
+        { label: "Users", href: "/admin/users", icon: UsersRound },
+        { label: "Concerns", href: "/admin/concerns", icon: Inbox },
+        { label: "Calendar", href: "/admin/calendar", icon: CalendarDays },
+        { label: "Activity log", href: "/admin/activity", icon: History },
+        profile,
+      ];
+    case Role.COORDINATOR:
+    case Role.SECRETARY: {
+      const base = role === Role.COORDINATOR ? "/coordinator" : "/secretary";
+      return [
+        { label: "Concern queue", href: base, icon: Inbox },
+        { label: "Calendar", href: `${base}/calendar`, icon: CalendarDays },
+        profile,
+      ];
+    }
+    default:
+      return [profile];
+  }
 }
 
-function getSectionLinks(role: Role, currentPath: string): SidebarLink[] {
-  if (currentPath === "/profile") {
-    return [
-      {
-        label: "Workspace",
-        description: "Back to role home",
-        href: getRoleHome(role),
-        icon: LayoutDashboard,
-      },
-      {
-        label: "Security",
-        description: "Password and name",
-        href: "/profile",
-        icon: LockKeyhole,
-      },
-    ];
-  }
-
-  if (role === Role.ADMIN) {
-    return [
-      { label: "Overview", description: "System counters", href: "/admin#overview", icon: LayoutDashboard },
-      { label: "Users", description: "Access editor", href: "/admin#users", icon: UsersRound },
-      { label: "Concerns", description: "Full threads", href: "/admin#queue", icon: Inbox },
-      { label: "Schedule", description: "Calendar view", href: "/admin#schedule", icon: CalendarDays },
-    ];
-  }
-
-  if (role === Role.STUDENT) {
-    return [
-      { label: "Record", description: "Student number", href: "/student#record", icon: GraduationCap },
-      { label: "Submit", description: "New concern", href: "/student#new-concern", icon: PenLine },
-      { label: "Calendar", description: "Department schedule", href: "/student#schedule", icon: CalendarDays },
-      { label: "Replies", description: "Active and closed", href: "/student#concerns", icon: Inbox },
-    ];
-  }
-
-  const basePath = role === Role.COORDINATOR ? "/coordinator" : "/secretary";
-  return [
-    { label: "Queue", description: "Student concerns", href: `${basePath}#queue`, icon: Inbox },
-    { label: "Calendar", description: "Availability editor", href: `${basePath}#schedule`, icon: CalendarDays },
-    { label: "Profile", description: "Account settings", href: "/profile", icon: UserRound },
-  ];
+/** The active item is the one whose href is the longest prefix of the path. */
+function getActiveHref(items: NavItem[], pathname: string) {
+  return items
+    .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+    .sort((left, right) => right.href.length - left.href.length)[0]?.href;
 }
 
-function SidebarContent({
+function Sidebar({
   user,
-  currentPath,
-  collapsed,
-  onCloseMobile,
+  pathname,
+  onNavigate,
 }: {
   user: AppShellProps["user"];
-  currentPath: string;
-  collapsed: boolean;
-  onCloseMobile?: () => void;
+  pathname: string;
+  onNavigate?: () => void;
 }) {
-  const navigation = getRoleNavigation(user.role);
-  const sectionLinks = getSectionLinks(user.role, currentPath);
-  const RoleIcon = roleIcons[user.role];
+  const navigation = getNavigation(user.role);
+  const activeHref = getActiveHref(navigation, pathname);
+  const meta = roleMeta[user.role];
+  const RoleIcon = meta.icon;
 
   return (
-    <>
-      <div
-        className={cx(
-          "border-b border-slate-800 px-3 py-4",
-          collapsed ? "flex justify-center" : "flex items-start justify-between gap-3",
-        )}
-      >
-        <div className={cx("min-w-0", collapsed ? "hidden" : "block")}>
-          <p className="text-lg font-bold text-sky-300">CS Dept</p>
-          <p className="mt-1 text-xs font-medium text-slate-500">Portal Workspace</p>
-          <p className="mt-3 inline-flex items-center gap-2 text-xs font-medium text-slate-400">
-            <Clock3 size={14} className="text-sky-400" />
-            <SidebarClock />
-          </p>
-        </div>
-
-        {collapsed ? (
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-sky-500/25 bg-sky-500/10 text-sm font-bold text-sky-200">
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
+        <Link href="/dashboard" onClick={onNavigate} className="flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-500 text-sm font-bold text-white">
             CS
-          </div>
-        ) : null}
-
-        {onCloseMobile ? (
+          </span>
+          <span>
+            <span className="block text-sm font-semibold text-ink">CS Department</span>
+            <span className="block text-xs text-ink-faint">Support portal</span>
+          </span>
+        </Link>
+        {onNavigate ? (
           <button
-            onClick={onCloseMobile}
-            className="rounded-lg border border-slate-700 p-2 text-slate-400 hover:border-slate-600 hover:bg-slate-800 hover:text-white lg:hidden"
-            aria-label="Close sidebar"
+            onClick={onNavigate}
+            className="btn-ghost btn-sm lg:hidden"
+            aria-label="Close menu"
             type="button"
           >
             <X size={18} />
@@ -162,148 +143,68 @@ function SidebarContent({
         ) : null}
       </div>
 
-      <div className={cx("flex-1 overflow-y-auto", collapsed ? "px-2 py-3" : "px-3 py-4")}>
-        <div className={cx("mb-4 rounded-lg border border-slate-800 bg-slate-950/60", collapsed ? "p-2" : "p-3")}>
-          {collapsed ? (
-            <div className="flex justify-center">
-              <RoleIcon size={18} className="text-sky-300" />
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <div className={cx("flex h-10 w-10 items-center justify-center rounded-lg border", roleStyles[user.role])}>
-                <RoleIcon size={18} />
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white">
-                  {user.role.replaceAll("_", " ")}
-                </p>
-                <p className="truncate text-xs text-slate-500">Active session</p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <p className={cx("mb-2 px-1 text-[11px] font-semibold uppercase text-slate-600", collapsed ? "sr-only" : "")}>
-          Navigation
-        </p>
-        <nav className="space-y-1">
-          {navigation.map((item) => {
-            const isActive =
-              currentPath === item.href || currentPath.startsWith(`${item.href}/`);
-            const Icon = item.href === "/profile" ? UserRound : LayoutDashboard;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onCloseMobile}
-                title={collapsed ? item.label : undefined}
-                className={cx(
-                  "group flex rounded-lg border transition",
-                  collapsed
-                    ? "items-center justify-center px-0 py-3"
-                    : "items-center gap-3 px-3 py-3",
-                  isActive
-                    ? "border-sky-500/30 bg-sky-500/10 text-sky-200"
-                    : "border-transparent text-slate-400 hover:border-slate-700 hover:bg-slate-800 hover:text-white",
-                )}
-              >
-                <Icon size={18} className="shrink-0" />
-                {!collapsed ? (
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{item.label}</p>
-                    <p className="truncate text-xs text-slate-500 group-hover:text-slate-400">
-                      {item.description}
-                    </p>
-                  </div>
-                ) : null}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <p className={cx("mb-2 mt-5 px-1 text-[11px] font-semibold uppercase text-slate-600", collapsed ? "sr-only" : "")}>
-          Sections
-        </p>
-        <nav className="space-y-1">
-          {sectionLinks.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onCloseMobile}
-                title={collapsed ? item.label : undefined}
-                className={cx(
-                  "group flex rounded-lg border border-transparent text-slate-400 transition hover:border-slate-700 hover:bg-slate-800 hover:text-white",
-                  collapsed ? "items-center justify-center px-0 py-3" : "items-center gap-3 px-3 py-3",
-                )}
-              >
-                <Icon size={18} className="shrink-0" />
-                {!collapsed ? (
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{item.label}</p>
-                    <p className="truncate text-xs text-slate-500 group-hover:text-slate-400">
-                      {item.description}
-                    </p>
-                  </div>
-                ) : null}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-
-      <div className={cx("border-t border-slate-800", collapsed ? "px-2 py-3" : "px-3 py-4")}>
-        <div className={cx("rounded-lg border border-slate-800 bg-slate-950/60", collapsed ? "p-2" : "p-3")}>
-          {collapsed ? (
-            <div className="space-y-2">
-              <div className="flex justify-center">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-pink-500 text-sm font-bold text-white">
-                  {user.name.charAt(0)}
-                </div>
-              </div>
-              <form action={logout}>
-                <SubmitButton pendingLabel="..." className="w-full rounded-lg px-0 py-2 text-xs">
-                  <LogOut size={14} />
-                </SubmitButton>
-              </form>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-pink-500 text-sm font-bold text-white">
-                  {user.name.charAt(0)}
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-white">{user.name}</p>
-                  <p className="truncate text-xs text-slate-500">{user.email}</p>
-                </div>
-              </div>
-              <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
-                <Link
-                  href="/profile"
-                  onClick={onCloseMobile}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-800/75 px-3 py-2 text-sm font-medium text-slate-200 hover:border-slate-600 hover:bg-slate-800 hover:text-white"
-                >
-                  <Settings2 size={15} />
-                  Profile
-                </Link>
-                <form action={logout}>
-                  <SubmitButton
-                    pendingLabel="..."
-                    className="h-full rounded-lg px-3 py-2"
-                  >
-                    <LogOut size={15} />
-                  </SubmitButton>
-                </form>
-              </div>
-            </>
-          )}
+      <div className="px-3 pt-4">
+        <div className="flex items-center gap-3 rounded-lg border border-line bg-canvas/60 px-3 py-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-violet-500/15 text-violet-200">
+            <RoleIcon size={16} />
+          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-ink">{meta.label}</p>
+            <p className="truncate text-xs text-ink-faint">{meta.focus}</p>
+          </div>
         </div>
       </div>
-    </>
+
+      <nav aria-label="Main" className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
+        {navigation.map((item) => {
+          const Icon = item.icon;
+          const isActive = item.href === activeHref;
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              aria-current={isActive ? "page" : undefined}
+              className={cx(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
+                isActive
+                  ? "bg-violet-500/15 text-violet-50"
+                  : "text-ink-muted hover:bg-white/[0.05] hover:text-ink",
+              )}
+            >
+              <Icon size={17} className={isActive ? "text-violet-300" : undefined} />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="space-y-3 border-t border-line px-3 py-4">
+        <p className="px-2 text-xs text-ink-faint">
+          <SidebarClock /> · PH time
+        </p>
+        <div className="flex items-center gap-3 px-2">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-raised text-sm font-semibold text-ink">
+            {user.name.charAt(0).toUpperCase()}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-ink">{user.name}</p>
+            <p className="truncate text-xs text-ink-faint">{user.email}</p>
+          </div>
+          <form action={logout}>
+            <SubmitButton
+              variant="ghost"
+              pendingLabel=""
+              className="btn-sm"
+              aria-label="Sign out"
+            >
+              <LogOut size={16} />
+            </SubmitButton>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -311,101 +212,79 @@ export function AppShell({
   user,
   title,
   description,
-  currentPath,
+  backLink,
+  actions,
   children,
 }: AppShellProps) {
-  const [collapsed, setCollapsed] = useState(false);
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  return (
-    <div className="min-h-screen bg-[#120d20] text-slate-100">
-      <aside
-        className={cx(
-          "fixed left-0 top-0 z-40 hidden h-screen border-r border-white/10 bg-[#171126] text-slate-300 shadow-[18px_0_60px_-45px_rgba(0,0,0,0.75)] transition-all duration-300 lg:flex lg:flex-col",
-          collapsed ? "w-20" : "w-80",
-        )}
-      >
-        <SidebarContent user={user} currentPath={currentPath} collapsed={collapsed} />
+  useEffect(() => {
+    if (!mobileOpen) return;
 
-        <button
-          onClick={() => setCollapsed((value) => !value)}
-          className="absolute -right-3 top-6 flex h-7 w-7 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-slate-400 shadow-lg transition hover:border-slate-600 hover:text-white"
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          type="button"
-        >
-          {collapsed ? <PanelLeftOpen size={14} /> : <PanelLeftClose size={14} />}
-        </button>
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileOpen(false);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen]);
+
+  return (
+    <div className="min-h-screen bg-canvas text-ink">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-line bg-surface lg:block">
+        <Sidebar user={user} pathname={pathname} />
       </aside>
 
       {mobileOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
           <button
-            className="absolute inset-0 w-full bg-slate-950/75 backdrop-blur-sm animate-fade-in"
+            className="animate-fade-in absolute inset-0 w-full bg-black/60 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
-            aria-label="Close sidebar overlay"
+            aria-label="Close menu"
             type="button"
           />
-          <aside className="animate-slide-in-left absolute left-0 top-0 h-full w-80 max-w-[86vw] border-r border-white/10 bg-[#171126] text-slate-300 shadow-2xl">
-            <SidebarContent
+          <aside className="animate-slide-in-left absolute inset-y-0 left-0 w-72 max-w-[85vw] border-r border-line bg-surface">
+            <Sidebar
               user={user}
-              currentPath={currentPath}
-              collapsed={false}
-              onCloseMobile={() => setMobileOpen(false)}
+              pathname={pathname}
+              onNavigate={() => setMobileOpen(false)}
             />
           </aside>
         </div>
       ) : null}
 
-      <div
-        className={cx(
-          "portal-main min-h-screen transition-[padding-left] duration-300",
-          collapsed ? "lg:pl-20" : "lg:pl-80",
-        )}
-      >
-        <div className="mx-auto flex min-h-screen max-w-[1800px] flex-col gap-5 px-4 py-4 sm:px-5 xl:px-7">
-          <header className="animate-enter rounded-lg border border-white/10 bg-slate-950/72 p-4 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] backdrop-blur xl:p-5">
-            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-              <div className="min-w-0 space-y-3">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setMobileOpen(true)}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-600 hover:bg-slate-800/80 hover:text-white lg:hidden"
-                    aria-label="Open sidebar"
-                    type="button"
-                  >
-                    <Menu size={18} />
-                  </button>
-                  <span
-                    className={cx(
-                      "inline-flex rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em]",
-                      roleStyles[user.role],
-                    )}
-                  >
-                    {user.role.replaceAll("_", " ")}
-                  </span>
-                </div>
+      <div className="lg:pl-64">
+        <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-canvas/90 px-4 py-3 backdrop-blur lg:hidden">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="btn-secondary btn-sm"
+            aria-label="Open menu"
+            type="button"
+          >
+            <Menu size={18} />
+          </button>
+          <span className="text-sm font-semibold">CS Department</span>
+        </div>
 
-                <div className="min-w-0">
-                  <h1 className="text-2xl font-bold text-white md:text-3xl">{title}</h1>
-                  {description ? (
-                    <p className="mt-1 max-w-4xl text-sm leading-6 text-slate-400">
-                      {description}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-slate-300">
-                <Clock3 size={16} className="text-violet-200" />
-                <SidebarClock />
-                <span className="hidden h-4 w-px bg-white/15 sm:inline-block" />
-                <span className="font-medium text-white">{user.name}</span>
-              </div>
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 lg:py-8">
+          <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+              {backLink ? (
+                <Link
+                  href={backLink.href}
+                  className="mb-2 inline-flex text-sm text-ink-muted hover:text-ink"
+                >
+                  ← {backLink.label}
+                </Link>
+              ) : null}
+              <h1 className="text-2xl font-semibold text-ink sm:text-3xl">{title}</h1>
+              {description ? <p className="muted mt-1 max-w-2xl">{description}</p> : null}
             </div>
+            {actions ? <div className="flex shrink-0 flex-wrap gap-2">{actions}</div> : null}
           </header>
 
-          <main className="animate-enter flex-1 [animation-delay:120ms]">{children}</main>
+          <main className="animate-enter">{children}</main>
         </div>
       </div>
     </div>

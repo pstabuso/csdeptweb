@@ -2,43 +2,19 @@ import { Send } from "lucide-react";
 
 import { createConcern } from "@/app/actions/concerns";
 import { SubmitButton } from "@/components/forms/submit-button";
-import { STUDENT_CONCERN_CATEGORIES } from "@/lib/constants";
+import { STAFF_CATEGORY_OWNERSHIP, STUDENT_CONCERN_CATEGORIES } from "@/lib/constants";
 
-type StudentConcernFormProps = {
-  redirectTo?: string;
-};
-
-export function StudentConcernForm({
-  redirectTo = "/student",
-}: StudentConcernFormProps) {
+export function StudentConcernForm() {
   return (
-    <form
-      id="new-concern"
-      action={createConcern}
-      className="animate-enter scroll-mt-5 space-y-4 rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]"
-    >
-      <input type="hidden" name="redirectTo" value={redirectTo} />
-      <div className="space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">
-          New concern
-        </p>
-        <h2 className="text-xl font-semibold text-white">Submit request</h2>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200" htmlFor="category">
+    <form action={createConcern} className="card card-pad space-y-5">
+      <div className="grid gap-4 md:grid-cols-[240px_minmax(0,1fr)]">
+        <div className="field">
+          <label className="label" htmlFor="category">
             Concern type
           </label>
-          <select
-            id="category"
-            name="category"
-            required
-            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
-            defaultValue=""
-          >
+          <select id="category" name="category" required className="input" defaultValue="">
             <option value="" disabled>
-              Choose type
+              Choose a type
             </option>
             {STUDENT_CONCERN_CATEGORIES.map((category) => (
               <option key={category} value={category}>
@@ -48,8 +24,8 @@ export function StudentConcernForm({
           </select>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200" htmlFor="subject">
+        <div className="field">
+          <label className="label" htmlFor="subject">
             Subject
           </label>
           <input
@@ -57,14 +33,15 @@ export function StudentConcernForm({
             name="subject"
             required
             minLength={5}
-            className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
-            placeholder="Short summary"
+            maxLength={140}
+            className="input"
+            placeholder="e.g. Request to complete INC in CS 101"
           />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-200" htmlFor="message">
+      <div className="field">
+        <label className="label" htmlFor="message">
           Details
         </label>
         <textarea
@@ -72,16 +49,29 @@ export function StudentConcernForm({
           name="message"
           required
           minLength={15}
-          rows={5}
-          className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400 focus:bg-slate-950"
-          placeholder="Explain the request or concern"
+          rows={7}
+          className="input resize-y"
+          placeholder="Explain what you need, include course codes, sections, and dates where relevant."
         />
+        <p className="hint">At least 15 characters. You can add follow-ups after submitting.</p>
       </div>
 
-      <SubmitButton pendingLabel="Sending concern...">
-        <Send size={16} />
-        Send concern
-      </SubmitButton>
+      <div className="flex flex-col gap-4 border-t border-line pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <dl className="grid gap-1 text-xs text-ink-faint">
+          <div>
+            <dt className="inline font-medium text-ink-muted">Coordinator handles: </dt>
+            <dd className="inline">{STAFF_CATEGORY_OWNERSHIP.COORDINATOR.join(", ")}</dd>
+          </div>
+          <div>
+            <dt className="inline font-medium text-ink-muted">Secretary handles: </dt>
+            <dd className="inline">{STAFF_CATEGORY_OWNERSHIP.SECRETARY.join(", ")}</dd>
+          </div>
+        </dl>
+        <SubmitButton pendingLabel="Submitting…">
+          <Send size={16} />
+          Submit concern
+        </SubmitButton>
+      </div>
     </form>
   );
 }

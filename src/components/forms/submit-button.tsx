@@ -9,23 +9,40 @@ type SubmitButtonProps = {
   children: React.ReactNode;
   pendingLabel?: string;
   className?: string;
+  variant?: "primary" | "secondary" | "ghost";
+  formAction?: (formData: FormData) => void | Promise<void>;
+  name?: string;
+  value?: string;
+  "aria-label"?: string;
+};
+
+const variants = {
+  primary: "btn-primary",
+  secondary: "btn-secondary",
+  ghost: "btn-ghost",
 };
 
 export function SubmitButton({
   children,
   pendingLabel = "Saving...",
   className,
+  variant = "primary",
+  formAction,
+  name,
+  value,
+  "aria-label": ariaLabel,
 }: SubmitButtonProps) {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
-      className={cx(
-        "inline-flex items-center justify-center gap-2 rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_10px_30px_-18px_rgba(14,165,233,0.95)] transition hover:bg-sky-400 active:translate-y-px disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-300 disabled:shadow-none",
-        className,
-      )}
+      className={cx(variants[variant], className)}
       disabled={pending}
+      formAction={formAction}
+      name={name}
+      value={value}
+      aria-label={ariaLabel}
     >
       {pending ? (
         <>

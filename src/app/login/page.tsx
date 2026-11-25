@@ -14,7 +14,7 @@ export default async function LoginPage() {
   return (
     <AuthShell
       title="Sign in"
-      subtitle="Use your assigned account."
+      subtitle="Students, staff and admins all sign in here."
       footerHref="/sign-up"
       footerLabel="Need an account?"
       footerAction="Student sign up"

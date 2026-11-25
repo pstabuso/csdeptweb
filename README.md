@@ -4,10 +4,44 @@ A Next.js and Prisma starter for a Vercel-deployed concern-management system for
 
 ## Roles included
 
-- `student`: logs in, submits concerns, and reads staff replies
-- `coordinator`: reviews all concerns and responds from the staff queue
-- `secretary`: reviews all concerns and responds from the staff queue
-- `admin`: sees platform-wide activity, user distribution, and concern metrics
+| Role | Handles | Calendar |
+| --- | --- | --- |
+| `student` | Submits concerns, follows up on replies, closes resolved concerns | View |
+| `coordinator` | Thesis Consultation, Grade/INC Completion, Readmission | View |
+| `secretary` | COR Revision, Others | **Manage** |
+| `admin` | Accounts, read-only oversight of every concern, activity log | View |
+
+Staff can open and answer any concern. Their queue simply defaults to
+**My categories → Needs reply** so each role sees its own work first. The
+category split lives in `STAFF_CATEGORY_OWNERSHIP` in `src/lib/constants.ts`.
+
+## Routes
+
+| Path | What it is |
+| --- | --- |
+| `/student` | Overview: new replies, waiting concerns, upcoming schedule, student-number setup |
+| `/student/concerns` | Active / closed / all concerns (new staff replies first) |
+| `/student/concerns/new` | Submit a concern |
+| `/student/concerns/[id]` | Conversation, follow-up form, "Mark as resolved" |
+| `/student/calendar` | Department calendar |
+| `/coordinator`, `/secretary` | Paginated concern queue with status counts, search, type filter and sort |
+| `/coordinator/concerns/[id]`, `/secretary/concerns/[id]` | Thread, reply + status, close/reopen, student's other concerns |
+| `/coordinator/calendar`, `/secretary/calendar` | Calendar (secretary can add, edit, delete) |
+| `/admin` | Overview: concern counts, open load per staff role, people, recent activity |
+| `/admin/users` | Search and filter accounts, edit name / email / role / access |
+| `/admin/concerns`, `/admin/concerns/[id]` | Read-only queue and threads |
+| `/admin/calendar`, `/admin/activity` | Calendar and paginated audit log |
+| `/profile` | Name and password |
+
+## Concern lifecycle
+
+```
+Student submits ──► OPEN ("Needs reply")
+Staff replies   ──► ANSWERED (default) / stays OPEN / CLOSED
+Student follows up ──► back to OPEN
+Student "Mark as resolved" or staff "Close" ──► CLOSED
+Staff "Reopen" ──► OPEN
+```
 
 ## Authentication flow
 
@@ -81,11 +115,20 @@ admin credentials through environment variables:
 
 ## What the system does
 
-- Students can submit a concern with a subject, category, and description
-- Coordinators and secretaries share a response queue and can update concern status
-- Admins can monitor total users, concern counts, and the latest audit activity
-- The login page requires users to choose the role they are signing in as
-- All successful logins, concern submissions, and staff replies are recorded in the audit log
+- Students submit a concern with a type, subject and details, then hold a two-way conversation with staff on the concern page
+- Coordinators and secretaries work from a paginated queue split by category ownership, with "Student followed up" and "New" indicators
+- Every form reports success or what went wrong via a notice banner (`src/lib/notices.ts`)
+- The secretary maintains the department calendar; everyone else can view it
+- Admins manage accounts and review all concerns and the audit log
+- Logins, concern submissions, replies, follow-ups, close/reopen, calendar changes and account edits are recorded in the audit log
+
+## Design system
+
+Tokens and component classes live in `src/app/globals.css`: one dark canvas,
+two surface levels (`bg-surface`, `bg-raised`), `ink` text colours, a single
+violet accent, and classes such as `card`, `btn-primary`, `btn-secondary`,
+`input`, `label`, `chip`. Status colours (amber / emerald / grey) are reserved
+for concern status. Shared building blocks are in `src/components/ui/`.
 
 ## Vercel deployment notes
 

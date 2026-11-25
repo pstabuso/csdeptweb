@@ -8,24 +8,31 @@ import { logActivity } from "@/lib/activity";
 import { requireUser } from "@/lib/auth";
 import { parseManilaDateTimeLocal } from "@/lib/ph-time";
 import { getDb } from "@/lib/prisma";
+import { withNotice } from "@/lib/notices";
 import { sanitizeRedirectPath } from "@/lib/security";
 import { scheduleEntrySchema } from "@/lib/validation";
 
-const writableRoles = [Role.COORDINATOR, Role.SECRETARY];
+// The secretary owns the department calendar. Everyone else can view it.
+const writableRoles = [Role.SECRETARY];
+const CALENDAR_FALLBACK = "/secretary/calendar";
 
 function revalidateScheduleViews() {
-  revalidatePath("/student");
-  revalidatePath("/coordinator");
-  revalidatePath("/secretary");
-  revalidatePath("/admin");
+  revalidatePath("/student", "layout");
+  revalidatePath("/coordinator", "layout");
+  revalidatePath("/secretary", "layout");
+  revalidatePath("/admin", "layout");
+}
+
+function getRedirectTarget(formData: FormData) {
+  return sanitizeRedirectPath(
+    String(formData.get("redirectTo") || CALENDAR_FALLBACK),
+    CALENDAR_FALLBACK,
+  );
 }
 
 export async function createScheduleEntry(formData: FormData) {
   const user = await requireUser(writableRoles);
-  const redirectTo = sanitizeRedirectPath(
-    String(formData.get("redirectTo") || "/coordinator"),
-    user.role === Role.COORDINATOR ? "/coordinator" : "/secretary",
-  );
+  const redirectTo = getRedirectTarget(formData);
   const parsed = scheduleEntrySchema.safeParse({
     title: formData.get("title"),
     location: formData.get("location"),
@@ -35,14 +42,14 @@ export async function createScheduleEntry(formData: FormData) {
   });
 
   if (!parsed.success) {
-    redirect(redirectTo);
+    redirect(withNotice(redirectTo, "schedule-invalid"));
   }
 
   const startsAt = parseManilaDateTimeLocal(parsed.data.startsAt);
   const endsAt = parseManilaDateTimeLocal(parsed.data.endsAt);
 
   if (!startsAt || !endsAt) {
-    redirect(redirectTo);
+    redirect(withNotice(redirectTo, "schedule-invalid"));
   }
 
   const db = getDb();
@@ -69,15 +76,12 @@ export async function createScheduleEntry(formData: FormData) {
   });
 
   revalidateScheduleViews();
-  redirect(redirectTo);
+  redirect(withNotice(redirectTo, "schedule-saved"));
 }
 
 export async function updateScheduleEntry(entryId: string, formData: FormData) {
   const user = await requireUser(writableRoles);
-  const redirectTo = sanitizeRedirectPath(
-    String(formData.get("redirectTo") || "/coordinator"),
-    user.role === Role.COORDINATOR ? "/coordinator" : "/secretary",
-  );
+  const redirectTo = getRedirectTarget(formData);
   const parsed = scheduleEntrySchema.safeParse({
     title: formData.get("title"),
     location: formData.get("location"),
@@ -87,14 +91,14 @@ export async function updateScheduleEntry(entryId: string, formData: FormData) {
   });
 
   if (!parsed.success) {
-    redirect(redirectTo);
+    redirect(withNotice(redirectTo, "schedule-invalid"));
   }
 
   const startsAt = parseManilaDateTimeLocal(parsed.data.startsAt);
   const endsAt = parseManilaDateTimeLocal(parsed.data.endsAt);
 
   if (!startsAt || !endsAt) {
-    redirect(redirectTo);
+    redirect(withNotice(redirectTo, "schedule-invalid"));
   }
 
   const db = getDb();
@@ -121,15 +125,12 @@ export async function updateScheduleEntry(entryId: string, formData: FormData) {
   });
 
   revalidateScheduleViews();
-  redirect(redirectTo);
+  redirect(withNotice(redirectTo, "schedule-saved"));
 }
 
 export async function deleteScheduleEntry(entryId: string, formData: FormData) {
   const user = await requireUser(writableRoles);
-  const redirectTo = sanitizeRedirectPath(
-    String(formData.get("redirectTo") || "/coordinator"),
-    user.role === Role.COORDINATOR ? "/coordinator" : "/secretary",
-  );
+  const redirectTo = getRedirectTarget(formData);
   const db = getDb();
 
   const existingEntry = await db.scheduleEntry.findUnique({
@@ -161,5 +162,5 @@ export async function deleteScheduleEntry(entryId: string, formData: FormData) {
   });
 
   revalidateScheduleViews();
-  redirect(redirectTo);
+  redirect(withNotice(redirectTo, "schedule-deleted"));
 }

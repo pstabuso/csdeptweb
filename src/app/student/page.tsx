@@ -1,237 +1,151 @@
 import { Role } from "@prisma/client";
-import { Save } from "lucide-react";
+import { ArrowRight, PenLine, Save } from "lucide-react";
+import Link from "next/link";
 
 import { updateStudentNumber } from "@/app/actions/concerns";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { AppShell } from "@/components/layout/app-shell";
-import { ScheduleBoard } from "@/components/portal/schedule-board";
-import { StudentConcernForm } from "@/components/portal/student-concern-form";
-import { StatusBadge } from "@/components/portal/status-badge";
+import { UpcomingSchedule } from "@/components/portal/schedule-board";
+import { StudentConcernList } from "@/components/portal/student-concern-list";
+import { EmptyState, Notice, SectionHeader, StatTile } from "@/components/ui/primitives";
 import { requireUser } from "@/lib/auth";
-import {
-  getScheduleEntries,
-  getStudentDashboardData,
-  normalizeScheduleMonth,
-} from "@/lib/dashboard-data";
-import { formatDateTime } from "@/lib/format";
-import { shiftScheduleMonth } from "@/lib/ph-time";
+import { getStudentOverview, getUpcomingScheduleEntries } from "@/lib/dashboard-data";
 
 type PageProps = {
-  searchParams?: Promise<{
-    scheduleMonth?: string;
-  }>;
+  searchParams?: Promise<{ notice?: string }>;
 };
 
-function ConcernList({
-  title,
-  concerns,
-}: {
-  title: string;
-  concerns: Awaited<ReturnType<typeof getStudentDashboardData>>;
-}) {
+function StudentNumberSetup() {
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
-          {title}
-        </h2>
-        <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-semibold text-slate-300">
-          {concerns.length}
-        </span>
-      </div>
-
-      {concerns.length ? (
-        concerns.map((concern) => (
-          <article
-            key={concern.id}
-            className="space-y-4 rounded-lg border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-55px_rgba(10,8,22,0.98)] backdrop-blur"
-          >
-            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-              <div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <StatusBadge status={concern.status} />
-                  <span className="rounded-full bg-violet-400/10 px-2.5 py-1 text-[11px] font-semibold text-violet-100 ring-1 ring-inset ring-violet-300/20">
-                    {concern.category}
-                  </span>
-                </div>
-                <h3 className="mt-2 text-lg font-semibold text-white">
-                  {concern.subject}
-                </h3>
-                <p className="mt-1 text-sm text-slate-400">
-                  {formatDateTime(concern.createdAt)}
-                </p>
-              </div>
-            </div>
-
-            <section className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-                Concern
-              </p>
-              <div className="rounded-lg border border-white/10 bg-slate-900/80 p-3 text-sm leading-6 text-slate-200">
-                {concern.message}
-              </div>
-            </section>
-
-            <details className="rounded-lg border border-white/10 bg-slate-900/60">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3">
-                <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  Replies
-                </h4>
-                <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-semibold text-slate-300">
-                  {concern.replies.length}
-                </span>
-              </summary>
-              {concern.replies.length ? (
-                <div className="space-y-2 border-t border-white/10 p-3">
-                  {concern.replies.map((reply) => (
-                    <div
-                      key={reply.id}
-                      className="rounded-lg border border-white/10 bg-slate-950/70 p-3"
-                    >
-                      <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                        <span>{reply.author.name}</span>
-                        <span className="text-slate-700">/</span>
-                        <span>{reply.author.role.replaceAll("_", " ")}</span>
-                        <span className="text-slate-700">/</span>
-                        <span>{formatDateTime(reply.createdAt)}</span>
-                      </div>
-                      <p className="mt-2 text-sm leading-6 text-slate-200">
-                        {reply.message}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="border-t border-white/10 px-3 py-3 text-sm text-slate-400">
-                  No replies yet.
-                </p>
-              )}
-            </details>
-          </article>
-        ))
-      ) : (
-        <div className="rounded-[1.5rem] border border-dashed border-white/15 bg-slate-950/50 p-5 text-center text-sm text-slate-400">
-          None
-        </div>
-      )}
-    </div>
+    <section className="card card-pad border-violet-400/30">
+      <p className="eyebrow">One-time setup</p>
+      <h2 className="section-title mt-0.5">Add your student number</h2>
+      <p className="muted mt-1 max-w-xl">
+        The department uses it to find your records. You can submit concerns once it&apos;s saved.
+      </p>
+      <form action={updateStudentNumber} className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <label className="sr-only" htmlFor="studentNumber">
+          Student number
+        </label>
+        <input
+          id="studentNumber"
+          name="studentNumber"
+          required
+          minLength={5}
+          className="input sm:max-w-xs"
+          placeholder="2024-00001"
+        />
+        <SubmitButton pendingLabel="Saving…">
+          <Save size={16} />
+          Save
+        </SubmitButton>
+      </form>
+    </section>
   );
 }
 
-export default async function StudentPage({ searchParams }: PageProps) {
+export default async function StudentOverviewPage({ searchParams }: PageProps) {
   const user = await requireUser([Role.STUDENT]);
-  const params = (await searchParams) ?? {};
-  const scheduleMonth = normalizeScheduleMonth(params.scheduleMonth);
-  const [concerns, scheduleEntries] = await Promise.all([
-    getStudentDashboardData(user.id),
-    getScheduleEntries(scheduleMonth),
+  const { notice } = (await searchParams) ?? {};
+  const [{ counts, needsAttention, recent }, upcoming] = await Promise.all([
+    getStudentOverview(user.id),
+    getUpcomingScheduleEntries(4),
   ]);
   const hasStudentNumber = Boolean(user.studentNumber);
-  const activeConcerns = concerns.filter((concern) => concern.status !== "CLOSED");
-  const closedConcerns = concerns.filter((concern) => concern.status === "CLOSED");
-  const previousMonthHref = `/student?scheduleMonth=${shiftScheduleMonth(scheduleMonth, -1)}`;
-  const nextMonthHref = `/student?scheduleMonth=${shiftScheduleMonth(scheduleMonth, 1)}`;
+  const firstName = user.name.split(" ")[0];
 
   return (
     <AppShell
       user={user}
-      title="Student desk"
-      description="Submit concerns and track replies."
-      currentPath="/student"
+      title={`Hi, ${firstName}`}
+      description={
+        user.studentNumber
+          ? `Student number ${user.studentNumber}`
+          : "Finish setup to start submitting concerns."
+      }
+      actions={
+        hasStudentNumber ? (
+          <Link href="/student/concerns/new" className="btn-primary">
+            <PenLine size={16} />
+            New concern
+          </Link>
+        ) : null
+      }
     >
-      <div className="space-y-8">
-        <section className="grid gap-6 xl:grid-cols-[minmax(320px,420px)_minmax(0,1fr)]">
-          <section
-            id="record"
-            className="animate-enter scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-5 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)]"
-          >
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
-              Record
-            </p>
-            <h2 className="mt-1 text-xl font-semibold text-white">
-              {hasStudentNumber ? "Ready" : "Student number required"}
-            </h2>
+      <div className="space-y-6">
+        <Notice code={notice} />
 
-            <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-slate-900/85 p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                    Student number
-                  </p>
-                  <p className="mt-1 text-base font-semibold text-white">
-                    {user.studentNumber || "Not set"}
-                  </p>
-                </div>
-                <span
-                  className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide ${
-                    hasStudentNumber
-                      ? "bg-violet-400/15 text-violet-100 ring-1 ring-inset ring-violet-300/30"
-                      : "bg-fuchsia-400/15 text-fuchsia-100 ring-1 ring-inset ring-fuchsia-300/30"
-                  }`}
-                >
-                  {hasStudentNumber ? "Ready" : "Needed"}
-                </span>
-              </div>
+        {!hasStudentNumber ? <StudentNumberSetup /> : null}
 
-              {!hasStudentNumber ? (
-                <form action={updateStudentNumber} className="mt-5 space-y-4">
-                  <div className="space-y-2">
-                    <label
-                      className="text-sm font-medium text-slate-200"
-                      htmlFor="studentNumber"
-                    >
-                      Student number
-                    </label>
-                    <input
-                      id="studentNumber"
-                      name="studentNumber"
-                      required
-                      minLength={4}
-                      className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
-                      placeholder="2024-00001"
-                    />
-                  </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <StatTile
+            label="Staff replied"
+            value={counts.ANSWERED}
+            helper={counts.ANSWERED ? "Read and follow up or close" : "Nothing new"}
+            href="/student/concerns"
+            highlight={counts.ANSWERED > 0}
+          />
+          <StatTile
+            label="Waiting for staff"
+            value={counts.OPEN}
+            helper="Staff will reply here"
+            href="/student/concerns"
+          />
+          <StatTile
+            label="Closed"
+            value={counts.CLOSED}
+            href="/student/concerns?view=closed"
+          />
+        </div>
 
-                  <SubmitButton pendingLabel="Saving student number...">
-                    <Save size={16} />
-                    Save student number
-                  </SubmitButton>
-                </form>
-              ) : null}
-            </div>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <section className="space-y-3">
+            <SectionHeader
+              title={needsAttention.length ? "Needs your attention" : "Recent concerns"}
+              action={
+                counts.ALL ? (
+                  <Link href="/student/concerns" className="btn-ghost btn-sm">
+                    View all
+                    <ArrowRight size={14} />
+                  </Link>
+                ) : null
+              }
+            />
+            {needsAttention.length ? (
+              <StudentConcernList concerns={needsAttention} />
+            ) : recent.length ? (
+              <StudentConcernList concerns={recent} />
+            ) : (
+              <EmptyState
+                title="No concerns yet"
+                description="Have a question about COR, grades, readmission, or your thesis? Send it to the department."
+                action={
+                  hasStudentNumber ? (
+                    <Link href="/student/concerns/new" className="btn-primary">
+                      <PenLine size={16} />
+                      Submit a concern
+                    </Link>
+                  ) : null
+                }
+              />
+            )}
           </section>
 
-          {hasStudentNumber ? (
-            <StudentConcernForm redirectTo={`/student?scheduleMonth=${scheduleMonth}`} />
-          ) : (
-            <section className="animate-enter rounded-lg border border-dashed border-sky-500/25 bg-sky-500/10 p-5 text-sm leading-7 text-sky-100">
-              Submit unlocks after saving your student number.
-            </section>
-          )}
-        </section>
-
-        <ScheduleBoard
-          month={scheduleMonth}
-          entries={scheduleEntries}
-          canManage={false}
-          previousMonthHref={previousMonthHref}
-          nextMonthHref={nextMonthHref}
-          redirectTo="/student"
-          title="Department calendar"
-        />
-
-        <section id="concerns" className="scroll-mt-5 space-y-6">
-          {concerns.length ? (
-            <>
-              <ConcernList title="Active" concerns={activeConcerns} />
-              <ConcernList title="Closed" concerns={closedConcerns} />
-            </>
-          ) : (
-            <div className="rounded-[1.5rem] border border-dashed border-white/15 bg-slate-950/50 p-5 text-center text-sm text-slate-400">
-              No concerns yet.
+          <section className="space-y-3">
+            <SectionHeader
+              title="Coming up"
+              action={
+                <Link href="/student/calendar" className="btn-ghost btn-sm">
+                  Calendar
+                  <ArrowRight size={14} />
+                </Link>
+              }
+            />
+            <div className="card card-pad">
+              <UpcomingSchedule entries={upcoming} />
             </div>
-          )}
-        </section>
+          </section>
+        </div>
       </div>
     </AppShell>
   );

@@ -18,29 +18,30 @@ export function AuthShell({
   footerAction,
 }: AuthShellProps) {
   return (
-    <main className="min-h-screen bg-[#120d20] px-4 py-6 text-slate-100">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-md items-center">
-        <section className="animate-enter w-full rounded-lg border border-white/10 bg-slate-950/78 p-6 shadow-[0_24px_90px_-48px_rgba(0,0,0,0.95)] backdrop-blur">
-          <div className="mb-6 border-b border-white/10 pb-5">
-            <p className="text-sm font-bold text-sky-300">
-              CS Department Portal
-            </p>
-            <h1 className="mt-4 text-2xl font-bold text-white">{title}</h1>
-            <p className="mt-1 text-sm text-slate-400">{subtitle}</p>
-          </div>
+    <main className="flex min-h-screen items-center justify-center bg-canvas px-4 py-10 text-ink">
+      <div className="animate-enter w-full max-w-md">
+        <div className="mb-6 flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-500 text-sm font-bold text-white">
+            CS
+          </span>
+          <span>
+            <span className="block text-sm font-semibold">CS Department</span>
+            <span className="block text-xs text-ink-faint">Support portal</span>
+          </span>
+        </div>
 
-          {children}
-
-          <p className="mt-5 text-center text-sm text-slate-400">
-            {footerLabel}{" "}
-            <Link
-              className="font-semibold text-sky-300 transition hover:text-sky-200"
-              href={footerHref}
-            >
-              {footerAction}
-            </Link>
-          </p>
+        <section className="card p-6">
+          <h1 className="text-2xl font-semibold">{title}</h1>
+          <p className="muted mt-1">{subtitle}</p>
+          <div className="mt-6">{children}</div>
         </section>
+
+        <p className="mt-5 text-center text-sm text-ink-muted">
+          {footerLabel}{" "}
+          <Link className="font-medium text-violet-300 hover:text-violet-200" href={footerHref}>
+            {footerAction}
+          </Link>
+        </p>
       </div>
     </main>
   );
