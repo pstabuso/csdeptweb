@@ -119,7 +119,7 @@ async function main() {
   const labConcern = await db.concern.create({
     data: {
       subject: "Request for laboratory make-up schedule",
-      category: "Others",
+      category: "Grade/INC Completion",
       message:
         "I missed the database systems laboratory because of a medical appointment. May I request a make-up schedule for this week?",
       status: ConcernStatus.ANSWERED,
@@ -143,6 +143,34 @@ async function main() {
         "My clearance still shows pending even though I already returned the borrowed equipment last week.",
       status: ConcernStatus.OPEN,
       studentId: student.id,
+    },
+  });
+
+  // A thread where the student followed up after a staff reply, so it is
+  // back in the coordinator's "Needs reply" queue.
+  await db.concern.create({
+    data: {
+      subject: "Thesis adviser consultation slot",
+      category: "Thesis Consultation",
+      message:
+        "Our group needs a consultation with our adviser before the proposal defense. Which slots are still open this month?",
+      status: ConcernStatus.OPEN,
+      studentId: student.id,
+      lastRespondedAt: new Date(),
+      replies: {
+        create: [
+          {
+            authorId: coordinator.id,
+            createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+            message:
+              "Tuesday and Thursday mornings are open. Please confirm your group members and preferred day.",
+          },
+          {
+            authorId: student.id,
+            message: "Thursday works for all four of us. Thank you!",
+          },
+        ],
+      },
     },
   });
 

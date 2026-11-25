@@ -32,3 +32,5 @@ This portal now uses STRIDE as a lightweight design check for the highest-risk f
 - Password, role, status, and security-sensitive account changes rotate the session version.
 - Old sessions are forced back to sign-in when the stored version changes.
 - Admins cannot disable or demote the account currently running the admin session.
+- Students can only read, follow up on, or close their own concerns; other concern IDs return 404.
+- Only the secretary role can create, edit or delete calendar entries (enforced in the server actions).

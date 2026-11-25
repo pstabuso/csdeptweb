@@ -6,11 +6,17 @@ import { redirect } from "next/navigation";
 
 import { logActivity } from "@/lib/activity";
 import { requireUser } from "@/lib/auth";
+import { withNotice } from "@/lib/notices";
 import { getDb } from "@/lib/prisma";
+import { sanitizeRedirectPath } from "@/lib/security";
 import { accessUpdateSchema } from "@/lib/validation";
 
 export async function updateUserAccess(userId: string, formData: FormData) {
   const admin = await requireUser([Role.ADMIN]);
+  const redirectTo = sanitizeRedirectPath(
+    String(formData.get("redirectTo") || "/admin/users"),
+    "/admin/users",
+  );
   const parsed = accessUpdateSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -20,7 +26,7 @@ export async function updateUserAccess(userId: string, formData: FormData) {
   });
 
   if (!parsed.success) {
-    redirect("/admin");
+    redirect(withNotice(redirectTo, "user-invalid"));
   }
 
   const db = getDb();
@@ -38,7 +44,7 @@ export async function updateUserAccess(userId: string, formData: FormData) {
   });
 
   if (!existingUser) {
-    redirect("/admin");
+    redirect(withNotice(redirectTo, "user-invalid"));
   }
 
   const normalizedEmail = parsed.data.email.toLowerCase();
@@ -63,7 +69,7 @@ export async function updateUserAccess(userId: string, formData: FormData) {
       },
     });
 
-    redirect("/admin");
+    redirect(withNotice(redirectTo, "self-change-blocked"));
   }
 
   const duplicateEmailUser = await db.user.findFirst({
@@ -77,7 +83,7 @@ export async function updateUserAccess(userId: string, formData: FormData) {
   });
 
   if (duplicateEmailUser) {
-    redirect("/admin");
+    redirect(withNotice(redirectTo, "user-email-taken"));
   }
 
   if (normalizedStudentNumber) {
@@ -92,7 +98,7 @@ export async function updateUserAccess(userId: string, formData: FormData) {
     });
 
     if (duplicateStudentNumberUser) {
-      redirect("/admin");
+      redirect(withNotice(redirectTo, "user-student-number-taken"));
     }
   }
 
@@ -139,6 +145,6 @@ export async function updateUserAccess(userId: string, formData: FormData) {
     },
   });
 
-  revalidatePath("/admin");
-  redirect("/admin");
+  revalidatePath("/admin", "layout");
+  redirect(withNotice(redirectTo, "user-saved"));
 }

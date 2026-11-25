@@ -1,10 +1,11 @@
 import { Save } from "lucide-react";
 
-import { AppShell } from "@/components/layout/app-shell";
-import { SubmitButton } from "@/components/forms/submit-button";
 import { updateProfile } from "@/app/actions/profile";
+import { SubmitButton } from "@/components/forms/submit-button";
+import { AppShell } from "@/components/layout/app-shell";
 import { requireUser } from "@/lib/auth";
-import { formatRoleLabel } from "@/lib/format";
+import { cx } from "@/lib/cx";
+import { formatDate, formatRoleLabel } from "@/lib/format";
 
 type PageProps = {
   searchParams?: Promise<{
@@ -12,74 +13,60 @@ type PageProps = {
   }>;
 };
 
+const statusMessages: Record<string, { tone: "success" | "error"; text: string }> = {
+  saved: { tone: "success", text: "Profile updated." },
+  password: { tone: "error", text: "Your current password didn't match. Nothing was changed." },
+  invalid: { tone: "error", text: "Check the form: new passwords need 8+ characters and must match." },
+};
+
 export default async function ProfilePage({ searchParams }: PageProps) {
   const user = await requireUser();
   const params = (await searchParams) ?? {};
-  const status = params.status;
+  const message = params.status ? statusMessages[params.status] : undefined;
 
   return (
-    <AppShell
-      user={user}
-      title="Profile"
-      description="Update your account details."
-      currentPath="/profile"
-    >
-      <section className="mx-auto max-w-3xl space-y-4">
-        {status === "saved" ? (
-          <div className="rounded-[1.4rem] border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">
-            Profile updated.
-          </div>
-        ) : null}
-        {status === "password" ? (
-          <div className="rounded-[1.4rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
-            Current password did not match.
-          </div>
-        ) : null}
-        {status === "invalid" ? (
-          <div className="rounded-[1.4rem] border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
-            Check the form and try again.
+    <AppShell user={user} title="Profile" description="Your account details and password.">
+      <div className="max-w-2xl space-y-4">
+        {message ? (
+          <div
+            role={message.tone === "error" ? "alert" : "status"}
+            className={cx(
+              "rounded-lg border px-4 py-3 text-sm",
+              message.tone === "error"
+                ? "border-rose-400/30 bg-rose-500/10 text-rose-100"
+                : "border-emerald-400/30 bg-emerald-500/10 text-emerald-100",
+            )}
+          >
+            {message.text}
           </div>
         ) : null}
 
-        <article className="rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-4 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur">
-          <div className="grid gap-3 md:grid-cols-3">
-            <div className="rounded-[1.1rem] border border-white/10 bg-slate-900/80 p-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-                Role
-              </p>
-              <p className="mt-2 text-lg font-semibold text-white">
-                {formatRoleLabel(user.role)}
-              </p>
+        <section className="card card-pad">
+          <dl className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <dt className="text-xs text-ink-muted">Role</dt>
+              <dd className="mt-1 font-medium text-ink">{formatRoleLabel(user.role)}</dd>
             </div>
-            <div className="rounded-[1.1rem] border border-white/10 bg-slate-900/80 p-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-                Email
-              </p>
-              <p className="mt-2 text-lg font-semibold text-white">{user.email}</p>
+            <div className="min-w-0">
+              <dt className="text-xs text-ink-muted">Email</dt>
+              <dd className="mt-1 truncate font-medium text-ink">{user.email}</dd>
             </div>
-            <div className="rounded-[1.1rem] border border-white/10 bg-slate-900/80 p-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-                Student number
-              </p>
-              <p className="mt-2 text-lg font-semibold text-white">
-                {user.studentNumber || "Not assigned"}
-              </p>
+            <div>
+              <dt className="text-xs text-ink-muted">
+                {user.studentNumber ? "Student number" : "Member since"}
+              </dt>
+              <dd className="mt-1 font-medium text-ink">
+                {user.studentNumber || formatDate(user.createdAt)}
+              </dd>
             </div>
-          </div>
-        </article>
+          </dl>
+          <p className="hint mt-4">To change your email or student number, contact the department admin.</p>
+        </section>
 
-        <form
-          action={updateProfile}
-          className="space-y-4 rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-5 shadow-[0_24px_90px_-50px_rgba(8,15,28,0.95)] backdrop-blur"
-        >
-          <div className="space-y-1">
-            <h2 className="text-xl font-semibold text-white">Account</h2>
-            <p className="text-sm text-slate-400">Name, then password if needed.</p>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-200" htmlFor="name">
-              Username
+        <form action={updateProfile} className="card card-pad space-y-5">
+          <div className="field">
+            <label className="label" htmlFor="name">
+              Display name
             </label>
             <input
               id="name"
@@ -87,67 +74,66 @@ export default async function ProfilePage({ searchParams }: PageProps) {
               defaultValue={user.name}
               required
               minLength={2}
-              className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
+              className="input"
             />
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2 md:col-span-2">
-              <label
-                className="text-sm font-medium text-slate-200"
-                htmlFor="currentPassword"
-              >
+          <fieldset className="space-y-3 border-t border-line pt-5">
+            <legend className="sr-only">Change password</legend>
+            <div>
+              <p className="font-medium text-ink">Change password</p>
+              <p className="hint">Leave blank to keep your current password. Changing it signs out other sessions.</p>
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="currentPassword">
                 Current password
               </label>
               <input
                 id="currentPassword"
                 name="currentPassword"
                 type="password"
-                minLength={8}
-                className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
-                placeholder="Required only when changing password"
+                autoComplete="current-password"
+                className="input"
               />
             </div>
-            <div className="space-y-2">
-              <label
-                className="text-sm font-medium text-slate-200"
-                htmlFor="password"
-              >
-                New password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                minLength={8}
-                className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
-                placeholder="Optional"
-              />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="field">
+                <label className="label" htmlFor="password">
+                  New password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  minLength={8}
+                  autoComplete="new-password"
+                  className="input"
+                />
+              </div>
+              <div className="field">
+                <label className="label" htmlFor="confirmPassword">
+                  Confirm new password
+                </label>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  minLength={8}
+                  autoComplete="new-password"
+                  className="input"
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <label
-                className="text-sm font-medium text-slate-200"
-                htmlFor="confirmPassword"
-              >
-                Confirm password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                minLength={8}
-                className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-violet-400"
-                placeholder="Re-enter new password"
-              />
-            </div>
-          </div>
+          </fieldset>
 
-          <SubmitButton pendingLabel="Saving profile...">
-            <Save size={16} />
-            Save profile
-          </SubmitButton>
+          <div className="flex justify-end">
+            <SubmitButton pendingLabel="Saving…">
+              <Save size={16} />
+              Save changes
+            </SubmitButton>
+          </div>
         </form>
-      </section>
+      </div>
     </AppShell>
   );
 }

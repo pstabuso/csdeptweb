@@ -16,22 +16,23 @@ export function LoginForm() {
       action={action}
       className="space-y-4"
     >
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-200" htmlFor="email">
+      <div className="field">
+        <label className="label" htmlFor="email">
           Email address
         </label>
         <input
           id="email"
           name="email"
           type="email"
+          autoComplete="email"
           required
-          className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:bg-slate-950"
+          className="input"
           placeholder="name@csdept.edu"
         />
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-200" htmlFor="password">
+      <div className="field">
+        <label className="label" htmlFor="password">
           Password
         </label>
         <input
@@ -40,20 +41,21 @@ export function LoginForm() {
           type="password"
           required
           minLength={8}
-          className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:bg-slate-950"
+          className="input"
           placeholder="Enter your password"
+          autoComplete="current-password"
         />
       </div>
 
       {state.error ? (
-        <p className="rounded-[1.2rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
+        <p role="alert" className="rounded-lg border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
           {state.error}
         </p>
       ) : null}
 
       <SubmitButton
         pendingLabel="Signing in..."
-        className="w-full py-2.5 text-base"
+        className="w-full"
       >
         <LogIn size={17} />
         Sign in

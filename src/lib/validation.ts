@@ -64,6 +64,14 @@ export const replySchema = z.object({
   status: z.enum(["OPEN", "ANSWERED", "CLOSED"]),
 });
 
+export const studentReplySchema = z.object({
+  message: z.string().trim().min(5, "Follow-up must be at least 5 characters."),
+});
+
+export const concernStatusSchema = z.object({
+  status: z.enum(["OPEN", "CLOSED"]),
+});
+
 export const profileUpdateSchema = z
   .object({
     name: z.string().trim().min(2, "Name must be at least 2 characters."),

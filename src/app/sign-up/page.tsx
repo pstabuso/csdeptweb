@@ -14,7 +14,7 @@ export default async function SignupPage() {
   return (
     <AuthShell
       title="Student sign up"
-      subtitle="Create a student account."
+      subtitle="Create a student account to send concerns to the department."
       footerHref="/login"
       footerLabel="Already have an account?"
       footerAction="Sign in"

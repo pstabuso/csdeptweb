@@ -1,15 +1,4 @@
-import { ScheduleEntry, User } from "@prisma/client";
-import {
-  CalendarClock,
-  ChevronLeft,
-  ChevronRight,
-  Clock3,
-  MapPin,
-  Pencil,
-  Plus,
-  Save,
-  Trash2,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock3, MapPin, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -18,21 +7,16 @@ import {
   updateScheduleEntry,
 } from "@/app/actions/schedule";
 import { SubmitButton } from "@/components/forms/submit-button";
-import {
-  formatDate,
-  formatMonthLabel,
-  formatRoleLabel,
-  formatTimeRange,
-} from "@/lib/format";
+import { ConfirmSubmitButton } from "@/components/ui/confirm-submit-button";
+import { EmptyState } from "@/components/ui/primitives";
+import { cx } from "@/lib/cx";
+import type { ScheduleRecord } from "@/lib/dashboard-data";
+import { formatDate, formatMonthLabel, formatRoleLabel, formatTimeRange } from "@/lib/format";
 import {
   formatManilaDateTimeLocalValue,
   getManilaDateKey,
   getManilaMonthGrid,
 } from "@/lib/ph-time";
-
-type ScheduleRecord = ScheduleEntry & {
-  createdBy: Pick<User, "name" | "role">;
-};
 
 type ScheduleBoardProps = {
   month: string;
@@ -40,139 +24,143 @@ type ScheduleBoardProps = {
   canManage: boolean;
   previousMonthHref: string;
   nextMonthHref: string;
+  currentMonthHref: string;
   redirectTo: string;
-  title: string;
-  description?: string;
 };
 
-const inputClass =
-  "w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-violet-400";
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const actionButtonClass =
-  "inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-white/20 hover:bg-white/[0.08] active:translate-y-px";
-
-function FormLabel({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function EntryFields({ entry }: { entry?: ScheduleRecord }) {
   return (
-    <label className="space-y-1.5">
-      <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-        {label}
-      </span>
-      {children}
-    </label>
+    <>
+      <div className="grid gap-3 md:grid-cols-2">
+        <div className="field">
+          <span className="label">Title</span>
+          <input
+            name="title"
+            defaultValue={entry?.title}
+            required
+            minLength={3}
+            placeholder="Consultation hours, office closed, meeting…"
+            className="input"
+            aria-label="Title"
+          />
+        </div>
+        <div className="field">
+          <span className="label">Location</span>
+          <input
+            name="location"
+            defaultValue={entry?.location}
+            required
+            minLength={2}
+            placeholder="Faculty room, lab, online"
+            className="input"
+            aria-label="Location"
+          />
+        </div>
+        <div className="field">
+          <span className="label">Starts</span>
+          <input
+            name="startsAt"
+            type="datetime-local"
+            defaultValue={entry ? formatManilaDateTimeLocalValue(entry.startsAt) : undefined}
+            required
+            className="input"
+            aria-label="Starts"
+          />
+        </div>
+        <div className="field">
+          <span className="label">Ends (same day)</span>
+          <input
+            name="endsAt"
+            type="datetime-local"
+            defaultValue={entry ? formatManilaDateTimeLocalValue(entry.endsAt) : undefined}
+            required
+            className="input"
+            aria-label="Ends"
+          />
+        </div>
+      </div>
+      <div className="field">
+        <span className="label">Notes (optional)</span>
+        <textarea
+          name="notes"
+          rows={2}
+          defaultValue={entry?.notes ?? ""}
+          className="input"
+          aria-label="Notes"
+        />
+      </div>
+      <p className="hint">Times are Philippine time. Entries are visible to students.</p>
+    </>
   );
 }
 
-function EntrySummary({ entry }: { entry: ScheduleRecord }) {
-  return (
+function EntryCard({
+  entry,
+  canManage,
+  redirectTo,
+}: {
+  entry: ScheduleRecord;
+  canManage: boolean;
+  redirectTo: string;
+}) {
+  const summary = (
     <div className="min-w-0 flex-1">
-      <div className="flex flex-wrap items-center gap-2">
-        <h3 className="truncate text-base font-semibold text-white">
-          {entry.title}
-        </h3>
-        <span className="rounded-full border border-violet-300/20 bg-violet-400/10 px-2 py-1 text-[11px] font-semibold text-violet-100">
-          {formatRoleLabel(entry.createdBy.role)}
-        </span>
-      </div>
-      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-400">
+      <p className="font-medium text-ink">{entry.title}</p>
+      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-muted">
         <span className="inline-flex items-center gap-1.5">
           <Clock3 size={14} />
-          {formatDate(entry.startsAt)} / {formatTimeRange(entry.startsAt, entry.endsAt)}
+          {formatTimeRange(entry.startsAt, entry.endsAt)}
         </span>
         <span className="inline-flex items-center gap-1.5">
           <MapPin size={14} />
           {entry.location}
         </span>
       </div>
-      <p className="mt-1 text-xs text-slate-500">
-        Posted by {entry.createdBy.name}
-      </p>
       {entry.notes ? (
-        <p className="mt-3 max-h-12 overflow-hidden rounded-lg border border-white/10 bg-slate-900/80 px-3 py-2 text-sm leading-6 text-slate-300">
-          {entry.notes}
-        </p>
+        <p className="mt-2 whitespace-pre-wrap text-sm text-ink-muted">{entry.notes}</p>
       ) : null}
+      <p className="hint mt-2">
+        Posted by {entry.createdBy.name} · {formatRoleLabel(entry.createdBy.role)}
+      </p>
     </div>
   );
-}
 
-function EntryForm({
-  entry,
-  redirectTo,
-}: {
-  entry: ScheduleRecord;
-  redirectTo: string;
-}) {
+  if (!canManage) {
+    return <article className="panel p-4">{summary}</article>;
+  }
+
   return (
-    <form
-      action={updateScheduleEntry.bind(null, entry.id)}
-      className="mt-4 space-y-3 border-t border-white/10 pt-4"
-    >
-      <input type="hidden" name="redirectTo" value={redirectTo} />
-      <div className="grid gap-3 md:grid-cols-2">
-        <FormLabel label="Title">
-          <input
-            name="title"
-            defaultValue={entry.title}
-            required
-            className={inputClass}
-          />
-        </FormLabel>
-        <FormLabel label="Location">
-          <input
-            name="location"
-            defaultValue={entry.location}
-            required
-            className={inputClass}
-          />
-        </FormLabel>
-        <FormLabel label="Start, PH time">
-          <input
-            name="startsAt"
-            type="datetime-local"
-            defaultValue={formatManilaDateTimeLocalValue(entry.startsAt)}
-            required
-            className={inputClass}
-          />
-        </FormLabel>
-        <FormLabel label="End, same day">
-          <input
-            name="endsAt"
-            type="datetime-local"
-            defaultValue={formatManilaDateTimeLocalValue(entry.endsAt)}
-            required
-            className={inputClass}
-          />
-        </FormLabel>
-      </div>
-      <FormLabel label="Notes">
-        <textarea
-          name="notes"
-          rows={2}
-          defaultValue={entry.notes ?? ""}
-          className={inputClass}
-        />
-      </FormLabel>
-      <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-        <SubmitButton pendingLabel="Saving..." className="rounded-lg px-4 py-2.5">
-          <Save size={16} />
-          Save edits
-        </SubmitButton>
-        <button
-          type="submit"
-          formAction={deleteScheduleEntry.bind(null, entry.id)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-rose-300/25 bg-rose-400/10 px-4 py-2.5 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20 active:translate-y-px"
-        >
-          <Trash2 size={16} />
-          Delete
-        </button>
-      </div>
-    </form>
+    <details className="group panel p-4">
+      <summary className="flex cursor-pointer list-none items-start gap-3">
+        {summary}
+        <span className="btn-secondary btn-sm shrink-0 group-open:bg-violet-500/15">
+          <Pencil size={13} />
+          Edit
+        </span>
+      </summary>
+      <form
+        action={updateScheduleEntry.bind(null, entry.id)}
+        className="mt-4 space-y-3 border-t border-line pt-4"
+      >
+        <input type="hidden" name="redirectTo" value={redirectTo} />
+        <EntryFields entry={entry} />
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <ConfirmSubmitButton
+            formAction={deleteScheduleEntry.bind(null, entry.id)}
+            confirmMessage={`Delete “${entry.title}”? Students will no longer see it.`}
+          >
+            <Trash2 size={15} />
+            Delete
+          </ConfirmSubmitButton>
+          <SubmitButton pendingLabel="Saving…">
+            <Save size={15} />
+            Save changes
+          </SubmitButton>
+        </div>
+      </form>
+    </details>
   );
 }
 
@@ -182,212 +170,161 @@ export function ScheduleBoard({
   canManage,
   previousMonthHref,
   nextMonthHref,
+  currentMonthHref,
   redirectTo,
-  title,
-  description,
 }: ScheduleBoardProps) {
   const grid = getManilaMonthGrid(month);
-  const entriesByDay = entries.reduce<Record<string, ScheduleRecord[]>>(
-    (accumulator, entry) => {
-      const key = getManilaDateKey(entry.startsAt);
-      accumulator[key] = [...(accumulator[key] || []), entry];
-      return accumulator;
-    },
-    {},
-  );
+  const todayKey = getManilaDateKey(new Date());
+  const entriesByDay = entries.reduce<Record<string, ScheduleRecord[]>>((accumulator, entry) => {
+    const key = getManilaDateKey(entry.startsAt);
+    (accumulator[key] ??= []).push(entry);
+    return accumulator;
+  }, {});
+  const agendaDays = Object.keys(entriesByDay).sort();
 
   return (
-    <section
-      id="schedule"
-      className="animate-enter space-y-4 scroll-mt-5 rounded-lg border border-slate-800 bg-slate-900/88 p-4 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.95)] xl:p-5"
-    >
-      <div className="flex flex-col gap-4 border-b border-white/10 pb-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-200/80">
-            <CalendarClock size={14} />
-            Calendar
-          </p>
-          <h2 className="mt-1 text-xl font-semibold tracking-tight text-white">
-            {title}
-          </h2>
-          {description ? (
-            <p className="mt-1 text-sm text-slate-400">{description}</p>
-          ) : null}
-        </div>
+    <div className="space-y-4">
+      {canManage ? (
+        <details className="card group">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 sm:px-5">
+            <span className="inline-flex items-center gap-2 font-medium text-ink">
+              <Plus size={16} className="text-violet-300" />
+              Add calendar entry
+            </span>
+            <span className="hint group-open:hidden">Click to open</span>
+          </summary>
+          <form
+            action={createScheduleEntry}
+            className="space-y-3 border-t border-line p-4 sm:px-5"
+          >
+            <input type="hidden" name="redirectTo" value={redirectTo} />
+            <EntryFields />
+            <div className="flex justify-end">
+              <SubmitButton pendingLabel="Saving…">
+                <Plus size={15} />
+                Add entry
+              </SubmitButton>
+            </div>
+          </form>
+        </details>
+      ) : null}
 
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <Link href={previousMonthHref} className={actionButtonClass}>
-            <ChevronLeft size={15} />
-            Prev
-          </Link>
-          <span className="rounded-lg border border-violet-300/20 bg-violet-400/10 px-3 py-2 font-semibold text-white">
-            {formatMonthLabel(month)}
-          </span>
-          <Link href={nextMonthHref} className={actionButtonClass}>
-            Next
-            <ChevronRight size={15} />
-          </Link>
-          <span className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-300">
-            PH time
-          </span>
-        </div>
-      </div>
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <section className="card card-pad">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="font-semibold text-ink">{formatMonthLabel(month)}</h2>
+            <div className="flex items-center gap-1">
+              <Link href={previousMonthHref} className="btn-ghost btn-sm" aria-label="Previous month">
+                <ChevronLeft size={16} />
+              </Link>
+              <Link href={currentMonthHref} className="btn-secondary btn-sm">
+                Today
+              </Link>
+              <Link href={nextMonthHref} className="btn-ghost btn-sm" aria-label="Next month">
+                <ChevronRight size={16} />
+              </Link>
+            </div>
+          </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(260px,0.82fr)_minmax(280px,1fr)]">
-        <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
-          <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+          <div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs font-medium text-ink-faint">
+            {WEEKDAYS.map((day) => (
               <div key={day}>{day}</div>
             ))}
           </div>
-
-          <div className="mt-2 grid grid-cols-7 gap-1">
+          <div className="mt-1 grid grid-cols-7 gap-1">
             {grid.map((cell) => {
               if (!cell.dayNumber) {
-                return <div key={cell.key} className="min-h-12" />;
+                return <div key={cell.key} className="aspect-square" />;
               }
 
-              const dayKey = `${month}-${String(cell.dayNumber).padStart(2, "0")}`;
-              const dayEntries = entriesByDay[dayKey] || [];
-              const hasEntries = dayEntries.length > 0;
+              const dayKey = cell.key;
+              const count = entriesByDay[dayKey]?.length ?? 0;
+              const isToday = dayKey === todayKey;
 
               return (
                 <div
                   key={cell.key}
-                  className={`min-h-12 rounded-lg border p-2 ${
-                    hasEntries
-                      ? "border-violet-300/25 bg-violet-400/10"
-                      : "border-white/10 bg-slate-950/70"
-                  }`}
-                  title={
-                    hasEntries
-                      ? `${dayEntries.length} schedule entr${
-                          dayEntries.length === 1 ? "y" : "ies"
-                        }`
-                      : undefined
-                  }
+                  className={cx(
+                    "flex aspect-square flex-col items-center justify-center gap-1 rounded-lg text-sm",
+                    isToday
+                      ? "bg-violet-500 font-semibold text-white"
+                      : count
+                        ? "bg-violet-500/10 text-ink"
+                        : "text-ink-muted",
+                  )}
+                  title={count ? `${count} entr${count === 1 ? "y" : "ies"}` : undefined}
                 >
-                  <div className="flex items-start justify-between gap-1">
-                    <span className="text-sm font-semibold text-white">
-                      {cell.dayNumber}
-                    </span>
-                    {hasEntries ? (
-                      <span className="rounded-full bg-violet-300 px-1.5 py-0.5 text-[10px] font-bold text-slate-950">
-                        {dayEntries.length}
-                      </span>
-                    ) : null}
-                  </div>
+                  {cell.dayNumber}
+                  <span
+                    className={cx(
+                      "h-1 w-1 rounded-full",
+                      count ? (isToday ? "bg-white" : "bg-violet-300") : "bg-transparent",
+                    )}
+                  />
                 </div>
               );
             })}
           </div>
-        </div>
+        </section>
 
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">
-              Agenda
-            </h3>
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-semibold text-slate-300">
-              {entries.length}
-            </span>
-          </div>
-
-          {entries.length ? (
-            <div className="space-y-2">
-              {entries.map((entry) =>
-                canManage ? (
-                  <details
-                    key={entry.id}
-                    className="group rounded-lg border border-white/10 bg-slate-950/70 p-4"
+        <section className="card card-pad">
+          <h2 className="font-semibold text-ink">Agenda</h2>
+          {agendaDays.length ? (
+            <div className="mt-3 space-y-4">
+              {agendaDays.map((dayKey) => (
+                <div key={dayKey}>
+                  <h3
+                    className={cx(
+                      "mb-2 text-xs font-semibold uppercase tracking-wider",
+                      dayKey === todayKey ? "text-violet-300" : "text-ink-faint",
+                    )}
                   >
-                    <summary className="flex cursor-pointer list-none items-start justify-between gap-3">
-                      <EntrySummary entry={entry} />
-                      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-slate-200 group-open:bg-violet-400/10">
-                        <Pencil size={14} />
-                        Edit
-                      </span>
-                    </summary>
-                    <EntryForm entry={entry} redirectTo={redirectTo} />
-                  </details>
-                ) : (
-                  <article
-                    key={entry.id}
-                    className="rounded-lg border border-white/10 bg-slate-950/70 p-4"
-                  >
-                    <EntrySummary entry={entry} />
-                  </article>
-                ),
-              )}
+                    {dayKey === todayKey ? "Today · " : ""}
+                    {formatDate(entriesByDay[dayKey][0].startsAt)}
+                  </h3>
+                  <div className="space-y-2">
+                    {entriesByDay[dayKey].map((entry) => (
+                      <EntryCard
+                        key={entry.id}
+                        entry={entry}
+                        canManage={canManage}
+                        redirectTo={redirectTo}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed border-white/15 bg-slate-950/50 px-4 py-4 text-sm text-slate-400">
-              No schedule entries for this month.
+            <div className="mt-3">
+              <EmptyState
+                title="Nothing scheduled this month"
+                description={canManage ? "Use “Add calendar entry” above to post availability." : undefined}
+              />
             </div>
           )}
-        </div>
+        </section>
       </div>
+    </div>
+  );
+}
 
-      {canManage ? (
-        <form
-          action={createScheduleEntry}
-          className="space-y-3 rounded-lg border border-white/10 bg-slate-950/70 p-4"
-        >
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-base font-semibold text-white">New entry</h3>
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-semibold text-slate-300">
-              Visible to students
-            </span>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            <FormLabel label="Title">
-              <input
-                name="title"
-                required
-                placeholder="Consultation, office hour, meeting"
-                className={inputClass}
-              />
-            </FormLabel>
-            <FormLabel label="Location">
-              <input
-                name="location"
-                required
-                placeholder="Faculty room, lab, online"
-                className={inputClass}
-              />
-            </FormLabel>
-            <FormLabel label="Start, PH time">
-              <input
-                name="startsAt"
-                type="datetime-local"
-                required
-                className={inputClass}
-              />
-            </FormLabel>
-            <FormLabel label="End, same day">
-              <input
-                name="endsAt"
-                type="datetime-local"
-                required
-                className={inputClass}
-              />
-            </FormLabel>
-          </div>
-          <FormLabel label="Notes">
-            <textarea
-              name="notes"
-              rows={2}
-              placeholder="Optional context"
-              className={inputClass}
-            />
-          </FormLabel>
-          <SubmitButton pendingLabel="Saving schedule...">
-            <Plus size={16} />
-            Add entry
-          </SubmitButton>
-        </form>
-      ) : null}
-    </section>
+export function UpcomingSchedule({ entries }: { entries: ScheduleRecord[] }) {
+  if (!entries.length) {
+    return <p className="muted">No upcoming entries.</p>;
+  }
+
+  return (
+    <ul className="space-y-2">
+      {entries.map((entry) => (
+        <li key={entry.id} className="panel px-3 py-2.5">
+          <p className="text-sm font-medium text-ink">{entry.title}</p>
+          <p className="mt-0.5 text-xs text-ink-muted">
+            {formatDate(entry.startsAt)} · {formatTimeRange(entry.startsAt, entry.endsAt)} ·{" "}
+            {entry.location}
+          </p>
+        </li>
+      ))}
+    </ul>
   );
 }
